@@ -13,7 +13,7 @@
                         <h1 class="text-3xl font-bold mb-2">
                             👋 Halo, {{ $user->nama_anak }}!
                         </h1>
-                        <p class="text-lg opacity-90">Selamat datang di PANDA TK</p>
+                        <p class="text-lg opacity-90">Selamat datang di PANDA</p>
                         <div class="mt-4 flex items-center space-x-4">
                             <div class="bg-white bg-opacity-20 px-4 py-2 rounded-xl">
                                 <p class="text-sm opacity-90">Orang tua:</p>

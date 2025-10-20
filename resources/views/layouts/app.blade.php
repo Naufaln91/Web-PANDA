@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'PANDA TK - Platform Pembelajaran')</title>
+    <title>@yield('title', 'PANDA - Platform Pembelajaran')</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -60,7 +60,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="text-3xl">🐼</div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800">PANDA TK</h1>
+                        <h1 class="text-xl font-bold text-gray-800">PANDA</h1>
                         <p class="text-xs text-gray-500">Platform Pembelajaran</p>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
     <!-- Footer -->
     <footer class="bg-white mt-12 py-6">
         <div class="max-w-7xl mx-auto px-4 text-center text-gray-600">
-            <p>&copy; 2024 PANDA TK - Platform Pembelajaran Anak. All rights reserved.</p>
+            <p>&copy; 2024 PANDA - Platform Pembelajaran Anak. All rights reserved.</p>
         </div>
     </footer>
 

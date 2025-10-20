@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
     // Materi
     Route::get('/materi', [MateriController::class, 'index'])->name('materi.index');
     Route::get('/materi/alfabet', [MateriController::class, 'alfabet'])->name('materi.alfabet');
+    Route::get('/materi/warna', [MateriController::class, 'warna'])->name('materi.warna');
+    Route::get('/materi/hewan', [MateriController::class, 'hewan'])->name('materi.hewan');
 
     // Permainan
     Route::get('/permainan', [PermainanController::class, 'index'])->name('permainan.index');

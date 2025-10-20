@@ -15,6 +15,24 @@
             <div class="bg-blue-50 rounded-xl p-6 mb-6">
                 <div class="grid md:grid-cols-3 gap-6">
                     <div>
+                        <i class="fas fa-list-ol text-3xl text-blue-500 mb-2"></i>
+                        <p class="text-gray-600 text-sm">Jumlah Soal</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ $kuis->soal->count() }}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock text-3xl text-green-500 mb-2"></i>
+                        <p class="text-gray-600 text-sm">Waktu</p>
+                        <p class="text-2xl font-bold text-gray-800">
+                            @if ($kuis->waktu_tipe === 'tanpa_waktu')
+                                Tidak Terbatas
+                            @elseif($kuis->waktu_tipe === 'per_soal')
+                                {{ $kuis->durasi_waktu }}s per soal
+                            @else
+                                {{ $kuis->durasi_waktu }}s total
+                            @endif
+                        </p>
+                    </div>
+                    <div>
                         <i class="fas fa-trophy text-3xl text-yellow-500 mb-2"></i>
                         <p class="text-gray-600 text-sm">Nilai Maksimal</p>
                         <p class="text-2xl font-bold text-gray-800">100</p>
@@ -588,22 +606,4 @@
             };
         </script>
     @endpush
-    @endsectionfas fa-list-ol text-3xl text-blue-500 mb-2"></i>
-    <p class="text-gray-600 text-sm">Jumlah Soal</p>
-    <p class="text-2xl font-bold text-gray-800">{{ $kuis->soal->count() }}</p>
-    </div>
-    <div>
-        <i class="fas fa-clock text-3xl text-green-500 mb-2"></i>
-        <p class="text-gray-600 text-sm">Waktu</p>
-        <p class="text-2xl font-bold text-gray-800">
-            @if ($kuis->waktu_tipe === 'tanpa_waktu')
-                Tidak Terbatas
-            @elseif($kuis->waktu_tipe === 'per_soal')
-                {{ $kuis->durasi_waktu }}s per soal
-            @else
-                {{ $kuis->durasi_waktu }}s total
-            @endif
-        </p>
-    </div>
-    <div>
-        <i class="
+@endsection

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - PANDA TK</title>
+    <title>Login - PANDA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -21,7 +21,7 @@
                 <div
                     class="bg-gradient-to-br from-blue-500 to-indigo-600 p-12 flex flex-col justify-center items-center text-white">
                     <div class="text-8xl mb-6">🐼</div>
-                    <h1 class="text-4xl font-bold mb-4">PANDA TK</h1>
+                    <h1 class="text-4xl font-bold mb-4">PANDA</h1>
                     <p class="text-center text-lg opacity-90">Platform Pembelajaran Anak</p>
                     <div class="mt-8 text-center">
                         <div class="flex justify-center space-x-6 text-5xl">
