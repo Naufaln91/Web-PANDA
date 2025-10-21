@@ -48,6 +48,22 @@ Route::middleware(['auth', 'wali_murid'])->prefix('wali-murid')->name('wali-muri
     Route::get('/dashboard', [DashboardController::class, 'waliMurid'])->name('dashboard');
 });
 
+// Kuis Management Routes (Guru & Admin only)
+Route::middleware(['auth', 'guru_or_admin'])->prefix('kuis')->name('kuis.')->group(function () {
+    Route::get('/create', [KuisController::class, 'create'])->name('create');
+    Route::post('/', [KuisController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [KuisController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [KuisController::class, 'update'])->name('update');
+    Route::put('/{id}/status', [KuisController::class, 'updateStatus'])->name('update-status');
+    Route::delete('/{id}', [KuisController::class, 'destroy'])->name('destroy');
+
+    // Soal Management
+    Route::post('/{kuisId}/soal', [KuisController::class, 'storeSoal'])->name('soal.store');
+    Route::put('/soal/{soalId}', [KuisController::class, 'updateSoal'])->name('soal.update');
+    Route::delete('/soal/{soalId}', [KuisController::class, 'destroySoal'])->name('soal.destroy');
+    Route::post('/{kuisId}/soal/reorder', [KuisController::class, 'reorderSoal'])->name('soal.reorder');
+});
+
 // Shared Routes (All Authenticated Users)
 Route::middleware('auth')->group(function () {
     // Materi
@@ -64,20 +80,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/kuis', [KuisController::class, 'index'])->name('kuis.index');
     Route::get('/kuis/{id}', [KuisController::class, 'show'])->name('kuis.show');
     Route::get('/kuis/{id}/soal', [KuisController::class, 'getSoal'])->name('kuis.get-soal');
-});
-
-// Kuis Management Routes (Guru & Admin only)
-Route::middleware(['auth', 'guru_or_admin'])->prefix('kuis')->name('kuis.')->group(function () {
-    Route::get('/create', [KuisController::class, 'create'])->name('create');
-    Route::post('/', [KuisController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [KuisController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [KuisController::class, 'update'])->name('update');
-    Route::put('/{id}/status', [KuisController::class, 'updateStatus'])->name('update-status');
-    Route::delete('/{id}', [KuisController::class, 'destroy'])->name('destroy');
-
-    // Soal Management
-    Route::post('/{kuisId}/soal', [KuisController::class, 'storeSoal'])->name('soal.store');
-    Route::put('/soal/{soalId}', [KuisController::class, 'updateSoal'])->name('soal.update');
-    Route::delete('/soal/{soalId}', [KuisController::class, 'destroySoal'])->name('soal.destroy');
-    Route::post('/{kuisId}/soal/reorder', [KuisController::class, 'reorderSoal'])->name('soal.reorder');
 });

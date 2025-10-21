@@ -215,6 +215,11 @@ class KuisController extends Controller
             ]);
         }
 
+        // Handle pilihan if sent as JSON string
+        if ($request->has('pilihan') && is_string($request->pilihan)) {
+            $request->merge(['pilihan' => json_decode($request->pilihan, true)]);
+        }
+
         $validator = Validator::make($request->all(), [
             'tipe' => 'required|in:pilihan_ganda,isian_singkat',
             'konten_soal' => 'required|string',
@@ -222,6 +227,8 @@ class KuisController extends Controller
             'jumlah_pilihan' => 'required_if:tipe,pilihan_ganda|integer|min:2|max:5',
             'jawaban_benar' => 'required',
             'pilihan' => 'required_if:tipe,pilihan_ganda|array',
+            'pilihan.*.konten' => 'required|string',
+            'pilihan.*.urutan' => 'required|integer',
         ], [
             'konten_soal.required' => 'Konten soal tidak boleh kosong.',
             'gambar_soal.max' => 'Ukuran gambar maksimal 5MB.',
@@ -258,20 +265,21 @@ class KuisController extends Controller
 
             // Jika pilihan ganda, simpan pilihan jawaban
             if ($request->tipe == 'pilihan_ganda' && $request->pilihan) {
-                foreach ($request->pilihan as $index => $pilihanData) {
+                foreach ($request->pilihan as $pilihanData) {
                     $gambarPilihanPath = null;
 
                     // Upload gambar pilihan jika ada
-                    if (isset($pilihanData['gambar']) && $pilihanData['gambar']) {
-                        $gambarPilihanPath = $pilihanData['gambar']->store('kuis/pilihan', 'public');
+                    $gambarKey = 'gambar_pilihan_' . $pilihanData['urutan'];
+                    if ($request->hasFile($gambarKey)) {
+                        $gambarPilihanPath = $request->file($gambarKey)->store('kuis/pilihan', 'public');
                     }
 
                     PilihanJawaban::create([
                         'soal_id' => $soal->id,
-                        'urutan' => $index + 1,
+                        'urutan' => $pilihanData['urutan'],
                         'konten_pilihan' => $pilihanData['konten'],
                         'gambar_pilihan' => $gambarPilihanPath,
-                        'is_benar' => ($index + 1) == $request->jawaban_benar,
+                        'is_benar' => $pilihanData['urutan'] == $request->jawaban_benar,
                     ]);
                 }
             }

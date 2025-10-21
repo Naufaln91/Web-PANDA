@@ -41,10 +41,12 @@ class LoginController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
 
             if ($user->isAdmin()) {
-                $user->update(['last_login' => now()]);
+                $user->fill(['last_login' => now()]);
+                $user->save();
                 return redirect()->route('admin.dashboard');
             }
 
@@ -128,7 +130,8 @@ class LoginController extends Controller
         if ($user) {
             // User sudah ada, langsung login
             Auth::login($user, true);
-            $user->update(['last_login' => now()]);
+            $user->fill(['last_login' => now()]);
+            $user->save();
 
             return response()->json([
                 'success' => true,
