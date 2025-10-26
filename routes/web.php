@@ -58,6 +58,7 @@ Route::middleware(['auth', 'guru_or_admin'])->prefix('kuis')->name('kuis.')->gro
     Route::delete('/{id}', [KuisController::class, 'destroy'])->name('destroy');
 
     // Soal Management
+    Route::get('/soal/{soalId}', [KuisController::class, 'getSingleSoal'])->name('soal.show');
     Route::post('/{kuisId}/soal', [KuisController::class, 'storeSoal'])->name('soal.store');
     Route::put('/soal/{soalId}', [KuisController::class, 'updateSoal'])->name('soal.update');
     Route::delete('/soal/{soalId}', [KuisController::class, 'destroySoal'])->name('soal.destroy');
@@ -71,10 +72,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/materi/alfabet', [MateriController::class, 'alfabet'])->name('materi.alfabet');
     Route::get('/materi/warna', [MateriController::class, 'warna'])->name('materi.warna');
     Route::get('/materi/hewan', [MateriController::class, 'hewan'])->name('materi.hewan');
+    Route::get('/materi/angka', [MateriController::class, 'angka'])->name('materi.angka');
+    Route::get('/materi/buah', [MateriController::class, 'buah'])->name('materi.buah');
+    Route::get('/materi/transportasi', [MateriController::class, 'transportasi'])->name('materi.transportasi');
+
 
     // Permainan
     Route::get('/permainan', [PermainanController::class, 'index'])->name('permainan.index');
     Route::get('/permainan/puzzle', [PermainanController::class, 'puzzle'])->name('permainan.puzzle');
+    Route::get('/permainan/hitung', [PermainanController::class, 'hitung'])->name('permainan.hitung');
+    Route::get('/permainan/cocokkan_pasangan', [PermainanController::class, 'cocokkan_pasangan'])->name('permainan.cocokkan_pasangan');
+    Route::get('/permainan/urutkan_angka', [PermainanController::class, 'urutkan_angka'])->name('permainan.urutkan_angka');
+    Route::get('/permainan/menyusun_kata', [PermainanController::class, 'menyusun_kata'])->name('permainan.menyusun_kata');
+    Route::get('/permainan/labirin', [PermainanController::class, 'labirin'])->name('permainan.labirin');
+
 
     // Kuis - View & Play (All users)
     Route::get('/kuis', [KuisController::class, 'index'])->name('kuis.index');

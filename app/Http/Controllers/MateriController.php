@@ -32,6 +32,27 @@ class MateriController extends Controller
                 'icon' => '🦁',
                 'route' => 'materi.hewan',
             ],
+            [
+                'id' => 'angka',
+                'title' => 'Belajar Angka',
+                'description' => 'Belajar mengenal angka dengan cara yang menyenangkan',
+                'icon' => '🔢',
+                'route' => 'materi.angka',
+            ],
+            [
+                'id' => 'buah',
+                'title' => 'Belajar Buah',
+                'description' => 'Belajar mengenal berbagai jenis buah dengan cara yang menyenangkan',
+                'icon' => '🍉',
+                'route' => 'materi.buah',
+            ],
+            [
+                'id' => 'transportasi',
+                'title' => 'Belajar Nama Transportasi',
+                'description' => 'Belajar mengenal berbagai macam transportasi dengan cara yang menyenangkan',
+                'icon' => '🚑',
+                'route' => 'materi.transportasi',
+            ]
         ];
 
         return view('materi.index', compact('materis'));
@@ -52,4 +73,20 @@ class MateriController extends Controller
     {
         return view('materi.hewan');
     }
+    // Materi Angka
+    public function angka()
+    {
+        return view('materi.angka');
+    }
+    // Materi Buah
+    public function buah()
+    {
+        return view('materi.buah');
+    }
+    // Materi Transportasi
+    public function transportasi()
+    {
+        return view('materi.transportasi');
+    }
 }
+

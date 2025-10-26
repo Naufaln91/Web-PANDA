@@ -4,6 +4,13 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto">
+        <div class="flex justify-end mb-6">
+            <a href="{{ route('kuis.index') }}"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition inline-block">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali
+            </a>
+        </div>
+
         <!-- Intro Screen -->
         <div id="intro-screen" class="card text-center">
             <div class="mb-6">
@@ -40,12 +47,7 @@
                 </div>
             </div>
 
-            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-6">
-                <p class="text-yellow-800 font-semibold">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Pastikan proyektor sudah siap. Klik tombol di bawah untuk memulai kuis.
-                </p>
-            </div>
+
 
             <button onclick="startKuis()"
                 class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-12 rounded-full text-2xl transition transform hover:scale-105 shadow-lg">

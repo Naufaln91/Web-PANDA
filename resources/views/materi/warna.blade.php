@@ -1,127 +1,92 @@
-{{-- resources/views/materi1.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Belajar Warna Pelangi 🌈')
+@section('title', 'Belajar Warna - PANDA TK')
 
 @section('content')
     <div class="space-y-6">
-        {{-- Header atas --}}
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center">
             <h1 class="text-3xl font-bold text-gray-800">
-                🌈 Yuk, Belajar Warna Pelangi!
+                🎨 Belajar Warna
             </h1>
             <a href="{{ route('materi.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg d-inline-flex align-items-center">
-                <i class="fas fa-arrow-left me-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali
             </a>
         </div>
 
-        {{-- Deskripsi --}}
-        <p class="text-lg text-gray-700 text-center mb-4">
-            Klik warna yang kamu suka, lalu sebutkan namanya dengan lantang! 🎵
-        </p>
-
-        {{-- Kotak warna --}}
-        <div class="warna-container mt-4">
-            <div class="warna merah" onclick="tampilkan('Merah ❤️')" role="button" aria-label="Merah"></div>
-            <div class="warna jingga" onclick="tampilkan('Jingga 🧡')" role="button" aria-label="Jingga"></div>
-            <div class="warna kuning" onclick="tampilkan('Kuning 💛')" role="button" aria-label="Kuning"></div>
-            <div class="warna hijau" onclick="tampilkan('Hijau 💚')" role="button" aria-label="Hijau"></div>
-            <div class="warna biru" onclick="tampilkan('Biru 💙')" role="button" aria-label="Biru"></div>
-            <div class="warna nila" onclick="tampilkan('Nila 💜')" role="button" aria-label="Nila"></div>
-            <div class="warna ungu" onclick="tampilkan('Ungu 💟')" role="button" aria-label="Ungu"></div>
+        {{-- Daftar warna --}}
+        <div class="card">
+            <div id="warna-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 place-items-center"></div>
         </div>
 
-        <p id="pesan" class="fw-bold mt-5 fs-4 text-dark text-center" aria-live="polite"></p>
+        {{-- Kotak warna terpilih --}}
+        <div class="card bg-gradient-to-r from-pink-100 to-yellow-100 text-center py-8">
+            <div id="selected-color" class="w-32 h-32 rounded-2xl mx-auto mb-4 shadow-lg border-2 border-gray-300"></div>
+            <p id="color-name" class="text-3xl font-bold text-gray-700 mb-4">Merah</p>
+            <button onclick="playCurrentSound()"
+                class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                <i class="fas fa-volume-up mr-2"></i> Dengarkan
+            </button>
+        </div>
     </div>
+
+    @push('scripts')
+        <script>
+            const colors = [
+                { name: 'Merah', hex: '#ff4d4d' },
+                { name: 'Jingga', hex: '#ff9933' },
+                { name: 'Kuning', hex: '#ffeb3b' },
+                { name: 'Hijau', hex: '#4caf50' },
+                { name: 'Biru', hex: '#4da6ff' },
+                { name: 'Nila', hex: '#3f51b5' },
+                { name: 'Ungu', hex: '#b366ff' },
+                { name: 'Hitam', hex: '#000000' },
+                { name: 'Putih', hex: '#ffffff' },
+                { name: 'Abu-abu', hex: '#9e9e9e' },
+                { name: 'Cokelat', hex: '#795548' },
+                { name: 'Merah Muda', hex: '#ffb6c1' },
+                { name: 'Turquoise', hex: '#40E0D0' },
+                { name: 'Emas', hex: '#FFD700' },
+                { name: 'Lavender', hex: '#b5b5f6ff' },
+            ];
+
+            let current = colors[0];
+            const container = document.getElementById('warna-container');
+
+            colors.forEach(c => {
+                const div = document.createElement('div');
+                div.className =
+                    "w-24 h-24 md:w-28 md:h-28 rounded-2xl shadow-lg cursor-pointer hover:scale-110 transition border-2 border-white";
+                div.style.backgroundColor = c.hex;
+                div.onclick = () => selectColor(c);
+                container.appendChild(div);
+            });
+
+            function selectColor(c) {
+                current = c;
+                const box = document.getElementById('selected-color');
+                const name = document.getElementById('color-name');
+                box.style.backgroundColor = c.hex;
+                name.textContent = c.name;
+                playCurrentSound();
+            }
+
+            function playCurrentSound() {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(current.name);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.9;
+                    speechSynthesis.cancel();
+                    speechSynthesis.speak(utterance);
+
+                    const box = document.getElementById('selected-color');
+                    box.classList.add('animate-bounce');
+                    setTimeout(() => box.classList.remove('animate-bounce'), 800);
+                }
+            }
+
+            document.getElementById('selected-color').style.backgroundColor = colors[0].hex;
+            setTimeout(() => playCurrentSound(), 600);
+        </script>
+    @endpush
 @endsection
-
-@push('styles')
-    <style>
-        .warna-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 25px;
-            margin-top: 40px;
-        }
-
-        .warna {
-            width: 120px;
-            height: 120px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .warna:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-        }
-
-        .merah {
-            background-color: #ff4d4d;
-        }
-
-        .jingga {
-            background-color: #ff9933;
-        }
-
-        .kuning {
-            background-color: #ffeb3b;
-        }
-
-        .hijau {
-            background-color: #4caf50;
-        }
-
-        .biru {
-            background-color: #4da6ff;
-        }
-
-        .nila {
-            background-color: #3f51b5;
-        }
-
-        .ungu {
-            background-color: #b366ff;
-        }
-
-        #pesan {
-            opacity: 0;
-            transition: opacity 0.8s ease-in;
-        }
-
-        .show-message {
-            opacity: 1 !important;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-                color: #ff6f61;
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-    </style>
-@endpush
-
-@push('scripts')
-    <script>
-        function tampilkan(warna) {
-            const pesan = document.getElementById('pesan');
-            pesan.textContent = `Bagus sekali! Ini warna ${warna}! 🌟`;
-            pesan.classList.add('show-message');
-        }
-    </script>
-@endpush

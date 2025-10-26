@@ -316,10 +316,20 @@ class KuisController extends Controller
             ]);
         }
 
+        // Handle pilihan if sent as JSON string
+        if ($request->has('pilihan') && is_string($request->pilihan)) {
+            $request->merge(['pilihan' => json_decode($request->pilihan, true)]);
+        }
+
         $validator = Validator::make($request->all(), [
+            'tipe' => 'required|in:pilihan_ganda,isian_singkat',
             'konten_soal' => 'required|string',
             'gambar_soal' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'jumlah_pilihan' => 'required_if:tipe,pilihan_ganda|integer|min:2|max:5',
             'jawaban_benar' => 'required',
+            'pilihan' => 'required_if:tipe,pilihan_ganda|array',
+            'pilihan.*.konten' => 'required|string',
+            'pilihan.*.urutan' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -341,33 +351,35 @@ class KuisController extends Controller
             }
 
             $soal->update([
+                'tipe' => $request->tipe,
                 'konten_soal' => $request->konten_soal,
+                'jumlah_pilihan' => $request->tipe == 'pilihan_ganda' ? $request->jumlah_pilihan : null,
                 'jawaban_benar' => $request->jawaban_benar,
             ]);
 
-            // Update pilihan jika pilihan ganda
-            if ($soal->isPilihanGanda() && $request->pilihan) {
-                // Hapus pilihan lama
-                foreach ($soal->pilihanJawaban as $pilihan) {
-                    if ($pilihan->gambar_pilihan) {
-                        Storage::disk('public')->delete($pilihan->gambar_pilihan);
-                    }
+            // Hapus pilihan lama
+            foreach ($soal->pilihanJawaban as $pilihan) {
+                if ($pilihan->gambar_pilihan) {
+                    Storage::disk('public')->delete($pilihan->gambar_pilihan);
                 }
-                $soal->pilihanJawaban()->delete();
+            }
+            $soal->pilihanJawaban()->delete();
 
-                // Tambah pilihan baru
-                foreach ($request->pilihan as $index => $pilihanData) {
+            // Tambah pilihan baru jika pilihan ganda
+            if ($request->tipe == 'pilihan_ganda' && $request->pilihan) {
+                foreach ($request->pilihan as $pilihanData) {
                     $gambarPilihanPath = null;
-                    if (isset($pilihanData['gambar']) && $pilihanData['gambar']) {
-                        $gambarPilihanPath = $pilihanData['gambar']->store('kuis/pilihan', 'public');
+                    $gambarKey = 'gambar_pilihan_' . $pilihanData['urutan'];
+                    if ($request->hasFile($gambarKey)) {
+                        $gambarPilihanPath = $request->file($gambarKey)->store('kuis/pilihan', 'public');
                     }
 
                     PilihanJawaban::create([
                         'soal_id' => $soal->id,
-                        'urutan' => $index + 1,
+                        'urutan' => $pilihanData['urutan'],
                         'konten_pilihan' => $pilihanData['konten'],
                         'gambar_pilihan' => $gambarPilihanPath,
-                        'is_benar' => ($index + 1) == $request->jawaban_benar,
+                        'is_benar' => $pilihanData['urutan'] == $request->jawaban_benar,
                     ]);
                 }
             }
@@ -486,6 +498,27 @@ class KuisController extends Controller
         return response()->json([
             'success' => true,
             'kuis' => $kuis,
+        ]);
+    }
+
+    // API: Get Single Soal
+    public function getSingleSoal($soalId)
+    {
+        $soal = Soal::with('pilihanJawaban')->findOrFail($soalId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && $soal->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'soal' => $soal,
         ]);
     }
 }

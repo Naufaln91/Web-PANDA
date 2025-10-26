@@ -70,15 +70,20 @@
         </div>
 
         <!-- Status Kuis -->
-        <div class="card mb-6 bg-gradient-to-r from-yellow-50 to-orange-50">
+        <div class="card mb-6 bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-2xl shadow-md">
             <div class="flex items-center justify-between">
+
+                <!-- Status Label -->
                 <div>
                     <p class="text-gray-700 font-semibold mb-2">Status Kuis:</p>
                     <span
-                        class="px-4 py-2 rounded-full text-sm font-bold {{ $kuis->status == 'published' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white' }}">
+                        class="px-4 py-2 rounded-full text-sm font-bold 
+                {{ $kuis->status == 'published' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white' }}">
                         {{ $kuis->status == 'published' ? 'Published' : 'Draft' }}
                     </span>
                 </div>
+
+                <!-- Action Button -->
                 <div>
                     @if ($kuis->status == 'draft')
                         <button onclick="publishKuis()"
@@ -92,8 +97,10 @@
                         </button>
                     @endif
                 </div>
+
             </div>
         </div>
+
 
         <!-- Daftar Soal -->
         <div class="card">
@@ -240,6 +247,7 @@
 
     @push('scripts')
         <script>
+            let soalList = @json($kuis->soal);
             let editingSoalId = null;
 
             // Toggle durasi waktu
@@ -315,6 +323,9 @@
                         waktu_tipe: waktuTipe,
                         durasi_waktu: durasiWaktu
                     },
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
                     success: function(response) {
                         if (response.success) {
                             Swal.fire({
@@ -348,6 +359,9 @@
                         _token: '{{ csrf_token() }}',
                         status: status
                     },
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
                     success: function(response) {
                         if (response.success) {
                             location.reload();
@@ -376,40 +390,39 @@
                 $('#soal-id').val(soalId);
                 $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Edit Soal');
 
-                // Load soal data
-                $.ajax({
-                    url: `/kuis/soal/${soalId}`,
-                    method: 'GET',
-                    success: function(soal) {
-                        $('#konten_soal').val(soal.konten_soal);
+                // Find soal from soalList
+                const soal = soalList.find(s => s.id == soalId);
+                if (!soal) {
+                    Swal.fire('Error', 'Soal tidak ditemukan.', 'error');
+                    return;
+                }
 
-                        if (soal.tipe === 'pilihan_ganda') {
-                            $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
-                            $('#jumlah_pilihan').val(soal.pilihan_jawaban.length).trigger('change');
+                $('#konten_soal').val(soal.konten_soal);
 
-                            // Populate pilihan
-                            setTimeout(() => {
-                                soal.pilihan_jawaban.forEach((pilihan, index) => {
-                                    $(`#pilihan_${index + 1}`).val(pilihan.konten_pilihan);
-                                    if (pilihan.is_benar) {
-                                        $(`input[name="jawaban_benar"][value="${index + 1}"]`).prop(
-                                            'checked', true);
-                                    }
-                                });
-                            }, 100);
-                        } else {
-                            $('input[name="tipe"][value="isian_singkat"]').prop('checked', true).trigger('change');
-                            $('#jawaban_isian').val(soal.jawaban_benar);
-                        }
+                if (soal.tipe === 'pilihan_ganda') {
+                    $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
+                    $('#jumlah_pilihan').val(soal.pilihan_jawaban.length).trigger('change');
 
-                        $('#form-soal-container').removeClass('hidden');
+                    // Populate pilihan
+                    setTimeout(() => {
+                        soal.pilihan_jawaban.forEach((pilihan, index) => {
+                            $(`#pilihan_${index + 1}`).val(pilihan.konten_pilihan);
+                            if (pilihan.is_benar) {
+                                $(`input[name="jawaban_benar"][value="${index + 1}"]`).prop('checked', true);
+                            }
+                        });
+                    }, 100);
+                } else {
+                    $('input[name="tipe"][value="isian_singkat"]').prop('checked', true).trigger('change');
+                    $('#jawaban_isian').val(soal.jawaban_benar);
+                }
 
-                        // Scroll to form
-                        $('html, body').animate({
-                            scrollTop: $('#form-soal-container').offset().top - 100
-                        }, 500);
-                    }
-                });
+                $('#form-soal-container').removeClass('hidden');
+
+                // Scroll to form
+                $('html, body').animate({
+                    scrollTop: $('#form-soal-container').offset().top - 100
+                }, 500);
             }
 
             function closeFormSoal() {
@@ -471,7 +484,13 @@
                 }
 
                 const url = editingSoalId ? `/kuis/soal/${editingSoalId}` : `/kuis/{{ $kuis->id }}/soal`;
-                const method = editingSoalId ? 'PUT' : 'POST';
+                let method = editingSoalId ? 'PUT' : 'POST';
+
+                // For PUT requests with FormData, use POST with _method
+                if (method === 'PUT') {
+                    formData.append('_method', 'PUT');
+                    method = 'POST';
+                }
 
                 $.ajax({
                     url: url,
@@ -479,6 +498,9 @@
                     data: formData,
                     processData: false,
                     contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
                     success: function(response) {
                         if (response.success) {
                             closeFormSoal();
@@ -509,6 +531,9 @@
                             method: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}'
+                            },
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function(response) {
                                 if (response.success) {

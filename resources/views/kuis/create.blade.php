@@ -364,6 +364,41 @@
                 }, 500);
             }
 
+            function editSoal(index) {
+                editingSoalIndex = index;
+                const soal = soalList[index];
+
+                $('#soal-id').val(soal.id);
+                $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Edit Soal');
+
+                $('#konten_soal').val(soal.konten_soal);
+
+                if (soal.tipe === 'pilihan_ganda') {
+                    $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
+                    $('#jumlah_pilihan').val(soal.pilihan_jawaban.length).trigger('change');
+
+                    // Populate pilihan
+                    setTimeout(() => {
+                        soal.pilihan_jawaban.forEach((pilihan, idx) => {
+                            $(`#pilihan_${idx + 1}`).val(pilihan.konten_pilihan);
+                            if (pilihan.is_benar) {
+                                $(`input[name="jawaban_benar"][value="${idx + 1}"]`).prop('checked', true);
+                            }
+                        });
+                    }, 100);
+                } else {
+                    $('input[name="tipe"][value="isian_singkat"]').prop('checked', true).trigger('change');
+                    $('#jawaban_isian').val(soal.jawaban_benar);
+                }
+
+                $('#form-soal-container').removeClass('hidden');
+
+                // Scroll to form
+                $('html, body').animate({
+                    scrollTop: $('#form-soal-container').offset().top - 100
+                }, 500);
+            }
+
             function closeFormSoal() {
                 $('#form-soal-container').addClass('hidden');
                 editingSoalIndex = null;
@@ -422,22 +457,38 @@
                     return;
                 }
 
+                const soalId = $('#soal-id').val();
+                const url = soalId ? `/kuis/soal/${soalId}` : `/kuis/${kuisId}/soal`;
+                let method = soalId ? 'PUT' : 'POST';
+
+                // For PUT requests with FormData, use POST with _method
+                if (method === 'PUT') {
+                    formData.append('_method', 'PUT');
+                    method = 'POST';
+                }
+
                 $.ajax({
-                    url: `/kuis/${kuisId}/soal`,
-                    method: 'POST',
+                    url: url,
+                    method: method,
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function(response) {
                         if (response.success) {
-                            soalList.push(response.soal);
+                            if (soalId) {
+                                // Update existing soal
+                                soalList[editingSoalIndex] = response.soal;
+                            } else {
+                                // Add new soal
+                                soalList.push(response.soal);
+                            }
                             renderSoalList();
                             closeFormSoal();
 
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
-                                text: 'Soal berhasil ditambahkan.',
+                                text: soalId ? 'Soal berhasil diupdate.' : 'Soal berhasil ditambahkan.',
                                 timer: 2000,
                                 showConfirmButton: false
                             });

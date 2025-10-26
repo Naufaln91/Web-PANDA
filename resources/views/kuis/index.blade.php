@@ -16,6 +16,7 @@
                     <i class="fas fa-plus-circle mr-2"></i> Buat Kuis Baru
                 </a>
             @endif
+
         </div>
 
         @if ($kuis->isEmpty())
@@ -26,7 +27,9 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($kuis as $item)
-                    <div class="card hover:shadow-2xl transition">
+                    <div class="card bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6">
+
+                        <!-- Status & Actions -->
                         <div class="flex justify-between items-start mb-4">
                             <span
                                 class="px-3 py-1 rounded-full text-xs font-semibold
@@ -35,7 +38,7 @@
                             </span>
 
                             @if (auth()->user()->isAdmin() || $item->created_by == auth()->id())
-                                <div class="flex space-x-2">
+                                <div class="flex space-x-3">
                                     <a href="{{ route('kuis.edit', $item->id) }}" class="text-blue-500 hover:text-blue-700">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -47,12 +50,15 @@
                             @endif
                         </div>
 
+                        <!-- Title & Description -->
                         <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $item->judul }}</h3>
-                        <p class="text-gray-600 text-sm mb-4">{{ $item->deskripsi }}</p>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $item->deskripsi }}</p>
 
+                        <!-- Meta Info -->
                         <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                             <span><i class="fas fa-list-ol mr-1"></i> {{ $item->soal->count() }} Soal</span>
-                            <span><i class="fas fa-clock mr-1"></i>
+                            <span>
+                                <i class="fas fa-clock mr-1"></i>
                                 @if ($item->waktu_tipe == 'tanpa_waktu')
                                     Tanpa Batas
                                 @else
@@ -61,6 +67,7 @@
                             </span>
                         </div>
 
+                        <!-- Action Button -->
                         @if ($item->status == 'published')
                             <a href="{{ route('kuis.show', $item->id) }}"
                                 class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-center transition">
@@ -70,6 +77,7 @@
                     </div>
                 @endforeach
             </div>
+
         @endif
     </div>
 
