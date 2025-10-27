@@ -270,7 +270,7 @@
         <div class="space-y-6">
             <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-8 mb-6">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">${soal.konten_soal}</h2>
-                ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="max-w-md mx-auto rounded-lg shadow-lg mt-4" alt="Gambar Soal">` : ''}
+                ${soal.gambar_soal ? `<img src="${window.location.origin}/storage/${soal.gambar_soal}" class="max-w-md mx-auto rounded-lg shadow-lg mt-4" alt="Gambar Soal">` : ''}
             </div>
     `;
 
@@ -286,7 +286,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-xl font-semibold text-gray-800">${pilihan.konten_pilihan}</p>
-                            ${pilihan.gambar_pilihan ? `<img src="/storage/${pilihan.gambar_pilihan}" class="max-w-xs mt-3 rounded-lg shadow" alt="Pilihan">` : ''}
+                            ${pilihan.gambar_pilihan ? `<img src="${window.location.origin}/storage/${pilihan.gambar_pilihan}" class="max-w-xs mt-3 rounded-lg shadow" alt="Pilihan">` : ''}
                         </div>
                     </div>
                 </div>
