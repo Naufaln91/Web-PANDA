@@ -19,7 +19,7 @@ class User extends Authenticatable
         'nomor_hp',
         'username',
         'password',
-        'nama_orangtua',
+        'nama',
         'nama_anak',
         'kelas_anak',
         'role',

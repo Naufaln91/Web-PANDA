@@ -33,20 +33,26 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nomor_hp' => 'required|string|regex:/^08[0-9]{9,11}$/|unique:whitelists,nomor_hp',
+            'role' => 'required|in:guru,wali_murid',
         ], [
             'nomor_hp.required' => 'Nomor HP harus diisi.',
             'nomor_hp.regex' => 'Format nomor HP salah.',
             'nomor_hp.unique' => 'Nomor HP ini sudah terdapat dalam whitelist.',
+            'role.required' => 'Role harus dipilih.',
+            'role.in' => 'Role tidak valid.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first('nomor_hp'),
+                'message' => $validator->errors()->first(),
             ]);
         }
 
-        Whitelist::create(['nomor_hp' => $request->nomor_hp]);
+        Whitelist::create([
+            'nomor_hp' => $request->nomor_hp,
+            'role' => $request->role,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -80,11 +86,15 @@ class AdminController extends Controller
     // Kelola Akun
     public function akunIndex()
     {
-        $users = User::where('role', '!=', 'admin')
+        $guru = User::where('role', 'guru')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'guru_page');
 
-        return view('admin.akun.index', compact('users'));
+        $waliMurid = User::where('role', 'wali_murid')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'wali_murid_page');
+
+        return view('admin.akun.index', compact('guru', 'waliMurid'));
     }
 
     public function akunDestroy($id)

@@ -12,6 +12,7 @@ return new class extends Migration
         Schema::create('whitelists', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_hp', 20)->unique();
+            $table->enum('role', ['guru', 'wali_murid']);
             $table->timestamps();
         });
     }

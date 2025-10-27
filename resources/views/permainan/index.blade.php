@@ -6,7 +6,7 @@
     <div class="space-y-6">
         <h1 class="text-3xl font-bold text-gray-800">
             <i class="fas fa-gamepad mr-2 text-pink-500"></i>
-            Permainan Edukatif
+            Permainan
         </h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

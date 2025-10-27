@@ -17,7 +17,7 @@
                         <div class="mt-4 flex items-center space-x-4">
                             <div class="bg-white bg-opacity-20 px-4 py-2 rounded-xl">
                                 <p class="text-sm opacity-90">Orang tua:</p>
-                                <p class="font-bold">{{ $user->nama_orangtua }}</p>
+                                <p class="font-bold">{{ $user->nama }}</p>
                             </div>
                             <div class="bg-white bg-opacity-20 px-4 py-2 rounded-xl">
                                 <p class="text-sm opacity-90">Kelas:</p>

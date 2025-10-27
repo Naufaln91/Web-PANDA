@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Whitelist extends Model
 {
-    protected $fillable = ['nomor_hp'];
+    protected $fillable = ['nomor_hp', 'role'];
 
     public static function isWhitelisted($nomorHp)
     {

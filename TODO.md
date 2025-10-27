@@ -1,31 +1,42 @@
-# TODO: Create Unit Tests for Controllers
+# TODO: Perubahan Proses Pembuatan Akun Guru dan Penentuan Role
 
-## Tasks
-- [x] Create tests/Feature/DashboardControllerTest.php
-  - [x] Test admin() method: assert view 'admin.dashboard' with correct data
-  - [x] Test guru() method: assert view 'guru.dashboard' with correct data
-  - [x] Test waliMurid() method: assert view 'wali-murid.dashboard' with correct data
+## 1. Update Migration Whitelists
+- Tambah kolom role enum('guru','wali_murid') di migration whitelists
 
-- [x] Create tests/Feature/MateriControllerTest.php
-  - [x] Test index() method: assert view 'materi.index' with materis data
-  - [x] Test alfabet() method: assert view 'materi.alfabet'
-  - [x] Test warna() method: assert view 'materi.warna'
-  - [x] Test hewan() method: assert view 'materi.hewan'
+## 2. Update Model Whitelist
+- Tambah fillable role
 
-- [x] Create tests/Feature/PermainanControllerTest.php
-  - [x] Test index() method: assert view 'permainan.index' with permainans data
-  - [x] Test puzzle() method: assert view 'permainan.puzzle'
+## 3. Update AdminController whitelistStore
+- Validasi dan simpan role saat tambah whitelist
 
-- [x] Create tests/Feature/Auth/LoginControllerTest.php
-  - [x] Test showLoginForm() method: assert view 'auth.login'
-  - [x] Test loginAdmin() method: success and failure cases
-  - [x] Test requestOtp() method: success and validation failures
-  - [x] Test verifyOtp() method: success, invalid OTP, new user flow
-  - [x] Test completeProfile() method: success and validation
-  - [x] Test logout() method: logout and redirect
+## 4. Update View Whitelist Index
+- Tambah select role di form tambah
+- Update tabel untuk tampilkan kolom role
 
-## Notes
-- Use RefreshDatabase trait for all tests
-- Create test users with different roles (admin, guru, wali_murid)
-- For LoginController, may need to create Whitelist and OtpCode test data
-- Run tests after creation to ensure they pass
+## 5. Update Migration Users
+- Rename nama_orangtua ke nama
+- Buat nama_anak dan kelas_anak nullable
+
+## 6. Update Model User
+- Update fillable nama
+
+## 7. Update LoginController requestOtp
+- Ambil role dari whitelist dan kirim ke frontend
+
+## 8. Update LoginController completeProfile
+- Validasi beda berdasarkan role - guru hanya nama, wali_murid lengkap
+
+## 9. Update View Login step-profile
+- Tampilkan form sesuai role
+
+## 10. Update AdminController akunIndex
+- Pisah data guru dan wali_murid
+
+## 11. Update View Akun Index
+- Tabel terpisah guru (kolom nama) dan wali murid (nama_orangtua, nama_anak, kelas_anak)
+
+## Followup Steps
+- Run php artisan migrate
+- Test flow login guru dan wali murid
+- Test admin kelola whitelist dengan role
+- Test admin kelola akun tabel terpisah

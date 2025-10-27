@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('nomor_hp', 20)->unique()->nullable();
             $table->string('username')->unique()->nullable();
             $table->string('password')->nullable();
-            $table->string('nama_orangtua')->nullable();
+            $table->string('nama')->nullable();
             $table->string('nama_anak')->nullable();
             $table->string('kelas_anak')->nullable();
             $table->enum('role', ['admin', 'guru', 'wali_murid']);

@@ -19,18 +19,30 @@
         <div class="card">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Tambah Nomor HP ke Whitelist</h2>
 
-            <form id="form-tambah-whitelist" class="flex gap-4">
+            <form id="form-tambah-whitelist" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @csrf
-                <div class="flex-1">
+                <div>
                     <input type="text" id="nomor_hp" name="nomor_hp"
                         class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                         placeholder="08xxxxxxxxxx">
+                </div>
+                <div>
+                    <select id="role" name="role"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                        <option value="">Pilih Role</option>
+                        <option value="guru">Guru</option>
+                        <option value="wali_murid">Wali Murid</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit"
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition">
+                        <i class="fas fa-plus mr-2"></i> Tambah
+                    </button>
+                </div>
+                <div class="md:col-span-3">
                     <p id="error-message" class="text-red-500 text-sm mt-1 hidden"></p>
                 </div>
-                <button type="submit"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition">
-                    <i class="fas fa-plus mr-2"></i> Tambah
-                </button>
             </form>
         </div>
 
@@ -44,6 +56,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nomor HP</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
                             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ditambahkan</th>
                             <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
                         </tr>
@@ -53,6 +66,13 @@
                             <tr class="border-b hover:bg-gray-50" data-id="{{ $whitelist->id }}">
                                 <td class="px-6 py-4 text-sm text-gray-700">{{ $whitelists->firstItem() + $index }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-700 font-semibold">{{ $whitelist->nomor_hp }}</td>
+                                <td class="px-6 py-4 text-sm">
+                                    <span
+                                        class="px-3 py-1 rounded-full text-xs font-semibold
+                                        {{ $whitelist->role == 'guru' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
+                                        {{ ucfirst(str_replace('_', ' ', $whitelist->role)) }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 text-sm text-gray-700">
                                     {{ $whitelist->created_at->format('d M Y, H:i') }}</td>
                                 <td class="px-6 py-4 text-center">
@@ -64,7 +84,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                     <i class="fas fa-inbox text-4xl mb-2"></i>
                                     <p>Belum ada nomor HP yang diwhitelist</p>
                                 </td>
@@ -96,7 +116,8 @@
                     method: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        nomor_hp: nomorHp
+                        nomor_hp: nomorHp,
+                        role: $('#role').val()
                     },
                     success: function(response) {
                         if (response.success) {

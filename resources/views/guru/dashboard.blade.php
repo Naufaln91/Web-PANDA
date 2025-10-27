@@ -54,7 +54,7 @@
                     class="block p-8 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105 text-center">
                     <i class="fas fa-gamepad text-5xl text-pink-500 mb-3"></i>
                     <h3 class="font-bold text-gray-800 text-lg">Permainan</h3>
-                    <p class="text-sm text-gray-600 mt-1">Mainkan permainan edukatif</p>
+                    <p class="text-sm text-gray-600 mt-1">Mainkan permainan</p>
                 </a>
 
                 <a href="{{ route('kuis.index') }}"

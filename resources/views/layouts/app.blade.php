@@ -106,7 +106,7 @@
                         <div class="flex items-center space-x-3">
                             <div class="text-right">
                                 <p class="text-sm font-semibold text-gray-700">
-                                    {{ auth()->user()->nama_orangtua ?? auth()->user()->username }}</p>
+                                    {{ auth()->user()->nama ?? auth()->user()->username }}</p>
                                 <p class="text-xs text-gray-500 capitalize">
                                     {{ str_replace('_', ' ', auth()->user()->role) }}</p>
                             </div>

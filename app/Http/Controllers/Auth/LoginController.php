@@ -90,10 +90,15 @@ class LoginController extends Controller
         // Cek apakah user sudah ada
         $userExists = User::where('nomor_hp', $nomorHp)->exists();
 
+        // Ambil role dari whitelist
+        $whitelist = Whitelist::where('nomor_hp', $nomorHp)->first();
+        $role = $whitelist ? $whitelist->role : null;
+
         return response()->json([
             'success' => true,
             'otp_code' => $otp->code, // Untuk development, tampilkan OTP
             'user_exists' => $userExists,
+            'role' => $role,
             'message' => 'Kode OTP berhasil dikirim.',
         ]);
     }
@@ -151,13 +156,23 @@ class LoginController extends Controller
     // Complete Profile untuk user baru
     public function completeProfile(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nomor_hp' => 'required|string',
-            'nama_orangtua' => 'required|string|max:255',
-            'nama_anak' => 'required|string|max:255',
-            'kelas_anak' => 'required|string|max:50',
-            'role' => 'required|in:guru,wali_murid',
-        ]);
+        // Ambil role dari whitelist
+        $whitelist = Whitelist::where('nomor_hp', $request->nomor_hp)->first();
+        $role = $whitelist ? $whitelist->role : 'wali_murid'; // default wali_murid jika tidak ada
+
+        if ($role === 'guru') {
+            $validator = Validator::make($request->all(), [
+                'nomor_hp' => 'required|string',
+                'nama' => 'required|string|max:255',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'nomor_hp' => 'required|string',
+                'nama_orangtua' => 'required|string|max:255',
+                'nama_anak' => 'required|string|max:255',
+                'kelas_anak' => 'required|string|max:50',
+            ]);
+        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -167,14 +182,23 @@ class LoginController extends Controller
         }
 
         // Buat user baru
-        $user = User::create([
-            'nomor_hp' => $request->nomor_hp,
-            'nama_orangtua' => $request->nama_orangtua,
-            'nama_anak' => $request->nama_anak,
-            'kelas_anak' => $request->kelas_anak,
-            'role' => $request->role,
-            'last_login' => now(),
-        ]);
+        if ($role === 'guru') {
+            $user = User::create([
+                'nomor_hp' => $request->nomor_hp,
+                'nama' => $request->nama,
+                'role' => $role,
+                'last_login' => now(),
+            ]);
+        } else {
+            $user = User::create([
+                'nomor_hp' => $request->nomor_hp,
+                'nama' => $request->nama_orangtua,
+                'nama_anak' => $request->nama_anak,
+                'kelas_anak' => $request->kelas_anak,
+                'role' => $role,
+                'last_login' => now(),
+            ]);
+        }
 
         // Login user
         Auth::login($user, true);

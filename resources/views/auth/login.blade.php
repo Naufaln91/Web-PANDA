@@ -151,37 +151,41 @@
                             <h3 class="text-xl font-bold text-gray-800 mb-4">Lengkapi Profil Anda</h3>
 
                             <div class="space-y-4">
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Nama Orang Tua</label>
-                                    <input type="text" id="nama_orangtua"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="Masukkan nama orang tua">
+                                <!-- Form untuk Guru -->
+                                <div id="form-guru" class="hidden">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama</label>
+                                        <input type="text" id="nama_guru"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama lengkap">
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Nama Anak</label>
-                                    <input type="text" id="nama_anak"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="Masukkan nama anak">
-                                </div>
+                                <!-- Form untuk Wali Murid -->
+                                <div id="form-wali-murid" class="hidden">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama Orang Tua</label>
+                                        <input type="text" id="nama_orangtua"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama orang tua">
+                                    </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Kelas Anak</label>
-                                    <select id="kelas_anak"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
-                                        <option value="">Pilih kelas</option>
-                                        <option value="TK A">TK A</option>
-                                        <option value="TK B">TK B</option>
-                                    </select>
-                                </div>
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama Anak</label>
+                                        <input type="text" id="nama_anak"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama anak">
+                                    </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Peran</label>
-                                    <select id="role"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
-                                        <option value="wali_murid">Wali Murid</option>
-                                        <option value="guru">Guru</option>
-                                    </select>
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Kelas Anak</label>
+                                        <select id="kelas_anak"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                                            <option value="">Pilih kelas</option>
+                                            <option value="TK A">TK A</option>
+                                            <option value="TK B">TK B</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <p id="error-profile" class="text-red-500 text-sm hidden"></p>
@@ -200,6 +204,7 @@
 
     <script>
         let currentNomorHp = '';
+        let currentRole = '';
 
         function showTab(tab) {
             if (tab === 'admin') {
@@ -238,6 +243,7 @@
                 success: function(response) {
                     if (response.success) {
                         currentNomorHp = nomorHp;
+                        currentRole = response.role;
                         document.getElementById('display-otp').textContent = response.otp_code;
                         document.getElementById('step-nomor-hp').classList.add('hidden');
                         document.getElementById('step-otp').classList.remove('hidden');
@@ -279,6 +285,8 @@
                         if (response.is_new_user) {
                             document.getElementById('step-otp').classList.add('hidden');
                             document.getElementById('step-profile').classList.remove('hidden');
+                            // Tampilkan form sesuai role
+                            showProfileForm(currentRole);
                         } else {
                             window.location.href = response.redirect_url;
                         }
@@ -299,19 +307,37 @@
         }
 
         function completeProfile() {
-            const namaOrangtua = document.getElementById('nama_orangtua').value;
-            const namaAnak = document.getElementById('nama_anak').value;
-            const kelasAnak = document.getElementById('kelas_anak').value;
-            const role = document.getElementById('role').value;
             const errorDiv = document.getElementById('error-profile');
             const btn = document.getElementById('btn-complete-profile');
 
             errorDiv.classList.add('hidden');
 
-            if (!namaOrangtua || !namaAnak || !kelasAnak) {
-                errorDiv.textContent = 'Semua field harus diisi!';
-                errorDiv.classList.remove('hidden');
-                return;
+            let data = {
+                _token: '{{ csrf_token() }}',
+                nomor_hp: currentNomorHp
+            };
+
+            if (currentRole === 'guru') {
+                const namaGuru = document.getElementById('nama_guru').value;
+                if (!namaGuru) {
+                    errorDiv.textContent = 'Nama harus diisi!';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                data.nama = namaGuru;
+            } else {
+                const namaOrangtua = document.getElementById('nama_orangtua').value;
+                const namaAnak = document.getElementById('nama_anak').value;
+                const kelasAnak = document.getElementById('kelas_anak').value;
+
+                if (!namaOrangtua || !namaAnak || !kelasAnak) {
+                    errorDiv.textContent = 'Semua field harus diisi!';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                data.nama_orangtua = namaOrangtua;
+                data.nama_anak = namaAnak;
+                data.kelas_anak = kelasAnak;
             }
 
             btn.disabled = true;
@@ -320,14 +346,7 @@
             $.ajax({
                 url: '{{ route('login.complete-profile') }}',
                 method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    nomor_hp: currentNomorHp,
-                    nama_orangtua: namaOrangtua,
-                    nama_anak: namaAnak,
-                    kelas_anak: kelasAnak,
-                    role: role
-                },
+                data: data,
                 success: function(response) {
                     if (response.success) {
                         Swal.fire({
@@ -359,6 +378,16 @@
             document.getElementById('step-otp').classList.add('hidden');
             document.getElementById('step-nomor-hp').classList.remove('hidden');
             document.getElementById('otp_code').value = '';
+        }
+
+        function showProfileForm(role) {
+            if (role === 'guru') {
+                document.getElementById('form-guru').classList.remove('hidden');
+                document.getElementById('form-wali-murid').classList.add('hidden');
+            } else {
+                document.getElementById('form-guru').classList.add('hidden');
+                document.getElementById('form-wali-murid').classList.remove('hidden');
+            }
         }
     </script>
 </body>
