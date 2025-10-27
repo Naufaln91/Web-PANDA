@@ -131,7 +131,7 @@
     <!-- Footer -->
     <footer class="bg-white mt-12 py-6">
         <div class="max-w-7xl mx-auto px-4 text-center text-gray-600">
-            <p>&copy; 2024 PANDA - Platform Pembelajaran Anak. All rights reserved.</p>
+            <p>&copy; 2025 PANDA - Platform Pembelajaran Anak. All rights reserved.</p>
         </div>
     </footer>
 

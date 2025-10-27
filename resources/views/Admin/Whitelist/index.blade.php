@@ -17,7 +17,7 @@
 
         <!-- Form Tambah Whitelist -->
         <div class="card">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Tambah Nomor HP ke Whitelist</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Tambah Nomor HP</h2>
 
             <form id="form-tambah-whitelist" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @csrf
@@ -48,7 +48,7 @@
 
         <!-- Daftar Whitelist -->
         <div class="card">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Daftar Nomor HP yang Diwhitelist</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Daftar Nomor HP</h2>
 
             <div class="overflow-x-auto">
                 <table class="w-full">

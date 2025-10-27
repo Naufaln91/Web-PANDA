@@ -64,7 +64,8 @@
                 Aksi Cepat
             </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- First Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <a href="{{ route('admin.whitelist.index') }}"
                     class="block p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
                     <i class="fas fa-list text-3xl text-blue-500 mb-3"></i>
@@ -78,12 +79,29 @@
                     <h3 class="font-bold text-gray-800">Kelola Akun</h3>
                     <p class="text-sm text-gray-600 mt-1">Lihat & hapus akun user</p>
                 </a>
+            </div>
 
-                <a href="{{ route('kuis.create') }}"
-                    class="block p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
-                    <i class="fas fa-plus-circle text-3xl text-purple-500 mb-3"></i>
-                    <h3 class="font-bold text-gray-800">Buat Kuis Baru</h3>
-                    <p class="text-sm text-gray-600 mt-1">Tambah kuis pembelajaran</p>
+            <!-- Second Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('materi.index') }}"
+                    class="block p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-book text-3xl text-yellow-500 mb-3"></i>
+                    <h3 class="font-bold text-gray-800">Materi</h3>
+                    <p class="text-sm text-gray-600 mt-1">Akses materi pembelajaran</p>
+                </a>
+
+                <a href="{{ route('permainan.index') }}"
+                    class="block p-6 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-gamepad text-3xl text-pink-500 mb-3"></i>
+                    <h3 class="font-bold text-gray-800">Permainan</h3>
+                    <p class="text-sm text-gray-600 mt-1">Mainkan permainan</p>
+                </a>
+
+                <a href="{{ route('kuis.index') }}"
+                    class="block p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
+                    <i class="fas fa-clipboard-question text-3xl text-blue-500 mb-3"></i>
+                    <h3 class="font-bold text-gray-800">Kuis</h3>
+                    <p class="text-sm text-gray-600 mt-1">Kelola & kerjakan kuis</p>
                 </a>
             </div>
         </div>

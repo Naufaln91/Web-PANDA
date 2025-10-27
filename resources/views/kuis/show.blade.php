@@ -19,7 +19,7 @@
                 <p class="text-gray-600 text-lg mb-6">{{ $kuis->deskripsi }}</p>
             </div>
 
-            <div class="bg-blue-50 rounded-xl p-6 mb-6">
+            <div class="bg-blue-200 rounded-xl p-6 mb-6">
                 <div class="grid md:grid-cols-3 gap-6">
                     <div>
                         <i class="fas fa-list-ol text-3xl text-blue-500 mb-2"></i>
@@ -48,7 +48,6 @@
             </div>
 
 
-
             <button onclick="startKuis()"
                 class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-12 rounded-full text-2xl transition transform hover:scale-105 shadow-lg">
                 <i class="fas fa-play mr-3"></i> Mulai Kuis
@@ -58,46 +57,56 @@
         <!-- Quiz Screen (Full Screen Mode) -->
         <div id="quiz-screen" class="hidden">
             <!-- Header dengan Timer -->
-            <div class="card mb-6 sticky top-0 z-50 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Soal</p>
-                        <p class="text-2xl font-bold text-gray-800">
-                            <span id="current-soal-number">1</span> / <span
-                                id="total-soal">{{ $kuis->soal->count() }}</span>
+            <div
+                class="card mb-4 shadow-lg bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <!-- Info Soal -->
+                    <div class="bg-white/70 px-3 py-2 rounded-lg shadow-sm border border-gray-100">
+                        <p class="text-xs text-gray-600">Soal</p>
+                        <p class="text-lg font-bold text-gray-800">
+                            <span id="current-soal-number">1</span> /
+                            <span id="total-soal">{{ $kuis->soal->count() }}</span>
                         </p>
                     </div>
 
+                    <!-- Timer -->
                     @if ($kuis->waktu_tipe !== 'tanpa_waktu')
-                        <div id="timer-display" class="text-center">
-                            <p class="text-sm text-gray-600">
+                        <div id="timer-display"
+                            class="text-center bg-white/70 px-3 py-2 rounded-lg shadow-sm border border-gray-100">
+                            <p class="text-xs text-gray-600">
                                 {{ $kuis->waktu_tipe === 'per_soal' ? 'Waktu Tersisa' : 'Waktu Total' }}
                             </p>
-                            <p id="timer-text" class="text-4xl font-bold text-blue-600">
+                            <p id="timer-text" class="text-2xl font-bold text-blue-700 tracking-wide">
                                 <span id="timer-minutes">00</span>:<span id="timer-seconds">00</span>
                             </p>
                         </div>
                     @endif
 
-                    <div class="text-right">
-                        <p class="text-sm text-gray-600">Dijawab</p>
-                        <p class="text-2xl font-bold text-green-600">
+                    <!-- Jumlah Dijawab -->
+                    <div class="text-right bg-green-50 border border-green-200 rounded-lg px-3 py-2 shadow-sm">
+                        <p class="text-xs text-gray-600">Dijawab</p>
+                        <p class="text-lg font-semibold text-green-600">
                             <span id="answered-count">0</span> soal
                         </p>
                     </div>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                <div class="mt-3 bg-gray-300 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div id="progress-bar"
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-500 ease-in-out"
+                        style="width: 0%">
+                    </div>
                 </div>
             </div>
 
             <!-- Soal Container -->
-            <div id="soal-container" class="card min-h-[500px]">
+            <div id="soal-container"
+                class="card min-h-[400px] bg-white border border-gray-200 rounded-xl p-4 shadow-md transition-all duration-300">
                 <!-- Content will be loaded by JavaScript -->
             </div>
         </div>
+
 
         <!-- Results Screen -->
         <div id="results-screen" class="hidden">

@@ -160,7 +160,7 @@
 
         <!-- Form Tambah/Edit Soal -->
         <div id="form-soal-container" class="card hidden">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-6 mt-4">
                 <h2 class="text-xl font-bold text-gray-800" id="form-soal-title">
                     <i class="fas fa-edit mr-2 text-purple-500"></i>
                     Tambah Soal Baru

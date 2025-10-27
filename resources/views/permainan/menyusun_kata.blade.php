@@ -3,8 +3,8 @@
 @section('title', 'Susun Kata - PANDA TK')
 
 @section('content')
-    <div class="space-y-6 text-center">
-        {{-- Judul dan tombol kembali --}}
+    <div class="space-y-6">
+        {{-- Header --}}
         <div class="flex justify-between items-center">
             <h1 class="text-3xl font-bold text-gray-800">✏️ Susun Kata</h1>
             <a href="{{ route('permainan.index') }}"
@@ -13,71 +13,134 @@
             </a>
         </div>
 
-        {{-- Statistik permainan --}}
-        <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <div class="bg-blue-100 rounded-lg p-4">
-                <div class="text-2xl font-bold text-blue-600" id="skor">0</div>
-                <div class="text-sm text-gray-600">Skor</div>
+        {{-- Main Game Area --}}
+        <div class="max-w-4xl mx-auto">
+            <div
+                class="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-3xl shadow-2xl p-8 border-4 border-white">
+
+                {{-- Progress Bar --}}
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-semibold text-gray-600">Pertanyaan <span id="soal-sekarang">1</span> dari
+                            <span id="total-soal">12</span></span>
+                        <span class="text-sm font-semibold text-purple-600" id="kategori-badge">Mulai</span>
+                    </div>
+                    <div class="bg-white rounded-full h-3 overflow-hidden shadow-inner">
+                        <div id="progress-bar"
+                            class="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 h-full transition-all duration-500 rounded-full"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+
+                {{-- Icon Display --}}
+                <div class="text-center mb-6">
+                    <div id="ikon-item"
+                        class="text-9xl mb-4 inline-block transform transition-all duration-300 hover:scale-110">
+                        ❓
+                    </div>
+                    <p class="text-lg font-semibold text-gray-700">Susun huruf-huruf di bawah!</p>
+                </div>
+
+                {{-- Word Area --}}
+                <div id="kata-area"
+                    class="flex flex-wrap justify-center gap-3 mb-8 min-h-[6rem] items-center p-4 bg-white/50 rounded-2xl backdrop-blur-sm">
+                </div>
+
+                {{-- Letter Buttons --}}
+                <div id="huruf-container"
+                    class="flex flex-wrap justify-center gap-3 mb-8 p-4 bg-white/30 rounded-2xl backdrop-blur-sm">
+                </div>
+
+                {{-- Result Message --}}
+                <div class="text-center mb-6 min-h-[3rem] flex items-center justify-center">
+                    <p id="result" class="text-2xl font-bold"></p>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="hapusHurufTerakhir()" id="btn-hapus"
+                        class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                        <i class="fas fa-backspace mr-2"></i> Hapus
+                    </button>
+                    <button onclick="resetKata()"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-redo mr-2"></i> Reset
+                    </button>
+                    <button onclick="tampilkanHint()" id="btn-hint"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                        <i class="fas fa-lightbulb mr-2"></i> Petunjuk
+                    </button>
+                    <button onclick="lewatiSoal()"
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-forward mr-2"></i> Lewati
+                    </button>
+                </div>
             </div>
-            <div class="bg-green-100 rounded-lg p-4">
-                <div class="text-2xl font-bold text-green-600" id="benar">0</div>
-                <div class="text-sm text-gray-600">Benar</div>
-            </div>
-            <div class="bg-red-100 rounded-lg p-4">
-                <div class="text-2xl font-bold text-red-600" id="salah">0</div>
-                <div class="text-sm text-gray-600">Salah</div>
-            </div>
-        </div>
-
-        {{-- Area permainan --}}
-        <div class="card bg-gradient-to-r from-green-50 to-yellow-100 py-12 px-6 rounded-2xl shadow-md">
-            <div id="ikon-item" class="text-8xl mb-8">❓</div>
-
-            {{-- Area kata yang sedang disusun --}}
-            <div id="kata-area" class="flex flex-wrap justify-center gap-3 mb-6 min-h-[5rem]"></div>
-
-            {{-- Tombol hapus huruf terakhir --}}
-            <button onclick="hapusHurufTerakhir()" id="btn-hapus"
-                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full mb-4 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                <i class="fas fa-backspace mr-2"></i> Hapus Huruf
-            </button>
-
-            {{-- Huruf yang bisa dipilih --}}
-            <div id="huruf-container" class="flex flex-wrap justify-center gap-4 mb-8"></div>
-
-            <p id="result" class="text-2xl font-bold min-h-[2rem]"></p>
-
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="resetKata()"
-                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full transition">
-                    <i class="fas fa-redo mr-2"></i> Reset
-                </button>
-                <button onclick="lewatiSoal()"
-                    class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-full transition">
-                    <i class="fas fa-forward mr-2"></i> Lewati
-                </button>
-                <button onclick="tampilkanHint()" id="btn-hint"
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-full transition">
-                    <i class="fas fa-lightbulb mr-2"></i> Petunjuk
-                </button>
-            </div>
-        </div>
-
-        {{-- Progress Bar --}}
-        <div class="max-w-2xl mx-auto">
-            <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
-                <div id="progress-bar"
-                    class="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-500"
-                    style="width: 0%"></div>
-            </div>
-            <p class="text-sm text-gray-600 mt-2">Soal <span id="soal-sekarang">1</span> dari <span
-                    id="total-soal">12</span></p>
         </div>
     </div>
 
+    @push('styles')
+        <style>
+            @keyframes bounce-in {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+
+                50% {
+                    transform: scale(1.1);
+                }
+
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes shake {
+
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+
+                25% {
+                    transform: translateX(-10px);
+                }
+
+                75% {
+                    transform: translateX(10px);
+                }
+            }
+
+            .letter-box {
+                animation: bounce-in 0.3s ease-out;
+            }
+
+            .shake-animation {
+                animation: shake 0.5s ease-in-out;
+            }
+
+            .icon-success {
+                animation: bounce 1s ease-in-out infinite;
+            }
+
+            @keyframes bounce {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-20px);
+                }
+            }
+        </style>
+    @endpush
+
     @push('scripts')
         <script>
-            // Data gabungan: Hewan, Buah, Transportasi
             const semuaItem = [{
                     kata: 'KUCING',
                     ikon: '🐱',
@@ -99,6 +162,16 @@
                     kategori: 'Hewan'
                 },
                 {
+                    kata: 'GAJAH',
+                    ikon: '🐘',
+                    kategori: 'Hewan'
+                },
+                {
+                    kata: 'KELINCI',
+                    ikon: '🐰',
+                    kategori: 'Hewan'
+                },
+                {
                     kata: 'APEL',
                     ikon: '🍎',
                     kategori: 'Buah'
@@ -114,8 +187,8 @@
                     kategori: 'Buah'
                 },
                 {
-                    kata: 'STROBERI',
-                    ikon: '🍓',
+                    kata: 'JERUK',
+                    ikon: '🍊',
                     kategori: 'Buah'
                 },
                 {
@@ -137,17 +210,25 @@
                     kata: 'PESAWAT',
                     ikon: '✈️',
                     kategori: 'Transportasi'
+                },
+                {
+                    kata: 'BUS',
+                    ikon: '🚌',
+                    kategori: 'Transportasi'
+                },
+                {
+                    kata: 'KERETA',
+                    ikon: '🚂',
+                    kategori: 'Transportasi'
                 }
             ];
 
             let currentData = null;
             let currentWord = [];
             let hurufButtons = [];
-            let skor = 0;
-            let benar = 0;
-            let salah = 0;
             let soalSekarang = 0;
             let hintDigunakan = false;
+            let audioContext = null;
 
             const ikonItem = document.getElementById('ikon-item');
             const hurufContainer = document.getElementById('huruf-container');
@@ -156,40 +237,88 @@
             const btnHapus = document.getElementById('btn-hapus');
             const btnHint = document.getElementById('btn-hint');
 
-            function newQuestion() {
-                // Pilih kata acak
-                currentData = semuaItem[Math.floor(Math.random() * semuaItem.length)];
-                currentWord = [];
-                hurufButtons = [];
-                hintDigunakan = false;
-                soalSekarang++;
+            function initAudio() {
+                if (!audioContext) {
+                    audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                }
+            }
 
-                updateKataArea();
-                result.textContent = '';
-                ikonItem.textContent = currentData.ikon;
-                btnHapus.disabled = true;
-                btnHint.disabled = false;
-                btnHint.classList.remove('opacity-50');
-
-                // Update progress
-                document.getElementById('soal-sekarang').textContent = soalSekarang;
-                const progress = (soalSekarang / semuaItem.length) * 100;
-                document.getElementById('progress-bar').style.width = progress + '%';
-
-                // Buat tombol huruf
-                hurufContainer.innerHTML = '';
-                const hurufArray = shuffle(currentData.kata.split(''));
-                hurufArray.forEach((h, index) => {
-                    const btn = document.createElement('button');
-                    btn.textContent = h;
-                    btn.className =
-                        'bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl text-3xl shadow-md transition transform hover:scale-110';
-                    btn.dataset.huruf = h;
-                    btn.dataset.index = index;
-                    btn.onclick = () => pilihHuruf(h, btn);
-                    hurufContainer.appendChild(btn);
-                    hurufButtons.push(btn);
+            function playSuccessSound() {
+                initAudio();
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        osc.start(audioContext.currentTime);
+                        osc.stop(audioContext.currentTime + 0.4);
+                    }, i * 120);
                 });
+            }
+
+            function playFailSound() {
+                initAudio();
+                const notes = [293.66, 246.94, 196.00];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.type = 'sawtooth';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        osc.start(audioContext.currentTime);
+                        osc.stop(audioContext.currentTime + 0.3);
+                    }, i * 150);
+                });
+            }
+
+            function createConfetti() {
+                const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#ec4899', '#f97316'];
+                for (let i = 0; i < 100; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.style.position = 'fixed';
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.top = '-20px';
+                        confetti.style.width = Math.random() * 12 + 6 + 'px';
+                        confetti.style.height = Math.random() * 12 + 6 + 'px';
+                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                        confetti.style.zIndex = '9999';
+                        confetti.style.pointerEvents = 'none';
+                        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                        confetti.style.opacity = '0.9';
+                        document.body.appendChild(confetti);
+
+                        let pos = -20;
+                        let rotation = Math.random() * 360;
+                        const drift = (Math.random() - 0.5) * 4;
+                        let left = parseFloat(confetti.style.left);
+
+                        const fall = setInterval(() => {
+                            pos += 6;
+                            rotation += 8;
+                            left += drift;
+                            confetti.style.top = pos + 'px';
+                            confetti.style.left = left + '%';
+                            confetti.style.transform = `rotate(${rotation}deg)`;
+
+                            if (pos > window.innerHeight + 50) {
+                                clearInterval(fall);
+                                confetti.remove();
+                            }
+                        }, 16);
+                    }, i * 15);
+                }
             }
 
             function shuffle(array) {
@@ -201,22 +330,67 @@
                 return arr;
             }
 
+            function newQuestion() {
+                currentData = semuaItem[Math.floor(Math.random() * semuaItem.length)];
+                currentWord = [];
+                hurufButtons = [];
+                hintDigunakan = false;
+                soalSekarang++;
+
+                updateKataArea();
+                result.textContent = '';
+                ikonItem.textContent = currentData.ikon;
+                ikonItem.classList.remove('icon-success', 'shake-animation');
+                btnHapus.disabled = true;
+                btnHint.disabled = false;
+
+                // Update kategori badge dengan warna
+                const kategoriBadge = document.getElementById('kategori-badge');
+                kategoriBadge.textContent = currentData.kategori;
+                if (currentData.kategori === 'Hewan') {
+                    kategoriBadge.className = 'text-sm font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full';
+                } else if (currentData.kategori === 'Buah') {
+                    kategoriBadge.className = 'text-sm font-semibold text-orange-600 bg-orange-100 px-3 py-1 rounded-full';
+                } else {
+                    kategoriBadge.className = 'text-sm font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full';
+                }
+
+                // Update progress
+                document.getElementById('soal-sekarang').textContent = soalSekarang;
+                document.getElementById('total-soal').textContent = semuaItem.length;
+                const progress = (soalSekarang / semuaItem.length) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+
+                // Create letter buttons
+                hurufContainer.innerHTML = '';
+                const hurufArray = shuffle(currentData.kata.split(''));
+                hurufArray.forEach((huruf, index) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = huruf;
+                    btn.className =
+                        'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl text-2xl shadow-lg transition transform hover:scale-110 hover:-rotate-3';
+                    btn.dataset.huruf = huruf;
+                    btn.dataset.index = index;
+                    btn.onclick = () => pilihHuruf(huruf, btn);
+                    hurufContainer.appendChild(btn);
+                    hurufButtons.push(btn);
+                });
+            }
+
             function updateKataArea() {
                 kataArea.innerHTML = '';
 
                 if (currentWord.length === 0) {
                     const placeholder = document.createElement('div');
-                    placeholder.textContent = '_ _ _';
-                    placeholder.className = 'text-4xl text-gray-400 font-bold';
+                    placeholder.textContent = 'Pilih huruf...';
+                    placeholder.className = 'text-3xl text-gray-400 font-semibold italic';
                     kataArea.appendChild(placeholder);
                 } else {
-                    currentWord.forEach((h, idx) => {
+                    currentWord.forEach((huruf, idx) => {
                         const box = document.createElement('div');
-                        box.textContent = h;
+                        box.textContent = huruf;
                         box.className =
-                            'bg-white border-4 border-blue-500 text-blue-600 font-bold py-3 px-5 rounded-xl text-3xl shadow-md animate-bounce';
-                        box.style.animationDuration = '0.5s';
-                        box.style.animationIterationCount = '1';
+                            'letter-box bg-white border-4 border-purple-400 text-purple-600 font-bold py-4 px-5 rounded-xl text-3xl shadow-lg';
                         kataArea.appendChild(box);
                     });
                 }
@@ -224,17 +398,15 @@
                 btnHapus.disabled = currentWord.length === 0;
             }
 
-            function pilihHuruf(h, btn) {
-                currentWord.push(h);
+            function pilihHuruf(huruf, btn) {
+                currentWord.push(huruf);
                 updateKataArea();
                 btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                // Efek suara klik
-                playSound('click');
+                btn.classList.add('opacity-30', 'cursor-not-allowed', 'scale-90');
+                btn.classList.remove('hover:scale-110');
 
                 if (currentWord.length === currentData.kata.length) {
-                    checkAnswer();
+                    setTimeout(() => checkAnswer(), 300);
                 }
             }
 
@@ -244,61 +416,47 @@
                 const hurufTerakhir = currentWord.pop();
                 updateKataArea();
 
-                // Aktifkan kembali tombol huruf yang dihapus
                 const btn = Array.from(hurufContainer.children).find(b =>
                     b.textContent === hurufTerakhir && b.disabled
                 );
                 if (btn) {
                     btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.remove('opacity-30', 'cursor-not-allowed', 'scale-90');
+                    btn.classList.add('hover:scale-110');
                 }
-
-                playSound('pop');
             }
 
             function checkAnswer() {
                 const jawabanUser = currentWord.join('');
 
                 if (jawabanUser === currentData.kata) {
-                    const poin = hintDigunakan ? 5 : 10;
-                    skor += poin;
-                    benar++;
-
-                    result.textContent = `🎉 Benar sekali! +${poin} poin`;
+                    result.textContent = `🎉 Benar Sekali! Ini ${currentData.kata}!`;
                     result.className = "text-green-600 font-bold text-2xl";
-                    ikonItem.classList.add('animate-bounce');
+                    ikonItem.classList.add('icon-success');
 
-                    updateStats();
-                    playSound('success');
-
-                    if ('speechSynthesis' in window) {
-                        const u = new SpeechSynthesisUtterance(`Benar, kata ini ${currentData.kata}`);
-                        u.lang = 'id-ID';
-                        speechSynthesis.speak(u);
-                    }
+                    playSuccessSound();
+                    createConfetti();
 
                     setTimeout(() => {
-                        ikonItem.classList.remove('animate-bounce');
-                        newQuestion();
-                    }, 2000);
+                        if (soalSekarang >= semuaItem.length) {
+                            result.textContent = "🏆 Semua Soal Selesai! Hebat!";
+                            result.className = "text-purple-600 font-bold text-2xl";
+                            createConfetti();
+                        } else {
+                            newQuestion();
+                        }
+                    }, 3000);
                 } else {
-                    salah++;
-                    result.textContent = "❌ Salah, coba lagi!";
+                    result.textContent = "❌ Ups, Salah! Coba Lagi!";
                     result.className = "text-red-600 font-bold text-2xl";
+                    ikonItem.classList.add('shake-animation');
 
-                    updateStats();
-                    playSound('error');
+                    playFailSound();
 
-                    if ('speechSynthesis' in window) {
-                        const u = new SpeechSynthesisUtterance("Salah, coba lagi");
-                        u.lang = 'id-ID';
-                        speechSynthesis.speak(u);
-                    }
-
-                    // Reset jawaban setelah 1 detik
                     setTimeout(() => {
+                        ikonItem.classList.remove('shake-animation');
                         resetJawaban();
-                    }, 1000);
+                    }, 1500);
                 }
             }
 
@@ -307,10 +465,10 @@
                 updateKataArea();
                 result.textContent = '';
 
-                // Aktifkan semua tombol huruf
                 hurufButtons.forEach(btn => {
                     btn.disabled = false;
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.remove('opacity-30', 'cursor-not-allowed', 'scale-90');
+                    btn.classList.add('hover:scale-110');
                 });
             }
 
@@ -320,7 +478,12 @@
 
             function lewatiSoal() {
                 if (confirm('Yakin ingin melewati soal ini?')) {
-                    newQuestion();
+                    if (soalSekarang >= semuaItem.length) {
+                        result.textContent = "🏆 Semua Soal Sudah Selesai!";
+                        result.className = "text-purple-600 font-bold text-2xl";
+                    } else {
+                        newQuestion();
+                    }
                 }
             }
 
@@ -329,68 +492,28 @@
 
                 hintDigunakan = true;
                 btnHint.disabled = true;
-                btnHint.classList.add('opacity-50');
 
-                // Tampilkan huruf pertama
                 const hurufPertama = currentData.kata[0];
                 const btn = Array.from(hurufContainer.children).find(b =>
                     b.textContent === hurufPertama && !b.disabled
                 );
 
                 if (btn) {
-                    pilihHuruf(hurufPertama, btn);
+                    btn.classList.add('ring-4', 'ring-yellow-400', 'ring-offset-2');
+                    setTimeout(() => {
+                        btn.classList.remove('ring-4', 'ring-yellow-400', 'ring-offset-2');
+                        pilihHuruf(hurufPertama, btn);
+                    }, 1000);
                 }
 
-                // Tampilkan kategori
-                result.textContent = `💡 Petunjuk: Ini adalah ${currentData.kategori}`;
+                result.textContent = `💡 Huruf pertama adalah "${hurufPertama}"`;
                 result.className = "text-yellow-600 font-bold text-xl";
 
                 setTimeout(() => {
-                    result.textContent = '';
+                    if (currentWord.length < currentData.kata.length) {
+                        result.textContent = '';
+                    }
                 }, 3000);
-            }
-
-            function updateStats() {
-                document.getElementById('skor').textContent = skor;
-                document.getElementById('benar').textContent = benar;
-                document.getElementById('salah').textContent = salah;
-            }
-
-            function playSound(type) {
-                // Simulasi efek suara dengan Web Audio API
-                const audioContext = new(window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                switch (type) {
-                    case 'click':
-                        oscillator.frequency.value = 800;
-                        gainNode.gain.value = 0.1;
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.1);
-                        break;
-                    case 'success':
-                        oscillator.frequency.value = 1000;
-                        gainNode.gain.value = 0.2;
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        break;
-                    case 'error':
-                        oscillator.frequency.value = 200;
-                        gainNode.gain.value = 0.2;
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                        break;
-                    case 'pop':
-                        oscillator.frequency.value = 600;
-                        gainNode.gain.value = 0.1;
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.05);
-                        break;
-                }
             }
 
             // Keyboard support
@@ -398,16 +521,12 @@
                 if (e.key === 'Backspace' || e.key === 'Delete') {
                     e.preventDefault();
                     hapusHurufTerakhir();
-                } else if (e.key === 'Enter') {
-                    if (currentWord.length === currentData.kata.length) {
-                        checkAnswer();
-                    }
                 } else if (e.key === 'Escape') {
                     resetKata();
                 }
             });
 
-            // Mulai permainan pertama kali
+            // Start game
             newQuestion();
         </script>
     @endpush

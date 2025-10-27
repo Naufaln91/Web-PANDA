@@ -98,18 +98,19 @@
         <!-- Step 2: Tambah Soal -->
         <div id="step-soal" class="hidden space-y-6">
             <!-- Info Kuis yang Dibuat -->
-            <div class="card bg-blue-50 border-2 border-blue-200">
+            <div class="card bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 rounded-2xl shadow-md p-5">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-800" id="display-judul"></h3>
-                        <p class="text-gray-600" id="display-deskripsi"></p>
+                    <div class="space-y-1">
+                        <h3 class="text-2xl font-bold text-gray-800" id="display-judul">Judul Kuis</h3>
+                        <p class="text-gray-700" id="display-deskripsi">Deskripsi singkat kuis ini.</p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right bg-white/70 rounded-xl px-4 py-2 shadow-sm">
                         <p class="text-sm text-gray-600">Jumlah Soal</p>
-                        <p class="text-3xl font-bold text-blue-600" id="jumlah-soal">0</p>
+                        <p class="text-3xl font-extrabold text-blue-700" id="jumlah-soal">0</p>
                     </div>
                 </div>
             </div>
+
 
             <!-- Daftar Soal -->
             <div class="card">
