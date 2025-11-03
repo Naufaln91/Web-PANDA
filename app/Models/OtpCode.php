@@ -12,6 +12,7 @@ class OtpCode extends Model
         'code',
         'expires_at',
         'is_used',
+        'resend_count',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class OtpCode extends Model
             'email' => $email,
             'code' => $code,
             'expires_at' => Carbon::now()->addMinutes(5),
+            'resend_count' => 0,
         ]);
     }
 

@@ -18,6 +18,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login/admin', [LoginController::class, 'loginAdmin'])->name('login.admin');
     Route::post('/login/request-otp', [LoginController::class, 'requestOtp'])->name('login.request-otp');
+    Route::post('/login/resend-otp', [LoginController::class, 'resendOtp'])->name('login.resend-otp');
     Route::post('/login/verify-otp', [LoginController::class, 'verifyOtp'])->name('login.verify-otp');
     Route::post('/login/complete-profile', [LoginController::class, 'completeProfile'])->name('login.complete-profile');
 });

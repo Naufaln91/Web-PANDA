@@ -116,9 +116,8 @@
 
                         <!-- Step 2: Input OTP -->
                         <div id="step-otp" class="hidden">
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
-                                <p class="font-semibold">Kode OTP Anda:</p>
-                                <p class="text-2xl font-bold" id="display-otp"></p>
+                            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-4">
+                                <p class="font-semibold">Kode OTP telah dikirim ke email Anda</p>
                                 <p class="text-sm mt-1">Kode berlaku selama 5 menit</p>
                             </div>
 
@@ -133,6 +132,18 @@
                                         placeholder="000000">
                                 </div>
                                 <p id="error-otp" class="text-red-500 text-sm mt-1 hidden"></p>
+                            </div>
+
+                            <div class="mb-4">
+                                <button onclick="resendOtp()" id="btn-resend-otp"
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-envelope mr-2"></i> Kirim Ulang OTP
+                                </button>
+                                <p id="resend-info" class="text-sm text-gray-600 mt-1 text-center">
+                                    <span id="resend-countdown" class="hidden">Kirim ulang tersedia dalam <span
+                                            id="countdown-timer">30</span> detik</span>
+                                    <span id="resend-limit" class="hidden">Batas kirim ulang tercapai</span>
+                                </p>
                             </div>
 
                             <button onclick="verifyOtp()" id="btn-verify-otp"
@@ -244,9 +255,9 @@
                     if (response.success) {
                         currentEmail = email;
                         currentRole = response.role;
-                        document.getElementById('display-otp').textContent = response.otp_code;
                         document.getElementById('step-email').classList.add('hidden');
                         document.getElementById('step-otp').classList.remove('hidden');
+                        startResendCountdown();
                     } else {
                         errorDiv.textContent = response.message;
                         errorDiv.classList.remove('hidden');
@@ -372,6 +383,85 @@
                     btn.innerHTML = '<i class="fas fa-save mr-2"></i> Simpan & Masuk';
                 }
             });
+        }
+
+        function resendOtp() {
+            const btn = document.getElementById('btn-resend-otp');
+            const errorDiv = document.getElementById('error-otp');
+
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim ulang...';
+
+            $.ajax({
+                url: '{{ route('login.resend-otp') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    email: currentEmail
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        startResendCountdown();
+                        if (response.remaining_resend <= 0) {
+                            disableResendButton();
+                        }
+                    } else {
+                        errorDiv.textContent = response.message;
+                        errorDiv.classList.remove('hidden');
+                        if (response.message.includes('tercapai')) {
+                            disableResendButton();
+                        }
+                    }
+                },
+                error: function() {
+                    errorDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                    errorDiv.classList.remove('hidden');
+                },
+                complete: function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-envelope mr-2"></i> Kirim Ulang OTP';
+                }
+            });
+        }
+
+        function startResendCountdown() {
+            let countdown = 30;
+            const countdownElement = document.getElementById('countdown-timer');
+            const countdownDiv = document.getElementById('resend-countdown');
+            const resendBtn = document.getElementById('btn-resend-otp');
+
+            resendBtn.disabled = true;
+            countdownDiv.classList.remove('hidden');
+            document.getElementById('resend-limit').classList.add('hidden');
+
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    countdownDiv.classList.add('hidden');
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function disableResendButton() {
+            const resendBtn = document.getElementById('btn-resend-otp');
+            const countdownDiv = document.getElementById('resend-countdown');
+            const limitDiv = document.getElementById('resend-limit');
+
+            resendBtn.disabled = true;
+            countdownDiv.classList.add('hidden');
+            limitDiv.classList.remove('hidden');
         }
 
         function backToEmail() {

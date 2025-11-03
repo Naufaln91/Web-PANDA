@@ -7,10 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Whitelist;
 use App\Models\OtpCode;
+use App\Mail\OtpEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class LoginController extends Controller
 {
@@ -87,6 +89,16 @@ class LoginController extends Controller
         // Generate OTP
         $otp = OtpCode::generateOtp($email);
 
+        // Kirim email OTP
+        try {
+            Mail::to($email)->send(new OtpEmail($otp->code));
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email OTP. Silakan coba lagi.',
+            ]);
+        }
+
         // Cek apakah user sudah ada
         $userExists = User::where('email', $email)->exists();
 
@@ -96,10 +108,9 @@ class LoginController extends Controller
 
         return response()->json([
             'success' => true,
-            'otp_code' => $otp->code, // Untuk development, tampilkan OTP
             'user_exists' => $userExists,
             'role' => $role,
-            'message' => 'Kode OTP berhasil dikirim.',
+            'message' => 'Kode OTP berhasil dikirim ke email Anda.',
         ]);
     }
 
@@ -206,6 +217,63 @@ class LoginController extends Controller
         return response()->json([
             'success' => true,
             'redirect_url' => $this->getRedirectUrl($user),
+        ]);
+    }
+
+    // Resend OTP
+    public function resendOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first('email'),
+            ]);
+        }
+
+        $email = $request->email;
+
+        // Cek apakah ada OTP yang masih aktif
+        $otp = OtpCode::where('email', $email)
+            ->where('is_used', false)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$otp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada OTP aktif. Silakan minta OTP baru.',
+            ]);
+        }
+
+        // Cek batas resend (maksimal 3 kali)
+        if ($otp->resend_count >= 3) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Batas pengiriman ulang OTP telah tercapai. Silakan minta OTP baru.',
+            ]);
+        }
+
+        // Increment resend count
+        $otp->increment('resend_count');
+
+        // Kirim ulang email OTP
+        try {
+            Mail::to($email)->send(new OtpEmail($otp->code));
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim ulang email OTP. Silakan coba lagi.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kode OTP berhasil dikirim ulang ke email Anda.',
+            'remaining_resend' => 3 - $otp->resend_count,
         ]);
     }
 
