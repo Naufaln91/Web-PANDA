@@ -68,14 +68,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <a href="{{ route('admin.whitelist.index') }}"
                     class="block p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
-                    <i class="fas fa-list text-3xl text-blue-500 mb-3"></i>
+                    <i class="fas fa-shield-alt text-3xl text-blue-500 mb-3"></i>
                     <h3 class="font-bold text-gray-800">Kelola Whitelist</h3>
                     <p class="text-sm text-gray-600 mt-1">Tambah/hapus nomor HP</p>
                 </a>
 
                 <a href="{{ route('admin.akun.index') }}"
                     class="block p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
-                    <i class="fas fa-user-circle text-3xl text-green-500 mb-3"></i>
+                    <i class="fas fa-users-cog text-3xl text-green-500 mb-3"></i>
                     <h3 class="font-bold text-gray-800">Kelola Akun</h3>
                     <p class="text-sm text-gray-600 mt-1">Lihat & hapus akun user</p>
                 </a>
