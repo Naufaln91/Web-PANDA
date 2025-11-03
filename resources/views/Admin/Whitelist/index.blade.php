@@ -9,9 +9,9 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-800 flex items-center">
                     <i class="fas fa-shield-alt mr-3 text-blue-500"></i>
-                    Kelola Whitelist Nomor HP
+                    Kelola Whitelist Email
                 </h1>
-                <p class="text-gray-600 mt-2">Kelola akses pengguna melalui nomor telepon</p>
+                <p class="text-gray-600 mt-2">Kelola akses pengguna melalui email</p>
             </div>
             <a href="{{ route('admin.dashboard') }}"
                 class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
@@ -25,7 +25,7 @@
             <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
                 <h2 class="text-xl font-bold text-white flex items-center">
                     <i class="fas fa-plus-circle mr-2"></i>
-                    Tambah Nomor HP Baru
+                    Tambah Email Baru
                 </h2>
             </div>
 
@@ -33,19 +33,19 @@
                 <form id="form-tambah-whitelist" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Input Nomor HP -->
+                        <!-- Input Email -->
                         <div class="space-y-2">
-                            <label for="nomor_hp" class="block text-sm font-semibold text-gray-700">
-                                <i class="fas fa-phone text-blue-500 mr-1"></i>
-                                Nomor HP
+                            <label for="email" class="block text-sm font-semibold text-gray-700">
+                                <i class="fas fa-envelope text-blue-500 mr-1"></i>
+                                Email
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                    <i class="fas fa-mobile-alt"></i>
+                                    <i class="fas fa-envelope"></i>
                                 </span>
-                                <input type="text" id="nomor_hp" name="nomor_hp"
+                                <input type="email" id="email" name="email"
                                     class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200"
-                                    placeholder="Contoh: 081234567890">
+                                    placeholder="Contoh: nama@email.com">
                             </div>
                         </div>
 
@@ -98,7 +98,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-list-ul mr-2 text-blue-500"></i>
-                        Daftar Nomor HP Whitelist
+                        Daftar Email Whitelist
                     </h2>
 
                     <!-- Search Box -->
@@ -108,7 +108,7 @@
                         </span>
                         <input type="text" id="search-input"
                             class="w-full pl-12 pr-4 py-2.5 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200"
-                            placeholder="Cari nomor HP...">
+                            placeholder="Cari email...">
                     </div>
                 </div>
             </div>
@@ -121,7 +121,7 @@
                                 <i class="fas fa-hashtag mr-1"></i> No
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                <i class="fas fa-phone mr-1"></i> Nomor HP
+                                <i class="fas fa-envelope mr-1"></i> Email
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 <i class="fas fa-user-tag mr-1"></i> Role
@@ -143,8 +143,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm font-semibold text-gray-800">
                                     <div class="flex items-center">
-                                        <i class="fas fa-mobile-alt text-blue-500 mr-2"></i>
-                                        {{ $whitelist->nomor_hp }}
+                                        <i class="fas fa-envelope text-blue-500 mr-2"></i>
+                                        {{ $whitelist->email }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm">
@@ -174,9 +174,9 @@
                                 <td colspan="5" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center text-gray-400">
                                         <i class="fas fa-inbox text-6xl mb-4"></i>
-                                        <p class="text-lg font-semibold text-gray-500">Belum ada nomor HP yang diwhitelist
+                                        <p class="text-lg font-semibold text-gray-500">Belum ada email yang diwhitelist
                                         </p>
-                                        <p class="text-sm text-gray-400 mt-1">Tambahkan nomor HP untuk memberikan akses</p>
+                                        <p class="text-sm text-gray-400 mt-1">Tambahkan email untuk memberikan akses</p>
                                     </div>
                                 </td>
                             </tr>
@@ -197,14 +197,14 @@
             $('#form-tambah-whitelist').on('submit', function(e) {
                 e.preventDefault();
 
-                const nomorHp = $('#nomor_hp').val();
+                const email = $('#email').val();
                 const role = $('#role').val();
                 const errorDiv = $('#error-message');
 
                 errorDiv.addClass('hidden');
 
                 // Validasi
-                if (!nomorHp || !role) {
+                if (!email || !role) {
                     errorDiv.find('p').text('Semua field harus diisi!');
                     errorDiv.removeClass('hidden');
                     return;
@@ -215,7 +215,7 @@
                     method: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        nomor_hp: nomorHp,
+                        email: email,
                         role: role
                     },
                     success: function(response) {
@@ -251,10 +251,10 @@
                 $('#whitelist-table-body tr').each(function() {
                     if ($(this).attr('id') === 'empty-row') return;
 
-                    const nomorHp = $(this).find('td:eq(1)').text().toLowerCase();
+                    const email = $(this).find('td:eq(1)').text().toLowerCase();
                     const role = $(this).find('td:eq(2)').text().toLowerCase();
 
-                    if (nomorHp.includes(searchValue) || role.includes(searchValue)) {
+                    if (email.includes(searchValue) || role.includes(searchValue)) {
                         $(this).show();
                         visibleRows++;
                     } else {
@@ -286,7 +286,7 @@
             function deleteWhitelist(id) {
                 Swal.fire({
                     title: 'Yakin ingin menghapus?',
-                    text: 'Jika nomor ini sudah memiliki akun, akun juga akan terhapus.',
+                    text: 'Jika email ini sudah memiliki akun, akun juga akan terhapus.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc2626',

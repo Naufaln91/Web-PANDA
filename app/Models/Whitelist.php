@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Whitelist extends Model
 {
-    protected $fillable = ['nomor_hp', 'role'];
+    protected $fillable = ['email', 'role'];
 
-    public static function isWhitelisted($nomorHp)
+    public static function isWhitelisted($email)
     {
-        return self::where('nomor_hp', $nomorHp)->exists();
+        return self::where('email', $email)->exists();
     }
 }

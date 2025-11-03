@@ -32,12 +32,12 @@ class AdminController extends Controller
     public function whitelistStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nomor_hp' => 'required|string|regex:/^08[0-9]{9,11}$/|unique:whitelists,nomor_hp',
+            'email' => 'required|email|unique:whitelists,email',
             'role' => 'required|in:guru,wali_murid',
         ], [
-            'nomor_hp.required' => 'Nomor HP harus diisi.',
-            'nomor_hp.regex' => 'Format nomor HP salah.',
-            'nomor_hp.unique' => 'Nomor HP ini sudah terdapat dalam whitelist.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email salah.',
+            'email.unique' => 'Email ini sudah terdapat dalam whitelist.',
             'role.required' => 'Role harus dipilih.',
             'role.in' => 'Role tidak valid.',
         ]);
@@ -50,29 +50,29 @@ class AdminController extends Controller
         }
 
         Whitelist::create([
-            'nomor_hp' => $request->nomor_hp,
+            'email' => $request->email,
             'role' => $request->role,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Nomor HP berhasil ditambah.',
+            'message' => 'Email berhasil ditambah.',
         ]);
     }
 
     public function whitelistDestroy($id)
     {
         $whitelist = Whitelist::findOrFail($id);
-        $nomorHp = $whitelist->nomor_hp;
+        $email = $whitelist->email;
 
-        // Cek apakah ada user dengan nomor ini
-        $user = User::where('nomor_hp', $nomorHp)->first();
+        // Cek apakah ada user dengan email ini
+        $user = User::where('email', $email)->first();
 
-        $message = 'Nomor HP berhasil dihapus.';
+        $message = 'Email berhasil dihapus.';
 
         if ($user) {
             $user->delete();
-            $message = 'Nomor HP dan akun terkait berhasil dihapus.';
+            $message = 'Email dan akun terkait berhasil dihapus.';
         }
 
         $whitelist->delete();

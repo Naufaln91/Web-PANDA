@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // The column is already 'nama' in the original migration, no need to rename
-            $table->string('nama_anak')->nullable()->change();
-            $table->string('kelas_anak')->nullable()->change();
+            $table->renameColumn('nomor_hp', 'email');
+            $table->string('email')->nullable()->unique()->change();
         });
     }
 
@@ -24,9 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Reverse the nullable changes
-            $table->string('nama_anak')->nullable(false)->change();
-            $table->string('kelas_anak')->nullable(false)->change();
+            $table->renameColumn('email', 'nomor_hp');
+            $table->string('nomor_hp')->unique()->change();
         });
     }
 };

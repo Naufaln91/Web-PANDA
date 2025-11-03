@@ -61,37 +61,37 @@ class LoginController extends Controller
     public function requestOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nomor_hp' => 'required|string|regex:/^08[0-9]{9,11}$/',
+            'email' => 'required|email',
         ], [
-            'nomor_hp.required' => 'Nomor HP harus diisi.',
-            'nomor_hp.regex' => 'Format nomor HP salah. Harus dimulai dengan 08 dan 11-13 digit.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email salah.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first('nomor_hp'),
+                'message' => $validator->errors()->first('email'),
             ]);
         }
 
-        $nomorHp = $request->nomor_hp;
+        $email = $request->email;
 
-        // Cek apakah nomor HP di whitelist
-        if (!Whitelist::isWhitelisted($nomorHp)) {
+        // Cek apakah email di whitelist
+        if (!Whitelist::isWhitelisted($email)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Nomor HP tidak masuk whitelist.',
+                'message' => 'Email tidak masuk whitelist.',
             ]);
         }
 
         // Generate OTP
-        $otp = OtpCode::generateOtp($nomorHp);
+        $otp = OtpCode::generateOtp($email);
 
         // Cek apakah user sudah ada
-        $userExists = User::where('nomor_hp', $nomorHp)->exists();
+        $userExists = User::where('email', $email)->exists();
 
         // Ambil role dari whitelist
-        $whitelist = Whitelist::where('nomor_hp', $nomorHp)->first();
+        $whitelist = Whitelist::where('email', $email)->first();
         $role = $whitelist ? $whitelist->role : null;
 
         return response()->json([
@@ -107,7 +107,7 @@ class LoginController extends Controller
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nomor_hp' => 'required|string',
+            'email' => 'required|email',
             'otp_code' => 'required|string|size:6',
         ]);
 
@@ -118,11 +118,11 @@ class LoginController extends Controller
             ]);
         }
 
-        $nomorHp = $request->nomor_hp;
+        $email = $request->email;
         $otpCode = $request->otp_code;
 
         // Verify OTP
-        if (!OtpCode::verifyOtp($nomorHp, $otpCode)) {
+        if (!OtpCode::verifyOtp($email, $otpCode)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Kode OTP salah atau sudah kadaluarsa.',
@@ -130,7 +130,7 @@ class LoginController extends Controller
         }
 
         // Cek apakah user sudah ada
-        $user = User::where('nomor_hp', $nomorHp)->first();
+        $user = User::where('email', $email)->first();
 
         if ($user) {
             // User sudah ada, langsung login
@@ -149,7 +149,7 @@ class LoginController extends Controller
         return response()->json([
             'success' => true,
             'is_new_user' => true,
-            'nomor_hp' => $nomorHp,
+            'email' => $email,
         ]);
     }
 
@@ -157,17 +157,17 @@ class LoginController extends Controller
     public function completeProfile(Request $request)
     {
         // Ambil role dari whitelist
-        $whitelist = Whitelist::where('nomor_hp', $request->nomor_hp)->first();
+        $whitelist = Whitelist::where('email', $request->email)->first();
         $role = $whitelist ? $whitelist->role : 'wali_murid'; // default wali_murid jika tidak ada
 
         if ($role === 'guru') {
             $validator = Validator::make($request->all(), [
-                'nomor_hp' => 'required|string',
+                'email' => 'required|email',
                 'nama' => 'required|string|max:255',
             ]);
         } else {
             $validator = Validator::make($request->all(), [
-                'nomor_hp' => 'required|string',
+                'email' => 'required|email',
                 'nama_orangtua' => 'required|string|max:255',
                 'nama_anak' => 'required|string|max:255',
                 'kelas_anak' => 'required|string|max:50',
@@ -184,14 +184,14 @@ class LoginController extends Controller
         // Buat user baru
         if ($role === 'guru') {
             $user = User::create([
-                'nomor_hp' => $request->nomor_hp,
+                'email' => $request->email,
                 'nama' => $request->nama,
                 'role' => $role,
                 'last_login' => now(),
             ]);
         } else {
             $user = User::create([
-                'nomor_hp' => $request->nomor_hp,
+                'email' => $request->email,
                 'nama' => $request->nama_orangtua,
                 'nama_anak' => $request->nama_anak,
                 'kelas_anak' => $request->kelas_anak,

@@ -70,7 +70,7 @@
                     class="block p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl hover:shadow-lg transition transform hover:scale-105">
                     <i class="fas fa-shield-alt text-3xl text-blue-500 mb-3"></i>
                     <h3 class="font-bold text-gray-800">Kelola Whitelist</h3>
-                    <p class="text-sm text-gray-600 mt-1">Tambah/hapus nomor HP</p>
+                    <p class="text-sm text-gray-600 mt-1">Tambah/hapus Email</p>
                 </a>
 
                 <a href="{{ route('admin.akun.index') }}"

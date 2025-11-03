@@ -35,7 +35,7 @@
                         </span>
                         <input type="text" id="search-guru"
                             class="w-full pl-12 pr-4 py-2.5 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200"
-                            placeholder="Cari nomor HP atau nama...">
+                            placeholder="Cari email atau nama...">
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                                 <i class="fas fa-hashtag mr-1"></i> No
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                <i class="fas fa-phone mr-1"></i> Nomor HP
+                                <i class="fas fa-envelope mr-1"></i> Email
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 <i class="fas fa-user mr-1"></i> Nama
@@ -70,8 +70,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm font-semibold text-gray-800">
                                     <div class="flex items-center">
-                                        <i class="fas fa-mobile-alt text-green-500 mr-2"></i>
-                                        {{ $user->nomor_hp }}
+                                        <i class="fas fa-envelope text-green-500 mr-2"></i>
+                                        {{ $user->email }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-700">
@@ -130,7 +130,7 @@
                         </span>
                         <input type="text" id="search-wali"
                             class="w-full pl-12 pr-4 py-2.5 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none transition-all duration-200"
-                            placeholder="Cari nomor HP atau nama...">
+                            placeholder="Cari email atau nama...">
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                                 <i class="fas fa-hashtag mr-1"></i> No
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                <i class="fas fa-phone mr-1"></i> Nomor HP
+                                <i class="fas fa-envelope mr-1"></i> Email
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 <i class="fas fa-user-tie mr-1"></i> Nama Orang Tua
@@ -171,8 +171,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm font-semibold text-gray-800">
                                     <div class="flex items-center">
-                                        <i class="fas fa-mobile-alt text-purple-500 mr-2"></i>
-                                        {{ $user->nomor_hp }}
+                                        <i class="fas fa-envelope text-purple-500 mr-2"></i>
+                                        {{ $user->email }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-700">
@@ -238,10 +238,10 @@
                 $('#guru-table-body tr').each(function() {
                     if ($(this).attr('id') === 'empty-guru') return;
 
-                    const nomorHp = $(this).find('td:eq(1)').text().toLowerCase();
+                    const email = $(this).find('td:eq(1)').text().toLowerCase();
                     const nama = $(this).find('td:eq(2)').text().toLowerCase();
 
-                    if (nomorHp.includes(searchValue) || nama.includes(searchValue)) {
+                    if (email.includes(searchValue) || nama.includes(searchValue)) {
                         $(this).show();
                         visibleRows++;
                     } else {
@@ -277,11 +277,11 @@
                 $('#wali-table-body tr').each(function() {
                     if ($(this).attr('id') === 'empty-wali') return;
 
-                    const nomorHp = $(this).find('td:eq(1)').text().toLowerCase();
+                    const email = $(this).find('td:eq(1)').text().toLowerCase();
                     const namaOrtu = $(this).find('td:eq(2)').text().toLowerCase();
                     const namaAnak = $(this).find('td:eq(3)').text().toLowerCase();
 
-                    if (nomorHp.includes(searchValue) || namaOrtu.includes(searchValue) || namaAnak.includes(
+                    if (email.includes(searchValue) || namaOrtu.includes(searchValue) || namaAnak.includes(
                             searchValue)) {
                         $(this).show();
                         visibleRows++;

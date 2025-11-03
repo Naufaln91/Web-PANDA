@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class OtpCode extends Model
 {
     protected $fillable = [
-        'nomor_hp',
+        'email',
         'code',
         'expires_at',
         'is_used',
@@ -19,10 +19,10 @@ class OtpCode extends Model
         'is_used' => 'boolean',
     ];
 
-    public static function generateOtp($nomorHp)
+    public static function generateOtp($email)
     {
         // Hapus OTP lama yang belum digunakan
-        self::where('nomor_hp', $nomorHp)
+        self::where('email', $email)
             ->where('is_used', false)
             ->delete();
 
@@ -31,15 +31,15 @@ class OtpCode extends Model
 
         // Simpan OTP dengan expired 5 menit
         return self::create([
-            'nomor_hp' => $nomorHp,
+            'email' => $email,
             'code' => $code,
             'expires_at' => Carbon::now()->addMinutes(5),
         ]);
     }
 
-    public static function verifyOtp($nomorHp, $code)
+    public static function verifyOtp($email, $code)
     {
-        $otp = self::where('nomor_hp', $nomorHp)
+        $otp = self::where('email', $email)
             ->where('code', $code)
             ->where('is_used', false)
             ->where('expires_at', '>', Carbon::now())

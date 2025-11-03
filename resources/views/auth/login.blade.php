@@ -93,19 +93,19 @@
                     <div id="form-user" class="space-y-6 hidden">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6">Login Guru / Wali Murid</h2>
 
-                        <!-- Step 1: Input Nomor HP -->
-                        <div id="step-nomor-hp">
+                        <!-- Step 1: Input Email -->
+                        <div id="step-email">
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Nomor HP</label>
+                                <label class="block text-gray-700 font-semibold mb-2">Email</label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                        <i class="fas fa-phone"></i>
+                                        <i class="fas fa-envelope"></i>
                                     </span>
-                                    <input type="text" id="nomor_hp"
+                                    <input type="email" id="email"
                                         class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="08xxxxxxxxxx">
+                                        placeholder="nama@email.com">
                                 </div>
-                                <p id="error-nomor-hp" class="text-red-500 text-sm mt-1 hidden"></p>
+                                <p id="error-email" class="text-red-500 text-sm mt-1 hidden"></p>
                             </div>
 
                             <button onclick="requestOtp()" id="btn-request-otp"
@@ -140,7 +140,7 @@
                                 <i class="fas fa-check mr-2"></i> Verifikasi OTP
                             </button>
 
-                            <button onclick="backToNomorHp()"
+                            <button onclick="backToEmail()"
                                 class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300">
                                 <i class="fas fa-arrow-left mr-2"></i> Kembali
                             </button>
@@ -203,7 +203,7 @@
     </div>
 
     <script>
-        let currentNomorHp = '';
+        let currentEmail = '';
         let currentRole = '';
 
         function showTab(tab) {
@@ -225,8 +225,8 @@
         }
 
         function requestOtp() {
-            const nomorHp = document.getElementById('nomor_hp').value;
-            const errorDiv = document.getElementById('error-nomor-hp');
+            const email = document.getElementById('email').value;
+            const errorDiv = document.getElementById('error-email');
             const btn = document.getElementById('btn-request-otp');
 
             errorDiv.classList.add('hidden');
@@ -238,14 +238,14 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    nomor_hp: nomorHp
+                    email: email
                 },
                 success: function(response) {
                     if (response.success) {
-                        currentNomorHp = nomorHp;
+                        currentEmail = email;
                         currentRole = response.role;
                         document.getElementById('display-otp').textContent = response.otp_code;
-                        document.getElementById('step-nomor-hp').classList.add('hidden');
+                        document.getElementById('step-email').classList.add('hidden');
                         document.getElementById('step-otp').classList.remove('hidden');
                     } else {
                         errorDiv.textContent = response.message;
@@ -277,7 +277,7 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    nomor_hp: currentNomorHp,
+                    email: currentEmail,
                     otp_code: otpCode
                 },
                 success: function(response) {
@@ -314,7 +314,7 @@
 
             let data = {
                 _token: '{{ csrf_token() }}',
-                nomor_hp: currentNomorHp
+                email: currentEmail
             };
 
             if (currentRole === 'guru') {
@@ -374,9 +374,9 @@
             });
         }
 
-        function backToNomorHp() {
+        function backToEmail() {
             document.getElementById('step-otp').classList.add('hidden');
-            document.getElementById('step-nomor-hp').classList.remove('hidden');
+            document.getElementById('step-email').classList.remove('hidden');
             document.getElementById('otp_code').value = '';
         }
 

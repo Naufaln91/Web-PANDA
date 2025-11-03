@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('whitelists', function (Blueprint $table) {
-            if (!Schema::hasColumn('whitelists', 'role')) {
-                $table->enum('role', ['guru', 'wali_murid'])->default('wali_murid');
-            }
+            $table->renameColumn('nomor_hp', 'email');
+            $table->string('email', 255)->unique()->change();
         });
     }
 
@@ -24,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('whitelists', function (Blueprint $table) {
-            $table->dropColumn('role');
+            $table->renameColumn('email', 'nomor_hp');
+            $table->string('nomor_hp', 20)->unique()->change();
         });
     }
 };
