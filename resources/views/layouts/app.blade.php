@@ -112,7 +112,8 @@
                             </div>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="text-red-500 hover:text-red-700 transition">
+                                <button type="submit" onclick="confirmLogout(event)"
+                                    class="text-red-500 hover:text-red-700 transition">
                                     <i class="fas fa-sign-out-alt text-xl"></i>
                                 </button>
                             </form>
@@ -136,6 +137,28 @@
     </footer>
 
     @stack('scripts')
+
+    <script>
+        function confirmLogout(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Anda akan keluar dari akun Anda.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal',
+                backdrop: true,
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.closest('form').submit();
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

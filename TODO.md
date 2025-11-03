@@ -88,3 +88,12 @@
 ## Tugas Tambahan: Navbar Responsive
 - [x] Buat navbar responsive pada layar HP
 - [x] Kembalikan kelas 'sm:hidden' pada menu responsive untuk menyembunyikan pada desktop dan tampilkan pada mobile
+
+
+-----
+
+- [x] Tambahkan modal konfirmasi logout di navigation.blade.php
+- [x] Gunakan komponen modal yang sudah ada
+- [x] Modal muncul saat klik logout
+- [x] Modal di tengah dan menutupi layar
+- [x] Pesan konfirmasi dengan tombol Batal dan Ya, Logout
