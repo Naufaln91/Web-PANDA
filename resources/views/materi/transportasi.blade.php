@@ -14,37 +14,73 @@
             </a>
         </div>
 
-        <div class="card">
+        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div id="transport-container" class="grid grid-cols-3 md:grid-cols-6 gap-4"></div>
-        </div>
 
-        <div class="card bg-gradient-to-r from-sky-100 to-gray-100">
-            <div class="text-center">
-                <div id="selected-transport" class="text-8xl mb-4">🚗</div>
-                <p id="transport-name" class="text-2xl text-gray-700 mb-4">Mobil</p>
-                <button onclick="playCurrentSound()"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
+
+            <div class="card bg-gradient-to-r from-sky-100 to-gray-100 text-center py-8 mt-6 rounded-2xl">
+                <div class="text-center">
+                    <div id="selected-transport" class="text-8xl mb-4">🚗</div>
+                    <p id="transport-name" class="text-2xl text-gray-700 mb-4">Mobil</p>
+                    <button onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
         <script>
-            const transports = [
-                { emoji: '🚗', name: 'Mobil' },
-                { emoji: '🚌', name: 'Bus' },
-                { emoji: '🚲', name: 'Sepeda' },
-                { emoji: '✈️', name: 'Pesawat' },
-                { emoji: '🚤', name: 'Kapal' },
-                { emoji: '🚂', name: 'Kereta Api' },
-                { emoji: '🏍️', name: 'Motor' },
-                { emoji: '🚚', name: 'Truk' },
-                { emoji: '🚑', name: 'Ambulans' },
-                { emoji: '🚁', name: 'Helikopter' },
-                { emoji: '🚒', name: 'Pemadam Kebakaran' },
-                { emoji: '🛻', name: 'Pick-up' }
+            const transports = [{
+                    emoji: '🚗',
+                    name: 'Mobil'
+                },
+                {
+                    emoji: '🚌',
+                    name: 'Bus'
+                },
+                {
+                    emoji: '🚲',
+                    name: 'Sepeda'
+                },
+                {
+                    emoji: '✈️',
+                    name: 'Pesawat'
+                },
+                {
+                    emoji: '🚤',
+                    name: 'Kapal'
+                },
+                {
+                    emoji: '🚂',
+                    name: 'Kereta Api'
+                },
+                {
+                    emoji: '🏍️',
+                    name: 'Motor'
+                },
+                {
+                    emoji: '🚚',
+                    name: 'Truk'
+                },
+                {
+                    emoji: '🚑',
+                    name: 'Ambulans'
+                },
+                {
+                    emoji: '🚁',
+                    name: 'Helikopter'
+                },
+                {
+                    emoji: '🚒',
+                    name: 'Pemadam Kebakaran'
+                },
+                {
+                    emoji: '🛻',
+                    name: 'Pick-up'
+                }
             ];
 
             let current = transports[0];
@@ -52,7 +88,8 @@
 
             transports.forEach(t => {
                 const div = document.createElement('div');
-                div.className = "rounded-2xl p-6 text-center shadow-lg cursor-pointer hover:scale-110 transition bg-white";
+                div.className =
+                    "rounded-2xl p-6 text-center shadow-lg cursor-pointer hover:scale-110 transition bg-white";
                 div.innerHTML = `<span class='text-5xl'>${t.emoji}</span>`;
                 div.onclick = () => selectTransport(t);
                 container.appendChild(div);

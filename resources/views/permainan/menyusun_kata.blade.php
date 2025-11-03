@@ -16,7 +16,7 @@
         {{-- Main Game Area --}}
         <div class="max-w-4xl mx-auto">
             <div
-                class="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-3xl shadow-2xl p-8 border-4 border-white">
+                class="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-50 rounded-3xl shadow-2xl p-8 border-4 border-white">
 
                 {{-- Progress Bar --}}
                 <div class="mb-6">

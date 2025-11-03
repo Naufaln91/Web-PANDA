@@ -12,7 +12,7 @@
             </a>
         </div>
 
-        <div class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div class="card text-center">
                 <h2 class="text-xl font-bold text-gray-700 mb-4">Susun angka dari kecil ke besar!</h2>
 

@@ -15,7 +15,7 @@
 
         <!-- Area permainan -->
         <div
-            class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
             <div class="flex flex-col items-center justify-center min-h-[70vh]">
                 <div id="game" class="grid gap-4 justify-center mb-3"></div>
                 <p id="status" class="text-xl font-bold text-green-600 mt-2"></p>

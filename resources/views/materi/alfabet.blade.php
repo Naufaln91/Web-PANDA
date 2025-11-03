@@ -15,29 +15,30 @@
         </div>
 
         {{-- Grid untuk pilihan huruf --}}
-        <div class="card">
+        <div class="card card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div id="alfabet-container" class="grid grid-cols-4 md:grid-cols-7 gap-4">
             </div>
-        </div>
 
-        {{-- Kartu display utama --}}
-        <div class="card bg-gradient-to-r from-blue-100 to-purple-100">
-            <div class="text-center p-4">
 
-                {{-- Kontainer untuk Huruf dan Gambar (Emoji) --}}
-                <div class="flex justify-center items-center gap-8 mb-4">
-                    <div id="selected-letter" class="text-9xl font-bold text-blue-600">A</div>
-                    <div id="selected-image" class="text-9xl">🍎</div>
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Huruf dan Gambar (Emoji) --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-letter" class="text-9xl font-bold text-blue-600">A</div>
+                        <div id="selected-image" class="text-9xl">🍎</div>
+                    </div>
+
+                    {{-- Nama Benda --}}
+                    <h2 id="selected-name" class="text-5xl font-bold text-gray-800 mb-4">Apel</h2>
+
+                    <p class="text-2xl text-gray-700 mb-4">Klik huruf untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
                 </div>
-
-                {{-- Nama Benda --}}
-                <h2 id="selected-name" class="text-5xl font-bold text-gray-800 mb-4">Apel</h2>
-
-                <p class="text-2xl text-gray-700 mb-4">Klik huruf untuk mendengar cara pengucapannya!</p>
-                <button id="play-sound-btn" onclick="playCurrentSound()"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
             </div>
         </div>
     </div>

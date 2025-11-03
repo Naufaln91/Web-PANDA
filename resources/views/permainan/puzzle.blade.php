@@ -15,7 +15,7 @@
         </div>
 
         <!-- Level Selection -->
-        <div class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div class="card">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">
                     <i class="fas fa-layer-group mr-2 text-purple-500" aria-hidden="true"></i>

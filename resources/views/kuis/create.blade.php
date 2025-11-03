@@ -111,7 +111,6 @@
                 </div>
             </div>
 
-
             <!-- Daftar Soal -->
             <div class="card">
                 <div class="flex justify-between items-center mb-4">
@@ -134,91 +133,95 @@
             </div>
 
             <!-- Form Tambah/Edit Soal -->
-            <div id="form-soal-container" class="card hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-800" id="form-soal-title">
-                        <i class="fas fa-edit mr-2 text-purple-500"></i>
-                        Tambah Soal Baru
-                    </h2>
-                    <button onclick="closeFormSoal()" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+            <div id="form-soal-wrapper"
+                class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-6 px-6 rounded-2xl shadow-md hidden">
+                <div id="form-soal-container" class="card">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800" id="form-soal-title">
+                            <i class="fas fa-edit mr-2 text-purple-500"></i>
+                            Tambah Soal Baru
+                        </h2>
+                        <button onclick="closeFormSoal()" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <form id="form-soal" class="space-y-6">
+                        <input type="hidden" id="soal-id" value="">
+                        <input type="hidden" id="soal-urutan" value="">
+
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Tipe Soal <span
+                                    class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="tipe" value="pilihan_ganda" checked class="mr-2">
+                                    <span class="font-semibold">Pilihan Ganda</span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="tipe" value="isian_singkat" class="mr-2">
+                                    <span class="font-semibold">Isian Singkat</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Pertanyaan/Soal <span
+                                    class="text-red-500">*</span></label>
+                            <textarea id="konten_soal" rows="3"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                placeholder="Tulis pertanyaan di sini..."></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Gambar Soal (Opsional)</label>
+                            <input type="file" id="gambar_soal" accept="image/*"
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg">
+                            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF. Maksimal 5MB</p>
+                            <div id="preview-gambar-soal" class="mt-2"></div>
+                        </div>
+
+                        <!-- Form untuk Pilihan Ganda -->
+                        <div id="form-pilihan-ganda">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-semibold mb-2">Jumlah Pilihan Jawaban</label>
+                                <select id="jumlah_pilihan" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg">
+                                    <option value="2">2 Pilihan</option>
+                                    <option value="3">3 Pilihan</option>
+                                    <option value="4" selected>4 Pilihan</option>
+                                    <option value="5">5 Pilihan</option>
+                                </select>
+                            </div>
+
+                            <div id="pilihan-container" class="space-y-4">
+                                <!-- Pilihan akan di-generate oleh JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Form untuk Isian Singkat -->
+                        <div id="form-isian-singkat" class="hidden">
+                            <label class="block text-gray-700 font-semibold mb-2">Jawaban yang Benar <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" id="jawaban_isian"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                placeholder="Tulis jawaban yang benar">
+                            <p class="text-sm text-gray-500 mt-1">Jawaban tidak case-sensitive (huruf besar/kecil
+                                diabaikan)
+                            </p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="saveSoal()"
+                                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition">
+                                <i class="fas fa-save mr-2"></i> Simpan Soal
+                            </button>
+                            <button type="button" onclick="closeFormSoal()"
+                                class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition">
+                                <i class="fas fa-times mr-2"></i> Batal
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form id="form-soal" class="space-y-6">
-                    <input type="hidden" id="soal-id" value="">
-                    <input type="hidden" id="soal-urutan" value="">
-
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Tipe Soal <span
-                                class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="tipe" value="pilihan_ganda" checked class="mr-2">
-                                <span class="font-semibold">Pilihan Ganda</span>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="tipe" value="isian_singkat" class="mr-2">
-                                <span class="font-semibold">Isian Singkat</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Pertanyaan/Soal <span
-                                class="text-red-500">*</span></label>
-                        <textarea id="konten_soal" rows="3"
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                            placeholder="Tulis pertanyaan di sini..."></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Gambar Soal (Opsional)</label>
-                        <input type="file" id="gambar_soal" accept="image/*"
-                            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg">
-                        <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, GIF. Maksimal 5MB</p>
-                        <div id="preview-gambar-soal" class="mt-2"></div>
-                    </div>
-
-                    <!-- Form untuk Pilihan Ganda -->
-                    <div id="form-pilihan-ganda">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-semibold mb-2">Jumlah Pilihan Jawaban</label>
-                            <select id="jumlah_pilihan" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg">
-                                <option value="2">2 Pilihan</option>
-                                <option value="3">3 Pilihan</option>
-                                <option value="4" selected>4 Pilihan</option>
-                                <option value="5">5 Pilihan</option>
-                            </select>
-                        </div>
-
-                        <div id="pilihan-container" class="space-y-4">
-                            <!-- Pilihan akan di-generate oleh JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Form untuk Isian Singkat -->
-                    <div id="form-isian-singkat" class="hidden">
-                        <label class="block text-gray-700 font-semibold mb-2">Jawaban yang Benar <span
-                                class="text-red-500">*</span></label>
-                        <input type="text" id="jawaban_isian"
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                            placeholder="Tulis jawaban yang benar">
-                        <p class="text-sm text-gray-500 mt-1">Jawaban tidak case-sensitive (huruf besar/kecil diabaikan)
-                        </p>
-                    </div>
-
-                    <div class="flex space-x-3">
-                        <button type="button" onclick="saveSoal()"
-                            class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition">
-                            <i class="fas fa-save mr-2"></i> Simpan Soal
-                        </button>
-                        <button type="button" onclick="closeFormSoal()"
-                            class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition">
-                            <i class="fas fa-times mr-2"></i> Batal
-                        </button>
-                    </div>
-                </form>
             </div>
 
             <!-- Action Buttons -->
@@ -234,6 +237,7 @@
                     </button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -355,6 +359,7 @@
                 $('#soal-id').val('');
                 $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Tambah Soal Baru');
                 $('#form-soal')[0].reset();
+                $('#form-soal-wrapper').removeClass('hidden');
                 $('#form-soal-container').removeClass('hidden');
                 generatePilihanJawaban(4);
                 $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
@@ -392,6 +397,7 @@
                     $('#jawaban_isian').val(soal.jawaban_benar);
                 }
 
+                $('#form-soal-wrapper').removeClass('hidden');
                 $('#form-soal-container').removeClass('hidden');
 
                 // Scroll to form
@@ -401,6 +407,7 @@
             }
 
             function closeFormSoal() {
+                $('#form-soal-wrapper').addClass('hidden');
                 $('#form-soal-container').addClass('hidden');
                 editingSoalIndex = null;
             }

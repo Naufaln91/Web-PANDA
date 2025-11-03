@@ -15,7 +15,7 @@
 
         {{-- Area permainan --}}
         <div
-            class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
             <div id="emoji" class="text-8xl md:text-9xl mb-10 leading-snug"></div>
 
             <div id="choices" class="flex flex-wrap justify-center gap-6 mb-8"></div>

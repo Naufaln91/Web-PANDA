@@ -15,39 +15,87 @@
         </div>
 
         {{-- Daftar warna --}}
-        <div class="card">
-            <div id="warna-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 place-items-center"></div>
-        </div>
+        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+            <div id="warna-container"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 place-items-center">
+            </div>
 
-        {{-- Kotak warna terpilih --}}
-        <div class="card bg-gradient-to-r from-pink-100 to-yellow-100 text-center py-8">
-            <div id="selected-color" class="w-32 h-32 rounded-2xl mx-auto mb-4 shadow-lg border-2 border-gray-300"></div>
-            <p id="color-name" class="text-3xl font-bold text-gray-700 mb-4">Merah</p>
-            <button onclick="playCurrentSound()"
-                class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                <i class="fas fa-volume-up mr-2"></i> Dengarkan
-            </button>
+
+            {{-- Kotak warna terpilih --}}
+            <div class="card bg-gradient-to-r from-pink-100 to-yellow-100 text-center py-8 mt-6 rounded-2xl">
+                <div id="selected-color" class="w-32 h-32 rounded-2xl mx-auto mb-4 shadow-lg border-2 border-gray-300">
+                </div>
+                <p id="color-name" class="text-3xl font-bold text-gray-700 mb-4">Merah</p>
+                <button onclick="playCurrentSound()"
+                    class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                </button>
+            </div>
         </div>
     </div>
 
     @push('scripts')
         <script>
-            const colors = [
-                { name: 'Merah', hex: '#ff4d4d' },
-                { name: 'Jingga', hex: '#ff9933' },
-                { name: 'Kuning', hex: '#ffeb3b' },
-                { name: 'Hijau', hex: '#4caf50' },
-                { name: 'Biru', hex: '#4da6ff' },
-                { name: 'Nila', hex: '#3f51b5' },
-                { name: 'Ungu', hex: '#b366ff' },
-                { name: 'Hitam', hex: '#000000' },
-                { name: 'Putih', hex: '#ffffff' },
-                { name: 'Abu-abu', hex: '#9e9e9e' },
-                { name: 'Cokelat', hex: '#795548' },
-                { name: 'Merah Muda', hex: '#ffb6c1' },
-                { name: 'Turquoise', hex: '#40E0D0' },
-                { name: 'Emas', hex: '#FFD700' },
-                { name: 'Lavender', hex: '#b5b5f6ff' },
+            const colors = [{
+                    name: 'Merah',
+                    hex: '#ff4d4d'
+                },
+                {
+                    name: 'Jingga',
+                    hex: '#ff9933'
+                },
+                {
+                    name: 'Kuning',
+                    hex: '#ffeb3b'
+                },
+                {
+                    name: 'Hijau',
+                    hex: '#4caf50'
+                },
+                {
+                    name: 'Biru',
+                    hex: '#4da6ff'
+                },
+                {
+                    name: 'Nila',
+                    hex: '#3f51b5'
+                },
+                {
+                    name: 'Ungu',
+                    hex: '#b366ff'
+                },
+                {
+                    name: 'Hitam',
+                    hex: '#000000'
+                },
+                {
+                    name: 'Putih',
+                    hex: '#ffffff'
+                },
+                {
+                    name: 'Abu-abu',
+                    hex: '#9e9e9e'
+                },
+                {
+                    name: 'Cokelat',
+                    hex: '#795548'
+                },
+                {
+                    name: 'Merah Muda',
+                    hex: '#ffb6c1'
+                },
+                {
+                    name: 'Turquoise',
+                    hex: '#40E0D0'
+                },
+                {
+                    name: 'Emas',
+                    hex: '#FFD700'
+                },
+                {
+                    name: 'Lavender',
+                    hex: '#b5b5f6ff'
+                },
             ];
 
             let current = colors[0];

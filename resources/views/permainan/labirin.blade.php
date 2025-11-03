@@ -14,7 +14,7 @@
         </div>
 
         <div
-            class="card bg-gradient-to-r from-blue-50 to-indigo-100 py-12 px-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-16">
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-16">
 
             <div class="text-center">
                 <div id="maze-container" class="inline-block relative p-4 rounded-lg shadow-lg">

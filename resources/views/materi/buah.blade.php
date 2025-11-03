@@ -14,39 +14,75 @@
             </a>
         </div>
 
-        <div class="card">
+        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div id="fruit-container" class="grid grid-cols-3 md:grid-cols-6 gap-4">
                 <!-- Buah akan di-generate oleh JavaScript -->
             </div>
-        </div>
 
-        <div class="card bg-gradient-to-r from-red-100 to-orange-100">
-            <div class="text-center">
-                <div id="selected-fruit" class="text-8xl mb-4">🍎</div>
-                <p id="fruit-name" class="text-2xl text-gray-700 mb-4 font-bold">Apel</p>
-                <button onclick="playCurrentSound()"
-                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
+
+            <div class="card bg-gradient-to-r from-red-100 to-orange-100 text-center py-8 mt-6 rounded-2xl">
+                <div class="text-center">
+                    <div id="selected-fruit" class="text-8xl mb-4">🍎</div>
+                    <p id="fruit-name" class="text-2xl text-gray-700 mb-4 font-bold">Apel</p>
+                    <button onclick="playCurrentSound()"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
         <script>
-            const fruits = [
-                { emoji: '🍎', name: 'Apel' },
-                { emoji: '🍌', name: 'Pisang' },
-                { emoji: '🍊', name: 'Jeruk' },
-                { emoji: '🍉', name: 'Semangka' },
-                { emoji: '🍇', name: 'Anggur' },
-                { emoji: '🍓', name: 'Stroberi' },
-                { emoji: '🍍', name: 'Nanas' },
-                { emoji: '🥭', name: 'Mangga' },
-                { emoji: '🍒', name: 'Ceri' },
-                { emoji: '🥥', name: 'Kelapa' },
-                { emoji: '🍐', name: 'Pir' },
-                { emoji: '🍈', name: 'Melon' }
+            const fruits = [{
+                    emoji: '🍎',
+                    name: 'Apel'
+                },
+                {
+                    emoji: '🍌',
+                    name: 'Pisang'
+                },
+                {
+                    emoji: '🍊',
+                    name: 'Jeruk'
+                },
+                {
+                    emoji: '🍉',
+                    name: 'Semangka'
+                },
+                {
+                    emoji: '🍇',
+                    name: 'Anggur'
+                },
+                {
+                    emoji: '🍓',
+                    name: 'Stroberi'
+                },
+                {
+                    emoji: '🍍',
+                    name: 'Nanas'
+                },
+                {
+                    emoji: '🥭',
+                    name: 'Mangga'
+                },
+                {
+                    emoji: '🍒',
+                    name: 'Ceri'
+                },
+                {
+                    emoji: '🥥',
+                    name: 'Kelapa'
+                },
+                {
+                    emoji: '🍐',
+                    name: 'Pir'
+                },
+                {
+                    emoji: '🍈',
+                    name: 'Melon'
+                }
             ];
 
             let currentFruit = fruits[0];
@@ -56,7 +92,8 @@
                 const div = document.createElement('div');
                 div.className =
                     "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition";
-                div.innerHTML = `<span class='text-5xl'>${fruit.emoji}</span><p class='mt-2 font-bold text-gray-700'>${fruit.name}</p>`;
+                div.innerHTML =
+                    `<span class='text-5xl'>${fruit.emoji}</span>`;
                 div.onclick = () => selectFruit(fruit);
                 container.appendChild(div);
             });
