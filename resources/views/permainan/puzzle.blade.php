@@ -15,7 +15,7 @@
         </div>
 
         <!-- Level Selection -->
-        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+        <div class="card gradient-primary py-12 px-6 rounded-2xl shadow-md">
             <div class="card">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">
                     <i class="fas fa-layer-group mr-2 text-purple-500" aria-hidden="true"></i>
@@ -47,7 +47,7 @@
                         <i class="fas fa-image mr-2 text-blue-500" aria-hidden="true"></i>
                         Gambar Asli
                     </h2>
-                    <div class="bg-gray-100 p-4 rounded-xl">
+                    <div class="bg-gray-100 p-4 rounded-2xl">
                         <img id="preview-image" src="" alt="Gambar puzzle yang akan diselesaikan"
                             class="w-full rounded-lg shadow-lg">
                     </div>
@@ -65,7 +65,7 @@
                         <i class="fas fa-puzzle-piece mr-2 text-green-500" aria-hidden="true"></i>
                         Papan Puzzle <span id="timer" class="text-sm text-gray-600 ml-2" aria-live="polite"></span>
                     </h2>
-                    <div class="bg-gray-200 p-4 rounded-xl">
+                    <div class="bg-gray-200 p-4 rounded-2xl">
                         <div id="puzzle-board" class="grid gap-2 mx-auto" style="width: fit-content;" role="grid"
                             aria-label="Area puzzle" tabindex="0"></div>
                     </div>
