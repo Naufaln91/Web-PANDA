@@ -111,7 +111,7 @@
                                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                     <a href="{{ route('admin.whitelist.index') }}"
                                         class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150">
-                                        <i class="fas fa-list mr-2"></i> Whitelist HP
+                                        <i class="fas fa-list mr-2"></i> Whitelist Email
                                     </a>
                                     <a href="{{ route('admin.akun.index') }}"
                                         class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150">
@@ -251,7 +251,7 @@
                                         Kelola</p>
                                     <a href="{{ route('admin.whitelist.index') }}" @click="open = false"
                                         class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition">
-                                        <i class="fas fa-list mr-3"></i> Whitelist HP
+                                        <i class="fas fa-list mr-3"></i> Whitelist Email
                                     </a>
                                     <a href="{{ route('admin.akun.index') }}" @click="open = false"
                                         class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition">

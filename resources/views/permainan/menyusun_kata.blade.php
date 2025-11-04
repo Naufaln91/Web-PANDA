@@ -14,69 +14,68 @@
         </div>
 
         {{-- Main Game Area --}}
-        <div class="max-w-4xl mx-auto">
-            <div
-                class="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-50 rounded-3xl shadow-2xl p-8 border-4 border-white">
+        <div
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
 
-                {{-- Progress Bar --}}
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-semibold text-gray-600">Pertanyaan <span id="soal-sekarang">1</span> dari
-                            <span id="total-soal">12</span></span>
-                        <span class="text-sm font-semibold text-purple-600" id="kategori-badge">Mulai</span>
-                    </div>
-                    <div class="bg-white rounded-full h-3 overflow-hidden shadow-inner">
-                        <div id="progress-bar"
-                            class="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 h-full transition-all duration-500 rounded-full"
-                            style="width: 0%"></div>
-                    </div>
+            {{-- Progress Bar --}}
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-gray-600">Pertanyaan <span id="soal-sekarang">1</span> dari
+                        <span id="total-soal">12</span></span>
+                    <span class="text-sm font-semibold text-purple-600" id="kategori-badge">Mulai</span>
                 </div>
-
-                {{-- Icon Display --}}
-                <div class="text-center mb-6">
-                    <div id="ikon-item"
-                        class="text-9xl mb-4 inline-block transform transition-all duration-300 hover:scale-110">
-                        ❓
-                    </div>
-                    <p class="text-lg font-semibold text-gray-700">Susun huruf-huruf di bawah!</p>
-                </div>
-
-                {{-- Word Area --}}
-                <div id="kata-area"
-                    class="flex flex-wrap justify-center gap-3 mb-8 min-h-[6rem] items-center p-4 bg-white/50 rounded-2xl backdrop-blur-sm">
-                </div>
-
-                {{-- Letter Buttons --}}
-                <div id="huruf-container"
-                    class="flex flex-wrap justify-center gap-3 mb-8 p-4 bg-white/30 rounded-2xl backdrop-blur-sm">
-                </div>
-
-                {{-- Result Message --}}
-                <div class="text-center mb-6 min-h-[3rem] flex items-center justify-center">
-                    <p id="result" class="text-2xl font-bold"></p>
-                </div>
-
-                {{-- Action Buttons --}}
-                <div class="flex flex-wrap justify-center gap-3">
-                    <button onclick="hapusHurufTerakhir()" id="btn-hapus"
-                        class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                        <i class="fas fa-backspace mr-2"></i> Hapus
-                    </button>
-                    <button onclick="resetKata()"
-                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-redo mr-2"></i> Reset
-                    </button>
-                    <button onclick="tampilkanHint()" id="btn-hint"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                        <i class="fas fa-lightbulb mr-2"></i> Petunjuk
-                    </button>
-                    <button onclick="lewatiSoal()"
-                        class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-forward mr-2"></i> Lewati
-                    </button>
+                <div class="bg-white rounded-full h-3 overflow-hidden shadow-inner">
+                    <div id="progress-bar"
+                        class="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 h-full transition-all duration-500 rounded-full"
+                        style="width: 0%"></div>
                 </div>
             </div>
+
+            {{-- Icon Display --}}
+            <div class="text-center mb-6">
+                <div id="ikon-item"
+                    class="text-9xl mb-4 inline-block transform transition-all duration-300 hover:scale-110">
+                    ❓
+                </div>
+                <p class="text-lg font-semibold text-gray-700">Susun huruf-huruf di bawah!</p>
+            </div>
+
+            {{-- Word Area --}}
+            <div id="kata-area"
+                class="flex flex-wrap justify-center gap-3 mb-8 min-h-[6rem] items-center p-4 bg-white/50 rounded-2xl backdrop-blur-sm">
+            </div>
+
+            {{-- Letter Buttons --}}
+            <div id="huruf-container"
+                class="flex flex-wrap justify-center gap-3 mb-8 p-4 bg-white/30 rounded-2xl backdrop-blur-sm">
+            </div>
+
+            {{-- Result Message --}}
+            <div class="text-center mb-6 min-h-[3rem] flex items-center justify-center">
+                <p id="result" class="text-2xl font-bold"></p>
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="hapusHurufTerakhir()" id="btn-hapus"
+                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    <i class="fas fa-backspace mr-2"></i> Hapus
+                </button>
+                <button onclick="resetKata()"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-redo mr-2"></i> Reset
+                </button>
+                <button onclick="tampilkanHint()" id="btn-hint"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    <i class="fas fa-lightbulb mr-2"></i> Petunjuk
+                </button>
+                <button onclick="lewatiSoal()"
+                    class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-forward mr-2"></i> Lewati
+                </button>
+            </div>
         </div>
+    </div>
     </div>
 
     @push('styles')
