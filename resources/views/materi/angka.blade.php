@@ -19,15 +19,22 @@
             <div id="angka-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4"></div>
 
 
-            {{-- Kotak angka terpilih --}}
-            <div class="card bg-gradient-to-r from-blue-100 to-green-100 text-center py-8 mt-6 rounded-2xl">
-                <div id="selected-number"
-                    class="w-48 h-24 rounded-xl mx-auto mb-4 shadow-lg border-2 border-gray-300 flex items-center justify-center text-5xl font-bold text-gray-700">
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Angka --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-number" class="text-9xl font-bold text-blue-600"></div>
+                    </div>
+
+                    <p id="number-name" class="text-2xl text-gray-700 mb-4 font-bold"></p>
+                    <p class="text-2xl text-gray-700 mb-4">Klik angka untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
                 </div>
-                <button onclick="playCurrentSound()"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
             </div>
         </div>
     </div>
@@ -92,7 +99,9 @@
             function selectNumber(n) {
                 current = n;
                 const box = document.getElementById('selected-number');
+                const name = document.getElementById('number-name');
                 box.textContent = n.value;
+                name.textContent = n.name;
                 playCurrentSound();
             }
 
@@ -109,11 +118,6 @@
                     setTimeout(() => box.classList.remove('animate-bounce'), 800);
                 }
             }
-
-            // Set angka awal
-            const selectedBox = document.getElementById('selected-number');
-            selectedBox.textContent = numbers[0].value;
-            setTimeout(() => playCurrentSound(), 600);
         </script>
     @endpush
 @endsection

@@ -20,12 +20,19 @@
             </div>
 
 
-            <div class="card bg-gradient-to-r from-red-100 to-orange-100 text-center py-8 mt-6 rounded-2xl">
-                <div class="text-center">
-                    <div id="selected-fruit" class="text-8xl mb-4">🍎</div>
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Buah --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-fruit" class="text-9xl">🍎</div>
+                    </div>
+
                     <p id="fruit-name" class="text-2xl text-gray-700 mb-4 font-bold">Apel</p>
-                    <button onclick="playCurrentSound()"
-                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                    <p class="text-2xl text-gray-700 mb-4">Klik buah untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
                     </button>
                 </div>
@@ -120,9 +127,6 @@
                     alert('Browser Anda tidak mendukung text-to-speech');
                 }
             }
-
-            // Auto play first fruit
-            setTimeout(() => playCurrentSound(), 800);
         </script>
     @endpush
 @endsection

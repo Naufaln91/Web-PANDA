@@ -21,15 +21,22 @@
             </div>
 
 
-            {{-- Kotak warna terpilih --}}
-            <div class="card bg-gradient-to-r from-pink-100 to-yellow-100 text-center py-8 mt-6 rounded-2xl">
-                <div id="selected-color" class="w-32 h-32 rounded-2xl mx-auto mb-4 shadow-lg border-2 border-gray-300">
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Warna --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-color" class="w-32 h-32 rounded-2xl shadow-lg border-2 border-gray-300"></div>
+                    </div>
+
+                    <p id="color-name" class="text-2xl text-gray-700 mb-4 font-bold">Merah</p>
+                    <p class="text-2xl text-gray-700 mb-4">Klik warna untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
                 </div>
-                <p id="color-name" class="text-3xl font-bold text-gray-700 mb-4">Merah</p>
-                <button onclick="playCurrentSound()"
-                    class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
             </div>
         </div>
     </div>
@@ -132,9 +139,6 @@
                     setTimeout(() => box.classList.remove('animate-bounce'), 800);
                 }
             }
-
-            document.getElementById('selected-color').style.backgroundColor = colors[0].hex;
-            setTimeout(() => playCurrentSound(), 600);
         </script>
     @endpush
 @endsection

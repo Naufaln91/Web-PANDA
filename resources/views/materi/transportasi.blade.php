@@ -18,11 +18,18 @@
             <div id="transport-container" class="grid grid-cols-3 md:grid-cols-6 gap-4"></div>
 
 
-            <div class="card bg-gradient-to-r from-sky-100 to-gray-100 text-center py-8 mt-6 rounded-2xl">
-                <div class="text-center">
-                    <div id="selected-transport" class="text-8xl mb-4">🚗</div>
-                    <p id="transport-name" class="text-2xl text-gray-700 mb-4">Mobil</p>
-                    <button onclick="playCurrentSound()"
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Transportasi --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-transport" class="text-9xl">🚗</div>
+                    </div>
+
+                    <p id="transport-name" class="text-2xl text-gray-700 mb-4 font-bold">Mobil</p>
+                    <p class="text-2xl text-gray-700 mb-4">Klik transportasi untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
                     </button>
@@ -114,9 +121,6 @@
                     setTimeout(() => el.classList.remove('animate-bounce'), 800);
                 }
             }
-
-            // Otomatis putar suara pertama
-            setTimeout(() => playCurrentSound(), 500);
         </script>
     @endpush
 @endsection

@@ -20,16 +20,22 @@
             <div id="hewan-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
 
 
-            {{-- Kotak hewan terpilih --}}
-            <div class="card bg-gradient-to-r from-green-100 to-yellow-100 text-center py-8 mt-6 rounded-2xl">
-                <div id="selected-hewan"
-                    class="w-80 sm:w-96 h-24 rounded-xl mx-auto mb-4 shadow-lg border-2 border-gray-300 flex items-center justify-center text-3xl font-bold text-gray-700">
-                    Klik hewan di atas
+            {{-- Kartu display utama --}}
+            <div class="card bg-gradient-to-r from-blue-200 to-purple-200 mt-6 rounded-2xl">
+                <div class="text-center p-8">
+
+                    {{-- Kontainer untuk Hewan --}}
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div id="selected-hewan" class="text-9xl"></div>
+                    </div>
+
+                    <p id="hewan-name" class="text-2xl text-gray-700 mb-4 font-bold"></p>
+                    <p class="text-2xl text-gray-700 mb-4">Klik hewan untuk mendengar cara pengucapannya!</p>
+                    <button id="play-sound-btn" onclick="playCurrentSound()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
+                        <i class="fas fa-volume-up mr-2"></i> Dengarkan
+                    </button>
                 </div>
-                <button onclick="playCurrentSound()"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-2xl transition">
-                    <i class="fas fa-volume-up mr-2"></i> Dengarkan
-                </button>
             </div>
         </div>
     </div>
@@ -134,7 +140,8 @@
 
             function selectHewan(h) {
                 current = h;
-                selectedBox.textContent = h.icon + " " + h.name;
+                selectedBox.textContent = h.icon;
+                document.getElementById('hewan-name').textContent = h.name;
                 playCurrentSound();
             }
 
@@ -151,9 +158,6 @@
                     setTimeout(() => selectedBox.classList.remove('animate-bounce'), 800);
                 }
             }
-
-            // Tampilkan kotak awal kosong
-            selectedBox.textContent = "Klik hewan di atas";
         </script>
     @endpush
 @endsection
