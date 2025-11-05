@@ -29,6 +29,7 @@
                 let matched = 0;
                 let level = 1;
                 let audioContext = null;
+                let isChecking = false; // TAMBAHAN: flag untuk mencegah klik saat checking
                 const levelPairs = [2, 3, 4, 6, 10]; // jumlah pasangan per level
 
                 function initAudio() {
@@ -44,6 +45,7 @@
                     const game = document.getElementById('game');
                     flipped = [];
                     matched = 0;
+                    isChecking = false; // RESET flag saat init level baru
                     document.getElementById('status').textContent = '';
 
                     // Tentukan kolom sesuai jumlah kartu
@@ -62,13 +64,22 @@
                 }
 
                 function flipCard(card) {
-                    if (flipped.length < 2 && !card.classList.contains('flipped')) {
-                        card.textContent = card.dataset.value;
-                        card.classList.add('flipped');
-                        flipped.push(card);
+                    // PERBAIKAN: Cek apakah sedang dalam proses checking, sudah matched, atau sudah flipped
+                    if (isChecking || card.classList.contains('matched') || card.classList.contains('flipped')) {
+                        return;
                     }
 
+                    // PERBAIKAN: Cek jika sudah ada 2 kartu yang di-flip
+                    if (flipped.length >= 2) {
+                        return;
+                    }
+
+                    card.textContent = card.dataset.value;
+                    card.classList.add('flipped');
+                    flipped.push(card);
+
                     if (flipped.length === 2) {
+                        isChecking = true; // SET flag sebelum checking
                         setTimeout(checkMatch, 700);
                     }
                 }
@@ -103,6 +114,7 @@
                         }
                     }
                     flipped = [];
+                    isChecking = false; // RESET flag setelah checking selesai
                 }
 
                 // --- Efek suara sukses ---
