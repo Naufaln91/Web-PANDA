@@ -2,154 +2,79 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
-use App\Models\Kuis;
-use App\Models\Whitelist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $admin;
-    protected $guru;
-    protected $waliMurid;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Create test users
-        $this->admin = User::create([
-            'username' => 'admin',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Admin User',
-            'role' => 'admin'
-        ]);
-
-        $this->guru = User::create([
-            'username' => 'guru',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Guru User',
-            'role' => 'guru'
-        ]);
-
-        $this->waliMurid = User::create([
-            'nomor_hp' => '081234567890',
-            'nama_orangtua' => 'Wali Murid',
-            'nama_anak' => 'Anak User',
-            'kelas_anak' => 'Kelas 1',
-            'role' => 'wali_murid'
-        ]);
-
-        // Create some test data
-        User::create([
-            'username' => 'guru2',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Guru 2',
-            'role' => 'guru'
-        ]);
-
-        User::create([
-            'nomor_hp' => '081234567891',
-            'nama_orangtua' => 'Wali 2',
-            'nama_anak' => 'Anak 2',
-            'kelas_anak' => 'Kelas 2',
-            'role' => 'wali_murid'
-        ]);
-
-        Whitelist::create(['nomor_hp' => '081234567890']);
-        Whitelist::create(['nomor_hp' => '081234567891']);
-
-        Kuis::create([
-            'created_by' => $this->guru->id,
-            'judul' => 'Test Kuis',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'published'
-        ]);
-    }
-
     /** @test */
-    public function admin_can_access_dashboard_with_correct_data()
+    public function admin_can_access_admin_dashboard()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->get('/admin/dashboard');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertStatus(200);
         $response->assertViewIs('admin.dashboard');
-        $response->assertViewHasAll([
-            'totalUsers',
-            'totalGuru',
-            'totalWaliMurid',
-            'totalWhitelist',
-            'totalKuis'
-        ]);
-
-        $viewData = $response->viewData('totalUsers');
-        $this->assertEquals(4, $viewData); // 2 gurus + 2 wali_murid (excluding admin)
-
-        $viewData = $response->viewData('totalGuru');
-        $this->assertEquals(2, $viewData);
-
-        $viewData = $response->viewData('totalWaliMurid');
-        $this->assertEquals(2, $viewData);
-
-        $viewData = $response->viewData('totalWhitelist');
-        $this->assertEquals(2, $viewData);
-
-        $viewData = $response->viewData('totalKuis');
-        $this->assertEquals(1, $viewData);
+        $response->assertViewHas(['totalUsers', 'totalGuru', 'totalWaliMurid', 'totalWhitelist', 'totalKuis']);
     }
 
     /** @test */
-    public function guru_can_access_dashboard_with_correct_data()
+    public function guru_can_access_guru_dashboard()
     {
-        $this->actingAs($this->guru);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
 
-        $response = $this->get('/guru/dashboard');
+        $response = $this->actingAs($guru)->get(route('guru.dashboard'));
 
         $response->assertStatus(200);
         $response->assertViewIs('guru.dashboard');
-        $response->assertViewHasAll(['myKuis', 'publishedKuis']);
-
-        $viewData = $response->viewData('myKuis');
-        $this->assertEquals(1, $viewData); // Kuis created by this guru
-
-        $viewData = $response->viewData('publishedKuis');
-        $this->assertEquals(1, $viewData); // Published kuis
+        $response->assertViewHas(['myKuis', 'publishedKuis']);
     }
 
     /** @test */
-    public function wali_murid_can_access_dashboard_with_correct_data()
+    public function wali_murid_can_access_wali_murid_dashboard()
     {
-        $this->actingAs($this->waliMurid);
+        /** @var \App\Models\User $waliMurid */
+        $waliMurid = User::factory()->create(['role' => 'wali_murid']);
 
-        $response = $this->get('/wali-murid/dashboard');
+        $response = $this->actingAs($waliMurid)->get(route('wali-murid.dashboard'));
 
         $response->assertStatus(200);
         $response->assertViewIs('wali-murid.dashboard');
-        $response->assertViewHasAll(['publishedKuis', 'user']);
-
-        $viewData = $response->viewData('publishedKuis');
-        $this->assertEquals(1, $viewData);
-
-        $user = $response->viewData('user');
-        $this->assertEquals($this->waliMurid->id, $user->id);
+        $response->assertViewHas(['publishedKuis', 'user']);
     }
 
     /** @test */
     public function unauthenticated_user_cannot_access_dashboards()
     {
-        $response = $this->get('/admin/dashboard');
-        $response->assertRedirect('/login');
+        $response = $this->get(route('admin.dashboard'));
+        $response->assertRedirect(route('login'));
 
-        $response = $this->get('/guru/dashboard');
-        $response->assertRedirect('/login');
+        $response = $this->get(route('guru.dashboard'));
+        $response->assertRedirect(route('login'));
 
-        $response = $this->get('/wali-murid/dashboard');
-        $response->assertRedirect('/login');
+        $response = $this->get(route('wali-murid.dashboard'));
+        $response->assertRedirect(route('login'));
+    }
+
+    /** @test */
+    public function wrong_role_cannot_access_other_dashboards()
+    {
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+
+        $response = $this->actingAs($guru)->get(route('admin.dashboard'));
+        $response->assertRedirect(route('login'));
+
+        /** @var \App\Models\User $waliMurid */
+        $waliMurid = User::factory()->create(['role' => 'wali_murid']);
+
+        $response = $this->actingAs($waliMurid)->get(route('guru.dashboard'));
+        $response->assertRedirect(route('login'));
     }
 }

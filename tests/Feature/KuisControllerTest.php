@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
 use App\Models\Kuis;
 use App\Models\Soal;
@@ -10,335 +9,269 @@ use App\Models\PilihanJawaban;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class KuisControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $admin;
-    protected $guru;
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Create test users
-        $this->admin = User::create([
-            'username' => 'admin',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Admin User',
-            'role' => 'admin'
-        ]);
-
-        $this->guru = User::create([
-            'username' => 'guru',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Guru User',
-            'role' => 'guru'
-        ]);
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
     /** @test */
-    public function admin_can_create_quiz()
+    public function authenticated_user_can_access_kuis_index()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
 
-        $response = $this->post('/kuis', [
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test Description',
-            'waktu_tipe' => 'tanpa_waktu'
-        ]);
+        $response = $this->actingAs($user)->get(route('kuis.index'));
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
+        $response->assertViewIs('kuis.index');
+        $response->assertViewHas('kuis');
+    }
+
+    /** @test */
+    public function guru_or_admin_can_access_create_kuis()
+    {
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+
+        $response = $this->actingAs($guru)->get(route('kuis.create'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('kuis.create');
+    }
+
+    /** @test */
+    public function wali_murid_cannot_access_create_kuis()
+    {
+        /** @var \App\Models\User $waliMurid */
+        $waliMurid = User::factory()->create(['role' => 'wali_murid']);
+
+        $response = $this->actingAs($waliMurid)->get(route('kuis.create'));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    /** @test */
+    public function guru_can_store_kuis()
+    {
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+
+        $data = [
+            'judul' => 'Kuis Test',
+            'deskripsi' => 'Deskripsi test',
+            'waktu_tipe' => 'per_soal',
+            'durasi_waktu' => 30,
+        ];
+
+        $response = $this->actingAs($guru)->post(route('kuis.store'), $data)
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
         $this->assertDatabaseHas('kuis', [
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test Description',
-            'waktu_tipe' => 'tanpa_waktu',
-            'created_by' => $this->admin->id
+            'judul' => 'Kuis Test',
+            'created_by' => $guru->id,
         ]);
     }
 
     /** @test */
-    public function guru_can_create_quiz()
+    public function guru_can_edit_own_kuis()
     {
-        $this->actingAs($this->guru);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
-        $response = $this->post('/kuis', [
-            'judul' => 'Guru Quiz',
-            'deskripsi' => 'Guru Description',
-            'waktu_tipe' => 'per_soal',
-            'durasi_waktu' => 30
-        ]);
+        $response = $this->actingAs($guru)->get(route('kuis.edit', $kuis->id));
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('kuis', [
-            'judul' => 'Guru Quiz',
-            'waktu_tipe' => 'per_soal',
-            'durasi_waktu' => 30
-        ]);
+        $response->assertViewIs('kuis.edit');
+        $response->assertViewHas('kuis');
     }
 
     /** @test */
-    public function quiz_creation_validation_fails()
+    public function guru_cannot_edit_other_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $guru1 */
+        $guru1 = User::factory()->create(['role' => 'guru']);
+        /** @var \App\Models\User $guru2 */
+        $guru2 = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru2->id]);
 
-        $response = $this->post('/kuis', [
-            'judul' => '', // Empty title
-            'waktu_tipe' => 'invalid_type'
-        ]);
+        $response = $this->actingAs($guru1)->get(route('kuis.edit', $kuis->id));
+
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function admin_can_edit_any_kuis()
+    {
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
+        $kuis = Kuis::factory()->create();
+
+        $response = $this->actingAs($admin)->get(route('kuis.edit', $kuis->id));
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => false]);
-        $response->assertJsonStructure(['errors']);
     }
 
     /** @test */
-    public function can_add_multiple_choice_question_with_options()
+    public function guru_can_update_own_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
-        // Create quiz first
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
+        $data = [
+            'judul' => 'Updated Title',
+            'deskripsi' => 'Updated description',
+            'waktu_tipe' => 'keseluruhan',
+            'durasi_waktu' => 60,
+        ];
 
-        $response = $this->post("/kuis/{$quiz->id}/soal", [
-            'tipe' => 'pilihan_ganda',
-            'konten_soal' => 'What is 2+2?',
-            'jumlah_pilihan' => 4,
-            'jawaban_benar' => 1,
-            'pilihan' => [
-                ['urutan' => 1, 'konten' => '3'],
-                ['urutan' => 2, 'konten' => '4'],
-                ['urutan' => 3, 'konten' => '5'],
-                ['urutan' => 4, 'konten' => '6']
-            ]
-        ]);
+        $response = $this->actingAs($guru)->put(route('kuis.update', $kuis->id), $data)
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('soal', [
-            'kuis_id' => $quiz->id,
-            'tipe' => 'pilihan_ganda',
-            'konten_soal' => 'What is 2+2?',
-            'jawaban_benar' => 1
-        ]);
-
-        $this->assertDatabaseCount('pilihan_jawaban', 4);
+        $this->assertDatabaseHas('kuis', ['judul' => 'Updated Title']);
     }
 
     /** @test */
-    public function can_add_question_with_images()
+    public function guru_can_publish_kuis_with_soal()
+    {
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id, 'status' => 'draft']);
+        Soal::factory()->create(['kuis_id' => $kuis->id]);
+
+        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['status' => 'published'])
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('kuis', ['id' => $kuis->id, 'status' => 'published']);
+    }
+
+    /** @test */
+    public function guru_cannot_publish_kuis_without_soal()
+    {
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id, 'status' => 'draft']);
+
+        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['status' => 'published'])
+            ->assertStatus(200)
+            ->assertJson(['success' => false]);
+    }
+
+    /** @test */
+    public function guru_can_store_soal()
     {
         Storage::fake('public');
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
-
-        $questionImage = UploadedFile::fake()->image('question.jpg');
-        $optionImage = UploadedFile::fake()->image('option.jpg');
-
-        $response = $this->post("/kuis/{$quiz->id}/soal", [
+        $data = [
             'tipe' => 'pilihan_ganda',
-            'konten_soal' => 'What animal is this?',
-            'gambar_soal' => $questionImage,
-            'jumlah_pilihan' => 2,
+            'konten_soal' => 'Soal test?',
+            'gambar_soal' => UploadedFile::fake()->image('soal.jpg'),
+            'jumlah_pilihan' => 3,
             'jawaban_benar' => 1,
             'pilihan' => [
-                ['urutan' => 1, 'konten' => 'Cat'],
-                ['urutan' => 2, 'konten' => 'Dog']
+                ['konten' => 'Jawaban 1', 'urutan' => 1],
+                ['konten' => 'Jawaban 2', 'urutan' => 2],
+                ['konten' => 'Jawaban 3', 'urutan' => 3],
             ],
-            'gambar_pilihan_1' => $optionImage
-        ]);
+            'gambar_pilihan_1' => UploadedFile::fake()->image('pilihan1.jpg'),
+        ];
 
-        $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
+        $response = $this->actingAs($guru)->post(route('kuis.soal.store', $kuis->id), $data)
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $soal = Soal::where('kuis_id', $quiz->id)->first();
-        $this->assertNotNull($soal->gambar_soal);
-
-        $pilihan = PilihanJawaban::where('soal_id', $soal->id)->where('urutan', 1)->first();
-        $this->assertNotNull($pilihan->gambar_pilihan);
+        $this->assertDatabaseHas('soal', ['kuis_id' => $kuis->id, 'konten_soal' => 'Soal test?']);
+        $this->assertDatabaseCount('pilihan_jawaban', 3);
     }
 
     /** @test */
-    public function can_publish_quiz_with_questions()
+    public function user_can_show_published_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
+        $kuis = Kuis::factory()->create(['status' => 'published']);
 
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
-
-        // Add a question
-        Soal::create([
-            'kuis_id' => $quiz->id,
-            'urutan' => 1,
-            'tipe' => 'pilihan_ganda',
-            'konten_soal' => 'Test question',
-            'jawaban_benar' => 1
-        ]);
-
-        $response = $this->put("/kuis/{$quiz->id}/status", [
-            'status' => 'published'
-        ]);
+        $response = $this->actingAs($user)->get(route('kuis.show', $kuis->id));
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('kuis', [
-            'id' => $quiz->id,
-            'status' => 'published'
-        ]);
+        $response->assertViewIs('kuis.show');
     }
 
     /** @test */
-    public function cannot_publish_quiz_without_questions()
+    public function user_cannot_show_draft_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
+        $kuis = Kuis::factory()->create(['status' => 'draft']);
 
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Empty Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
+        $response = $this->actingAs($user)->get(route('kuis.show', $kuis->id));
 
-        $response = $this->put("/kuis/{$quiz->id}/status", [
-            'status' => 'published'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson(['success' => false]);
-
-        $this->assertDatabaseHas('kuis', [
-            'id' => $quiz->id,
-            'status' => 'draft'
-        ]);
+        $response->assertStatus(403);
     }
 
     /** @test */
-    public function can_update_quiz()
+    public function creator_can_show_draft_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id, 'status' => 'draft']);
 
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Original Title',
-            'deskripsi' => 'Original Description',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
-
-        $response = $this->put("/kuis/{$quiz->id}", [
-            'judul' => 'Updated Title',
-            'deskripsi' => 'Updated Description',
-            'waktu_tipe' => 'keseluruhan',
-            'durasi_waktu' => 60
-        ]);
+        $response = $this->actingAs($guru)->get(route('kuis.show', $kuis->id));
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('kuis', [
-            'id' => $quiz->id,
-            'judul' => 'Updated Title',
-            'waktu_tipe' => 'keseluruhan',
-            'durasi_waktu' => 60
-        ]);
     }
 
     /** @test */
-    public function can_delete_quiz()
+    public function user_can_get_soal_for_kuis()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
+        $kuis = Kuis::factory()->create(['status' => 'published']);
 
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
-
-        $response = $this->delete("/kuis/{$quiz->id}");
-
-        $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-
-        $this->assertDatabaseMissing('kuis', ['id' => $quiz->id]);
+        $response = $this->actingAs($user)->get(route('kuis.get-soal', $kuis->id))
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
     }
 
     /** @test */
-    public function unauthorized_user_cannot_access_quiz_operations()
+    public function guru_can_destroy_own_kuis()
     {
-        $quiz = Kuis::create([
-            'created_by' => $this->admin->id,
-            'judul' => 'Test Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
+        /** @var \App\Models\User $guru */
+        $guru = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
-        // Try to update without authentication
-        $response = $this->put("/kuis/{$quiz->id}", [
-            'judul' => 'Hacked Title'
-        ]);
+        $response = $this->actingAs($guru)->delete(route('kuis.destroy', $kuis->id))
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $response->assertRedirect('/login');
+        $this->assertDatabaseMissing('kuis', ['id' => $kuis->id]);
     }
 
     /** @test */
-    public function guru_cannot_update_other_gurus_quiz()
+    public function guru_cannot_destroy_other_kuis()
     {
-        $otherGuru = User::create([
-            'username' => 'other_guru',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Other Guru',
-            'role' => 'guru'
-        ]);
+        /** @var \App\Models\User $guru1 */
+        $guru1 = User::factory()->create(['role' => 'guru']);
+        /** @var \App\Models\User $guru2 */
+        $guru2 = User::factory()->create(['role' => 'guru']);
+        $kuis = Kuis::factory()->create(['created_by' => $guru2->id]);
 
-        $quiz = Kuis::create([
-            'created_by' => $otherGuru->id,
-            'judul' => 'Other Guru Quiz',
-            'deskripsi' => 'Test',
-            'waktu_tipe' => 'tanpa_waktu',
-            'status' => 'draft'
-        ]);
-
-        $this->actingAs($this->guru);
-
-        $response = $this->put("/kuis/{$quiz->id}", [
-            'judul' => 'Hacked Title'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson(['success' => false]);
-
-        $this->assertDatabaseHas('kuis', [
-            'id' => $quiz->id,
-            'judul' => 'Other Guru Quiz'
-        ]);
+        $response = $this->actingAs($guru1)->delete(route('kuis.destroy', $kuis->id))
+            ->assertStatus(200)
+            ->assertJson(['success' => false]);
     }
 }

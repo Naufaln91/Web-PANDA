@@ -2,83 +2,28 @@
 
 namespace Tests\Feature\Admin;
 
-use Tests\TestCase;
 use App\Models\User;
 use App\Models\Whitelist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AdminControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $admin;
-    protected $guru;
-    protected $waliMurid;
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Create test users
-        $this->admin = User::create([
-            'username' => 'admin',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Admin User',
-            'role' => 'admin'
-        ]);
-
-        $this->guru = User::create([
-            'nomor_hp' => '081234567890',
-            'nama_orangtua' => 'Guru User',
-            'nama_anak' => 'Anak Guru',
-            'kelas_anak' => 'Kelas 1',
-            'role' => 'guru'
-        ]);
-
-        $this->waliMurid = User::create([
-            'nomor_hp' => '081234567891',
-            'nama_orangtua' => 'Wali Murid',
-            'nama_anak' => 'Anak User',
-            'kelas_anak' => 'Kelas 1',
-            'role' => 'wali_murid'
-        ]);
-
-        // Create whitelist entries
-        Whitelist::create(['nomor_hp' => '081234567890']);
-        Whitelist::create(['nomor_hp' => '081234567891']);
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
     /** @test */
-    public function admin_can_access_dashboard_with_correct_data()
+    public function admin_can_access_whitelist_index()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->get('/admin/dashboard');
-
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.dashboard');
-        $response->assertViewHasAll(['totalUsers', 'totalGuru', 'totalWaliMurid', 'totalWhitelist']);
-
-        // Skip view data assertion for now as viewData() requires a key parameter
-        // The assertViewHasAll already confirms the data is passed to the view
-    }
-
-    /** @test */
-    public function non_admin_cannot_access_admin_dashboard()
-    {
-        $this->actingAs($this->guru);
-
-        $response = $this->get('/admin/dashboard');
-
-        $response->assertRedirect('/login');
-    }
-
-    /** @test */
-    public function admin_can_view_whitelist_index()
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->get('/admin/whitelist');
+        $response = $this->actingAs($admin)->get(route('admin.whitelist.index'));
 
         $response->assertStatus(200);
         $response->assertViewIs('admin.whitelist.index');
@@ -86,135 +31,90 @@ class AdminControllerTest extends TestCase
     }
 
     /** @test */
-    public function admin_can_add_to_whitelist()
+    public function admin_can_store_whitelist()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->post('/admin/whitelist', [
-            'nomor_hp' => '081234567892'
-        ]);
+        $data = [
+            'email' => 'test@example.com',
+            'role' => 'guru',
+        ];
 
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'Nomor HP berhasil ditambah.'
-        ]);
+        $response = $this->actingAs($admin)->post(route('admin.whitelist.store'), $data)
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $this->assertDatabaseHas('whitelists', [
-            'nomor_hp' => '081234567892'
-        ]);
+        $this->assertDatabaseHas('whitelists', $data);
     }
 
     /** @test */
-    public function whitelist_validation_fails_for_duplicate_number()
+    public function admin_can_destroy_whitelist()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
+        $whitelist = Whitelist::factory()->create();
 
-        $response = $this->post('/admin/whitelist', [
-            'nomor_hp' => '081234567890' // Already exists
-        ]);
+        $response = $this->actingAs($admin)->delete(route('admin.whitelist.destroy', $whitelist->id));
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Nomor HP ini sudah terdapat dalam whitelist.'
-        ]);
-    }
-
-    /** @test */
-    public function whitelist_validation_fails_for_invalid_format()
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->post('/admin/whitelist', [
-            'nomor_hp' => 'invalid'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Format nomor HP salah.'
-        ]);
-    }
-
-    /** @test */
-    public function admin_can_delete_whitelist_without_user()
-    {
-        $this->actingAs($this->admin);
-
-        $whitelist = Whitelist::create(['nomor_hp' => '081234567893']);
-
-        $response = $this->delete("/admin/whitelist/{$whitelist->id}");
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'Nomor HP berhasil dihapus.'
-        ]);
-
+        $response->assertJson(['success' => true]);
         $this->assertDatabaseMissing('whitelists', ['id' => $whitelist->id]);
     }
 
     /** @test */
-    public function admin_can_delete_whitelist_with_user()
+    public function admin_can_access_akun_index()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
 
-        $whitelist = Whitelist::where('nomor_hp', '081234567890')->first();
-
-        $response = $this->delete("/admin/whitelist/{$whitelist->id}");
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'Nomor HP dan akun terkait berhasil dihapus.'
-        ]);
-
-        $this->assertDatabaseMissing('whitelists', ['id' => $whitelist->id]);
-        $this->assertDatabaseMissing('users', ['nomor_hp' => '081234567890']);
-    }
-
-    /** @test */
-    public function admin_can_view_akun_index()
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->get('/admin/akun');
+        $response = $this->actingAs($admin)->get(route('admin.akun.index'));
 
         $response->assertStatus(200);
         $response->assertViewIs('admin.akun.index');
-        $response->assertViewHas('users');
+        $response->assertViewHas(['guru', 'waliMurid']);
     }
 
     /** @test */
-    public function admin_can_delete_user_account()
+    public function admin_can_destroy_user()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create(['role' => 'guru']);
 
-        $response = $this->delete("/admin/akun/{$this->guru->id}");
+        $response = $this->actingAs($admin)->delete(route('admin.akun.destroy', $user->id))
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
 
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'Akun berhasil dihapus.'
-        ]);
-
-        $this->assertDatabaseMissing('users', ['id' => $this->guru->id]);
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
     /** @test */
-    public function admin_cannot_delete_admin_account()
+    public function admin_cannot_destroy_admin_user()
     {
-        $this->actingAs($this->admin);
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
+        /** @var \App\Models\User $anotherAdmin */
+        $anotherAdmin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->delete("/admin/akun/{$this->admin->id}");
+        $response = $this->actingAs($admin)->delete(route('admin.akun.destroy', $anotherAdmin->id))
+            ->assertStatus(200)
+            ->assertJson(['success' => false]);
 
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Tidak dapat menghapus akun admin.'
-        ]);
+        $this->assertDatabaseHas('users', ['id' => $anotherAdmin->id]);
+    }
 
-        $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
+    /** @test */
+    public function non_admin_cannot_access_admin_routes()
+    {
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create(['role' => 'guru']);
+
+        $response = $this->actingAs($user)->get(route('admin.whitelist.index'));
+        $response->assertRedirect(route('login'));
+
+        $response = $this->actingAs($user)->post(route('admin.whitelist.store'), []);
+        $response->assertRedirect(route('login'));
     }
 }

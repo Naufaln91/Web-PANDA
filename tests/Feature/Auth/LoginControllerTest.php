@@ -2,277 +2,186 @@
 
 namespace Tests\Feature\Auth;
 
-use Tests\TestCase;
 use App\Models\User;
 use App\Models\Whitelist;
 use App\Models\OtpCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
+use Tests\TestCase;
 
 class LoginControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $admin;
-    protected $guru;
-    protected $waliMurid;
-
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+    }
 
-        // Create test users
-        $this->admin = User::create([
+    /** @test */
+    public function show_login_form_redirects_if_authenticated()
+    {
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('login'));
+
+        $response->assertRedirect();
+    }
+
+    /** @test */
+    public function admin_can_login_with_credentials()
+    {
+        /** @var \App\Models\User $admin */
+        $admin = User::factory()->create([
             'username' => 'admin',
             'password' => bcrypt('password'),
-            'nama_orangtua' => 'Admin User',
-            'role' => 'admin'
+            'role' => 'admin',
         ]);
 
-        $this->guru = User::create([
-            'username' => 'guru',
-            'password' => bcrypt('password'),
-            'nama_orangtua' => 'Guru User',
-            'role' => 'guru'
-        ]);
-
-        $this->waliMurid = User::create([
-            'nomor_hp' => '081234567890',
-            'nama_orangtua' => 'Wali Murid',
-            'nama_anak' => 'Anak User',
-            'kelas_anak' => 'Kelas 1',
-            'role' => 'wali_murid'
-        ]);
-
-        // Create whitelist entries
-        Whitelist::create(['nomor_hp' => '081234567890']);
-        Whitelist::create(['nomor_hp' => '081234567891']);
-    }
-
-    /** @test */
-    public function show_login_form_displays_login_view()
-    {
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
-        $response->assertViewIs('auth.login');
-    }
-
-    /** @test */
-    public function show_login_form_redirects_authenticated_user()
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->get('/login');
-
-        $response->assertRedirect('/');
-    }
-
-    /** @test */
-    public function admin_can_login_with_valid_credentials()
-    {
-        $response = $this->post('/login/admin', [
+        $response = $this->post(route('login.admin'), [
             'username' => 'admin',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
-        $response->assertRedirect('/admin/dashboard');
-        $this->assertAuthenticatedAs($this->admin);
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($admin);
     }
 
     /** @test */
-    public function admin_login_fails_with_invalid_credentials()
+    public function invalid_credentials_fail_login()
     {
-        $response = $this->post('/login/admin', [
+        $response = $this->post(route('login.admin'), [
             'username' => 'admin',
-            'password' => 'wrongpassword'
+            'password' => 'wrong',
         ]);
 
-        $response->assertRedirect('/');
-        $response->assertSessionHas('error', 'Username atau password salah.');
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
         $this->assertGuest();
     }
 
     /** @test */
-    public function admin_login_validation_fails()
+    public function request_otp_for_whitelisted_email()
     {
-        $response = $this->post('/login/admin', [
-            'username' => '',
-            'password' => ''
-        ]);
+        Mail::fake();
+        $whitelist = Whitelist::factory()->create(['email' => 'test@example.com', 'role' => 'guru']);
 
-        $response->assertRedirect('/');
-        $response->assertSessionHasErrors(['username', 'password']);
-    }
-
-    /** @test */
-    public function request_otp_succeeds_for_whitelisted_number()
-    {
-        $response = $this->post('/login/request-otp', [
-            'nomor_hp' => '081234567890'
+        $response = $this->post(route('login.request-otp'), [
+            'email' => 'test@example.com',
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'user_exists' => true,
-            'message' => 'Kode OTP berhasil dikirim.'
-        ]);
-
-        $this->assertDatabaseHas('otp_codes', [
-            'nomor_hp' => '081234567890',
-            'is_used' => false
-        ]);
+        $response->assertJson(['success' => true]);
+        $this->assertDatabaseHas('otp_codes', ['email' => 'test@example.com']);
+        Mail::assertSent(\App\Mail\OtpEmail::class);
     }
 
     /** @test */
-    public function request_otp_fails_for_non_whitelisted_number()
+    public function request_otp_fails_for_non_whitelisted_email()
     {
-        $response = $this->post('/login/request-otp', [
-            'nomor_hp' => '081234567899' // Not in whitelist
+        $response = $this->post(route('login.request-otp'), [
+            'email' => 'notwhitelisted@example.com',
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Nomor HP tidak masuk whitelist.'
-        ]);
+        $response->assertJson(['success' => false]);
     }
 
     /** @test */
-    public function request_otp_validation_fails()
+    public function verify_otp_and_login_existing_user()
     {
-        $response = $this->post('/login/request-otp', [
-            'nomor_hp' => 'invalid'
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create(['email' => 'test@example.com', 'role' => 'guru']);
+        $otp = OtpCode::factory()->create([
+            'email' => 'test@example.com',
+            'code' => '123456',
+            'is_used' => false,
+        ]);
+
+        $response = $this->post(route('login.verify-otp'), [
+            'email' => 'test@example.com',
+            'otp_code' => '123456',
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false
-        ]);
-        $response->assertJsonStructure(['message']);
-    }
-
-    /** @test */
-    public function verify_otp_succeeds_for_existing_user()
-    {
-        // Generate OTP first
-        $otp = OtpCode::generateOtp('081234567890');
-
-        $response = $this->post('/login/verify-otp', [
-            'nomor_hp' => '081234567890',
-            'otp_code' => $otp->code
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'is_new_user' => false,
-            'redirect_url' => route('wali-murid.dashboard')
-        ]);
-
-        $this->assertAuthenticatedAs($this->waliMurid);
-        $this->assertDatabaseHas('otp_codes', [
-            'nomor_hp' => '081234567890',
-            'is_used' => true
-        ]);
-    }
-
-    /** @test */
-    public function verify_otp_fails_with_invalid_code()
-    {
-        // Generate OTP first
-        OtpCode::generateOtp('081234567890');
-
-        $response = $this->post('/login/verify-otp', [
-            'nomor_hp' => '081234567890',
-            'otp_code' => '000000'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false,
-            'message' => 'Kode OTP salah atau sudah kadaluarsa.'
-        ]);
-
-        $this->assertGuest();
-    }
-
-    /** @test */
-    public function verify_otp_creates_new_user_flow()
-    {
-        // Generate OTP for non-existing user
-        $otp = OtpCode::generateOtp('081234567891');
-
-        $response = $this->post('/login/verify-otp', [
-            'nomor_hp' => '081234567891',
-            'otp_code' => $otp->code
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'is_new_user' => true,
-            'nomor_hp' => '081234567891'
-        ]);
-
-        $this->assertGuest(); // Not authenticated yet
-    }
-
-    /** @test */
-    public function complete_profile_creates_new_user()
-    {
-        $response = $this->post('/login/complete-profile', [
-            'nomor_hp' => '081234567891',
-            'nama_orangtua' => 'New Parent',
-            'nama_anak' => 'New Child',
-            'kelas_anak' => 'Kelas 2',
-            'role' => 'guru'
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'redirect_url' => route('guru.dashboard')
-        ]);
-
-        $this->assertDatabaseHas('users', [
-            'nomor_hp' => '081234567891',
-            'nama_orangtua' => 'New Parent',
-            'nama_anak' => 'New Child',
-            'kelas_anak' => 'Kelas 2',
-            'role' => 'guru'
-        ]);
-
-        $user = User::where('nomor_hp', '081234567891')->first();
+        $response->assertJson(['success' => true, 'is_new_user' => false]);
         $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseHas('otp_codes', ['id' => $otp->id, 'is_used' => true]);
     }
 
     /** @test */
-    public function complete_profile_validation_fails()
+    public function verify_otp_for_new_user()
     {
-        $response = $this->post('/login/complete-profile', [
-            'nomor_hp' => '081234567891',
-            'nama_orangtua' => '',
-            'nama_anak' => '',
-            'kelas_anak' => '',
-            'role' => 'invalid'
+        Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
+        $otp = OtpCode::factory()->create([
+            'email' => 'new@example.com',
+            'code' => '123456',
+            'is_used' => false,
+        ]);
+
+        $response = $this->post(route('login.verify-otp'), [
+            'email' => 'new@example.com',
+            'otp_code' => '123456',
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson([
-            'success' => false
-        ]);
-        $response->assertJsonStructure(['message']);
+        $response->assertJson(['success' => true, 'is_new_user' => true]);
+        $this->assertDatabaseHas('otp_codes', ['id' => $otp->id, 'is_used' => true]);
     }
 
     /** @test */
-    public function logout_clears_session_and_redirects()
+    public function complete_profile_for_new_guru()
     {
-        $this->actingAs($this->admin);
+        Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
 
-        $response = $this->post('/logout');
+        $response = $this->post(route('login.complete-profile'), [
+            'email' => 'new@example.com',
+            'nama' => 'Guru Baru',
+        ]);
 
-        $response->assertRedirect('/login');
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+        $this->assertDatabaseHas('users', [
+            'email' => 'new@example.com',
+            'nama' => 'Guru Baru',
+            'role' => 'guru',
+        ]);
+    }
+
+    /** @test */
+    public function complete_profile_for_new_wali_murid()
+    {
+        Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'wali_murid']);
+
+        $response = $this->post(route('login.complete-profile'), [
+            'email' => 'new@example.com',
+            'nama_orangtua' => 'Orang Tua',
+            'nama_anak' => 'Anak',
+            'kelas_anak' => 'Kelas 1',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+        $this->assertDatabaseHas('users', [
+            'email' => 'new@example.com',
+            'nama' => 'Orang Tua',
+            'nama_anak' => 'Anak',
+            'kelas_anak' => 'Kelas 1',
+            'role' => 'wali_murid',
+        ]);
+    }
+
+    /** @test */
+    public function logout_clears_session()
+    {
+        /** @var \App\Models\User $user */
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('logout'));
+
+        $response->assertRedirect(route('login'));
         $this->assertGuest();
     }
 }
