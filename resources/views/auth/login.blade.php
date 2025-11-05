@@ -201,7 +201,7 @@
 
                                 <p id="error-profile" class="text-red-500 text-sm hidden"></p>
 
-                                <button onclick="completeProfile()" id="btn-complete-profile"
+                                <button onclick="confirmCompleteProfile()" id="btn-complete-profile"
                                     class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
                                     <i class="fas fa-save mr-2"></i> Simpan & Masuk
                                 </button>
@@ -317,12 +317,12 @@
             });
         }
 
-        function completeProfile() {
+        function confirmCompleteProfile() {
             const errorDiv = document.getElementById('error-profile');
-            const btn = document.getElementById('btn-complete-profile');
-
             errorDiv.classList.add('hidden');
 
+            // Validate form
+            let isValid = true;
             let data = {
                 _token: '{{ csrf_token() }}',
                 email: currentEmail
@@ -350,6 +350,27 @@
                 data.nama_anak = namaAnak;
                 data.kelas_anak = kelasAnak;
             }
+
+            // Show confirmation popup
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin data sudah diisi dengan benar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    completeProfile(data);
+                }
+            });
+        }
+
+        function completeProfile(data) {
+            const errorDiv = document.getElementById('error-profile');
+            const btn = document.getElementById('btn-complete-profile');
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
