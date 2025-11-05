@@ -19,7 +19,14 @@
             <div class="flex flex-col items-center justify-center min-h-[70vh]">
                 <div id="game" class="grid gap-4 justify-center mb-3"></div>
                 <p id="status" class="text-xl font-bold text-green-600 mt-2"></p>
+                <button id="restartBtn"
+                    class="hidden bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition mt-6">
+                    <i class="fas fa-redo mr-2"></i> Main Lagi dari Awal
+                </button>
             </div>
+
+            <!-- Canvas untuk confetti -->
+            <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
         </div>
 
         @push('scripts')
@@ -29,7 +36,7 @@
                 let matched = 0;
                 let level = 1;
                 let audioContext = null;
-                let isChecking = false; // TAMBAHAN: flag untuk mencegah klik saat checking
+                let isChecking = false;
                 const levelPairs = [2, 3, 4, 6, 10]; // jumlah pasangan per level
 
                 function initAudio() {
@@ -45,12 +52,26 @@
                     const game = document.getElementById('game');
                     flipped = [];
                     matched = 0;
-                    isChecking = false; // RESET flag saat init level baru
+                    isChecking = false;
                     document.getElementById('status').textContent = '';
+                    document.getElementById('restartBtn').classList.add('hidden');
 
-                    // Tentukan kolom sesuai jumlah kartu
-                    let gridCols = Math.ceil(Math.sqrt(items.length));
-                    game.className = `grid gap-4 justify-center grid-cols-${gridCols} mb-3`;
+                    // Tentukan kolom dengan style inline
+                    let gridCols;
+                    const totalCards = items.length;
+
+                    if (totalCards <= 4) {
+                        gridCols = 2;
+                    } else if (totalCards <= 9) {
+                        gridCols = 3;
+                    } else if (totalCards <= 16) {
+                        gridCols = 4;
+                    } else {
+                        gridCols = 5; // untuk 20 kartu
+                    }
+
+                    game.className = 'grid gap-4 justify-center mb-3';
+                    game.style.gridTemplateColumns = `repeat(${gridCols}, minmax(0, 1fr))`;
                     game.innerHTML = '';
 
                     items.forEach((emoji) => {
@@ -64,12 +85,10 @@
                 }
 
                 function flipCard(card) {
-                    // PERBAIKAN: Cek apakah sedang dalam proses checking, sudah matched, atau sudah flipped
                     if (isChecking || card.classList.contains('matched') || card.classList.contains('flipped')) {
                         return;
                     }
 
-                    // PERBAIKAN: Cek jika sudah ada 2 kartu yang di-flip
                     if (flipped.length >= 2) {
                         return;
                     }
@@ -79,7 +98,7 @@
                     flipped.push(card);
 
                     if (flipped.length === 2) {
-                        isChecking = true; // SET flag sebelum checking
+                        isChecking = true;
                         setTimeout(checkMatch, 700);
                     }
                 }
@@ -97,11 +116,17 @@
                         if (matched === levelPairs[level - 1]) {
                             if (level < levelPairs.length) {
                                 document.getElementById('status').textContent = "🎉 Hebat! Lanjut ke level berikutnya...";
+                                createConfetti(); // Confetti setiap level selesai
                                 level++;
                                 setTimeout(initLevel, 2000);
                             } else {
+                                // Level terakhir selesai
                                 document.getElementById('status').textContent = "🏆 Keren banget! Semua pasangan sudah cocok!";
-                                createConfetti();
+                                createConfetti(); // Confetti level terakhir
+                                // Tampilkan tombol restart setelah confetti muncul
+                                setTimeout(() => {
+                                    document.getElementById('restartBtn').classList.remove('hidden');
+                                }, 1000);
                             }
                         }
                     } else {
@@ -114,7 +139,7 @@
                         }
                     }
                     flipped = [];
-                    isChecking = false; // RESET flag setelah checking selesai
+                    isChecking = false;
                 }
 
                 // --- Efek suara sukses ---
@@ -165,30 +190,67 @@
                     });
                 }
 
-                // --- Efek confetti 🎊 ---
+                // --- Efek confetti 🎊 (sama seperti permainan hitung) ---
                 function createConfetti() {
+                    const canvas = document.getElementById('confetti-canvas');
+                    const ctx = canvas.getContext('2d');
+                    const particles = [];
+
+                    const colors = ['#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'];
+
+                    const W = canvas.width = canvas.offsetWidth;
+                    const H = canvas.height = canvas.offsetHeight;
+
                     for (let i = 0; i < 60; i++) {
-                        const c = document.createElement('div');
-                        c.style.position = 'fixed';
-                        c.style.left = Math.random() * 100 + '%';
-                        c.style.top = '-10px';
-                        c.style.width = '10px';
-                        c.style.height = '10px';
-                        c.style.background = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa'][Math.floor(Math.random() * 5)];
-                        c.style.borderRadius = '50%';
-                        c.style.zIndex = '9999';
-                        document.body.appendChild(c);
-                        let pos = -10;
-                        const fall = setInterval(() => {
-                            pos += 6;
-                            c.style.top = pos + 'px';
-                            if (pos > window.innerHeight) {
-                                clearInterval(fall);
-                                c.remove();
-                            }
-                        }, 20);
+                        particles.push({
+                            x: Math.random() * W,
+                            y: Math.random() * -H / 2,
+                            r: Math.random() * 6 + 3,
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            speed: Math.random() * 3 + 2,
+                            tilt: Math.random() * 10 - 5
+                        });
                     }
+
+                    function draw() {
+                        ctx.clearRect(0, 0, W, H);
+                        particles.forEach(p => {
+                            ctx.beginPath();
+                            ctx.fillStyle = p.color;
+                            ctx.fillRect(p.x, p.y, p.r, p.r);
+                        });
+                    }
+
+                    function update() {
+                        particles.forEach(p => {
+                            p.y += p.speed;
+                            p.x += Math.sin(p.tilt);
+                        });
+                    }
+
+                    function loop() {
+                        draw();
+                        update();
+                        if (particles.some(p => p.y < H)) {
+                            requestAnimationFrame(loop);
+                        }
+                    }
+                    loop();
                 }
+
+                // Fungsi restart game
+                function restartGame() {
+                    level = 1;
+                    matched = 0;
+                    flipped = [];
+                    isChecking = false;
+                    document.getElementById('status').textContent = '';
+                    document.getElementById('restartBtn').classList.add('hidden');
+                    initLevel();
+                }
+
+                // Event listener untuk tombol restart
+                document.getElementById('restartBtn').addEventListener('click', restartGame);
 
                 initLevel();
             </script>

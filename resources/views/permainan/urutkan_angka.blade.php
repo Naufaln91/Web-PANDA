@@ -12,7 +12,8 @@
             </a>
         </div>
 
-        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+        <div
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
             <div class="card text-center">
                 <h2 class="text-xl font-bold text-gray-700 mb-4">Susun angka dari kecil ke besar!</h2>
 
@@ -36,7 +37,13 @@
                 </div>
 
                 <p id="pesan" class="text-xl font-bold text-gray-800 mt-4 min-h-[2rem]"></p>
+                <button id="restartBtn"
+                    class="hidden bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition mt-6">
+                    <i class="fas fa-redo mr-2"></i> Main Lagi dari Awal
+                </button>
             </div>
+            <!-- Canvas untuk confetti -->
+            <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
         </div>
 
         @push('styles')
@@ -137,43 +144,52 @@
                     });
                 }
 
+                // 🎊 Efek confetti sederhana
                 function createConfetti() {
-                    const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#ec4899', '#f97316'];
-                    for (let i = 0; i < 80; i++) {
-                        setTimeout(() => {
-                            const c = document.createElement('div');
-                            c.style.position = 'fixed';
-                            c.style.left = Math.random() * 100 + '%';
-                            c.style.top = '-20px';
-                            c.style.width = Math.random() * 10 + 5 + 'px';
-                            c.style.height = Math.random() * 10 + 5 + 'px';
-                            c.style.background = colors[Math.floor(Math.random() * colors.length)];
-                            c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                            c.style.zIndex = '9999';
-                            c.style.pointerEvents = 'none';
-                            c.style.transform = `rotate(${Math.random() * 360}deg)`;
-                            document.body.appendChild(c);
+                    const canvas = document.getElementById('confetti-canvas');
+                    const ctx = canvas.getContext('2d');
+                    const particles = [];
 
-                            let pos = -20;
-                            let rotation = Math.random() * 360;
-                            const horizontalDrift = (Math.random() - 0.5) * 3;
-                            let left = parseFloat(c.style.left);
+                    const colors = ['#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'];
 
-                            const fall = setInterval(() => {
-                                pos += 5;
-                                rotation += 5;
-                                left += horizontalDrift;
-                                c.style.top = pos + 'px';
-                                c.style.left = left + '%';
-                                c.style.transform = `rotate(${rotation}deg)`;
+                    const W = canvas.width = canvas.offsetWidth;
+                    const H = canvas.height = canvas.offsetHeight;
 
-                                if (pos > window.innerHeight + 50) {
-                                    clearInterval(fall);
-                                    c.remove();
-                                }
-                            }, 16);
-                        }, i * 20);
+                    for (let i = 0; i < 60; i++) {
+                        particles.push({
+                            x: Math.random() * W,
+                            y: Math.random() * -H / 2,
+                            r: Math.random() * 6 + 3,
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            speed: Math.random() * 3 + 2,
+                            tilt: Math.random() * 10 - 5
+                        });
                     }
+
+                    function draw() {
+                        ctx.clearRect(0, 0, W, H);
+                        particles.forEach(p => {
+                            ctx.beginPath();
+                            ctx.fillStyle = p.color;
+                            ctx.fillRect(p.x, p.y, p.r, p.r);
+                        });
+                    }
+
+                    function update() {
+                        particles.forEach(p => {
+                            p.y += p.speed;
+                            p.x += Math.sin(p.tilt);
+                        });
+                    }
+
+                    function loop() {
+                        draw();
+                        update();
+                        if (particles.some(p => p.y < H)) {
+                            requestAnimationFrame(loop);
+                        }
+                    }
+                    loop();
                 }
 
                 function acak(arr) {
@@ -295,12 +311,30 @@
                         pesan.className = "text-xl font-bold text-purple-600 mt-4 min-h-[2rem]";
                         createConfetti();
                         playSuccessSound();
+                        // Tampilkan tombol restart setelah confetti muncul
+                        setTimeout(() => {
+                            document.getElementById('restartBtn').classList.remove('hidden');
+                        }, 1000);
                     }
                 }
 
                 function resetLevel() {
                     buatAngka();
                 }
+
+                // TAMBAHAN: Fungsi restart game
+                function restartGame() {
+                    level = 1;
+                    matched = 0;
+                    flipped = [];
+                    isChecking = false;
+                    document.getElementById('pesan').textContent = '';
+                    document.getElementById('restartBtn').classList.add('hidden');
+                    buatAngka();
+                }
+
+                // Event listener untuk tombol restart
+                document.getElementById('restartBtn').addEventListener('click', restartGame);
 
                 // Initialize game
                 buatAngka();
