@@ -19,7 +19,7 @@
             <div class="card bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm opacity-90">Total Whitelist no HP</p>
+                        <p class="text-sm opacity-90">Total Whitelist Email</p>
                         <h3 class="text-4xl font-bold mt-2">{{ $totalWhitelist }}</h3>
                     </div>
                     <i class="fas fa-user-friends text-5xl opacity-50"></i>
