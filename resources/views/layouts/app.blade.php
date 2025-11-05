@@ -70,7 +70,7 @@
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
 
     <!-- Navbar -->
-    <nav class="bg-white shadow-lg" x-data="{ open: false }">
+    <nav class="bg-blue-100 shadow-lg" x-data="{ open: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
