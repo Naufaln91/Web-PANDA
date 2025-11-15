@@ -91,7 +91,7 @@ class LoginController extends Controller
 
         // Kirim email OTP
         try {
-            Mail::to($email)->send(new OtpEmail($otp->code));
+            Mail::to($email)->send(new OtpEmail($otp->plain_code));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -262,7 +262,7 @@ class LoginController extends Controller
 
         // Kirim ulang email OTP
         try {
-            Mail::to($email)->send(new OtpEmail($otp->code));
+            Mail::to($email)->send(new OtpEmail($otp->plain_code));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

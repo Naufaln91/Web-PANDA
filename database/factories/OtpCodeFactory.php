@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 /**
@@ -17,9 +18,10 @@ class OtpCodeFactory extends Factory
      */
     public function definition(): array
     {
+        $code = str_pad(fake()->numberBetween(0, 999999), 6, '0', STR_PAD_LEFT);
         return [
             'email' => fake()->unique()->safeEmail(),
-            'code' => str_pad(fake()->numberBetween(0, 999999), 6, '0', STR_PAD_LEFT),
+            'code' => Hash::make($code),
             'expires_at' => Carbon::now()->addMinutes(5),
             'is_used' => false,
             'resend_count' => 0,

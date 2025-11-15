@@ -1,13 +1,10 @@
-# TODO: Fix Intelephense Errors in Test Files
+# TODO: Implement Hashing for OTP Codes
 
-## Tasks
-- [x] Fix tests/Feature/DashboardControllerTest.php: Add @var comments for user variables
-- [x] Fix tests/Feature/Admin/AdminControllerTest.php: Change middleware namespace and add @var comments
-- [x] Fix tests/Feature/MateriControllerTest.php: Add @var comments for user variables
-- [x] Fix tests/Feature/PermainanControllerTest.php: Add @var comments for user variables
-- [x] Fix tests/Feature/Auth/LoginControllerTest.php: Change middleware namespace and add @var comments
-- [ ] Fix tests/Feature/KuisControllerTest.php: Change middleware namespace and add @var comments
-
-## Followup
-- [ ] Verify errors are resolved by checking intelephense diagnostics
-- [ ] Run tests to ensure functionality is not broken
+## Steps to Complete
+- [x] Create new database migration to hash existing unused OTP codes
+- [x] Update OtpCode model to hash codes in generateOtp() and use Hash::check() in verifyOtp()
+- [x] Update OtpCodeFactory to hash codes in definition()
+- [x] Update LoginControllerTest to accommodate hashed codes in assertions
+- [x] Run migration to hash existing data
+- [x] Run tests to ensure functionality works
+- [x] Manual verification if needed

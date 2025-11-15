@@ -94,15 +94,16 @@ class LoginControllerTest extends TestCase
     {
         /** @var \App\Models\User $user */
         $user = User::factory()->create(['email' => 'test@example.com', 'role' => 'guru']);
+        $plainCode = '123456';
         $otp = OtpCode::factory()->create([
             'email' => 'test@example.com',
-            'code' => '123456',
+            'code' => \Illuminate\Support\Facades\Hash::make($plainCode),
             'is_used' => false,
         ]);
 
         $response = $this->post(route('login.verify-otp'), [
             'email' => 'test@example.com',
-            'otp_code' => '123456',
+            'otp_code' => $plainCode,
         ]);
 
         $response->assertStatus(200);
@@ -115,15 +116,16 @@ class LoginControllerTest extends TestCase
     public function verify_otp_for_new_user()
     {
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
+        $plainCode = '123456';
         $otp = OtpCode::factory()->create([
             'email' => 'new@example.com',
-            'code' => '123456',
+            'code' => \Illuminate\Support\Facades\Hash::make($plainCode),
             'is_used' => false,
         ]);
 
         $response = $this->post(route('login.verify-otp'), [
             'email' => 'new@example.com',
-            'otp_code' => '123456',
+            'otp_code' => $plainCode,
         ]);
 
         $response->assertStatus(200);

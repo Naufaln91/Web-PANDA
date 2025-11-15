@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class OtpCode extends Model
@@ -32,27 +33,33 @@ class OtpCode extends Model
 
         // Generate OTP 6 digit
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $hashedCode = Hash::make($code);
 
         // Simpan OTP dengan expired 5 menit
-        return self::create([
+        $otp = self::create([
             'email' => $email,
-            'code' => $code,
+            'code' => $hashedCode,
             'expires_at' => Carbon::now()->addMinutes(5),
             'resend_count' => 0,
         ]);
+
+        // Return OTP dengan plain code untuk email
+        $otp->plain_code = $code;
+        return $otp;
     }
 
     public static function verifyOtp($email, $code)
     {
-        $otp = self::where('email', $email)
-            ->where('code', $code)
+        $otps = self::where('email', $email)
             ->where('is_used', false)
             ->where('expires_at', '>', Carbon::now())
-            ->first();
+            ->get();
 
-        if ($otp) {
-            $otp->update(['is_used' => true]);
-            return true;
+        foreach ($otps as $otp) {
+            if (Hash::check($code, $otp->code)) {
+                $otp->update(['is_used' => true]);
+                return true;
+            }
         }
 
         return false;
