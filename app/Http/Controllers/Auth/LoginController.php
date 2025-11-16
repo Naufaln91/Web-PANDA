@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -40,6 +44,12 @@ class LoginController extends Controller
                 ->withInput();
         }
 
+        // Check if rate limited
+        if ($this->isRateLimited($request)) {
+            $seconds = RateLimiter::availableIn($this->throttleKey($request));
+            return redirect()->back()->with('error', 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . ceil($seconds / 60) . ' menit.');
+        }
+
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
@@ -47,6 +57,9 @@ class LoginController extends Controller
             $user = Auth::user();
 
             if ($user->isAdmin()) {
+                // Clear rate limiter on successful login
+                RateLimiter::clear($this->throttleKey($request));
+
                 $user->fill(['last_login' => now()]);
                 $user->save();
                 return redirect()->route('admin.dashboard');
@@ -55,6 +68,17 @@ class LoginController extends Controller
             Auth::logout();
             return redirect()->back()->with('error', 'Username atau password salah.');
         }
+
+        // Increment failed attempts
+        RateLimiter::hit($this->throttleKey($request));
+
+        // Log failed attempt
+        Log::warning('Failed admin login attempt', [
+            'username' => $request->username,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'attempts' => RateLimiter::attempts($this->throttleKey($request))
+        ]);
 
         return redirect()->back()->with('error', 'Username atau password salah.');
     }
@@ -308,5 +332,21 @@ class LoginController extends Controller
         } else {
             return route('wali-murid.dashboard');
         }
+    }
+
+    /**
+     * Check if the login request is rate limited.
+     */
+    private function isRateLimited(Request $request): bool
+    {
+        return RateLimiter::tooManyAttempts($this->throttleKey($request), 5);
+    }
+
+    /**
+     * Get the rate limiting throttle key for the request.
+     */
+    private function throttleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower($request->string('username')) . '|' . $request->ip());
     }
 }
