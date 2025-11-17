@@ -86,6 +86,29 @@
                     </div>
                 </div>
 
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">Penunjukan Jawaban <span
+                            class="text-red-500">*</span></label>
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="radio" name="penunjukan_jawaban" value="setelah_jawab" checked class="mr-3">
+                            <div>
+                                <span class="font-semibold">Setelah Jawab Soal</span>
+                                <p class="text-sm text-gray-500">Jawaban ditunjukkan langsung setelah menjawab setiap soal
+                                    (hijau untuk benar, merah untuk salah)</p>
+                            </div>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="penunjukan_jawaban" value="setelah_semua" class="mr-3">
+                            <div>
+                                <span class="font-semibold">Setelah Menjawab Semua Soal</span>
+                                <p class="text-sm text-gray-500">Jawaban ditunjukkan setelah menyelesaikan semua soal (warna
+                                    biru)</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="flex justify-end">
                     <button onclick="createKuis()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition">
@@ -322,7 +345,8 @@
                         judul: judul,
                         deskripsi: deskripsi,
                         waktu_tipe: waktuTipe,
-                        durasi_waktu: durasiWaktu
+                        durasi_waktu: durasiWaktu,
+                        penunjukan_jawaban: $('input[name="penunjukan_jawaban"]:checked').val()
                     },
                     success: function(response) {
                         if (response.success) {

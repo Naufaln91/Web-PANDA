@@ -336,7 +336,14 @@
                 $('.quiz-answer').removeClass('selected');
                 event.currentTarget.classList.add('selected');
 
-                showFeedback(isBenar);
+                if (kuisData.penunjukan_jawaban === 'setelah_jawab') {
+                    showFeedback(isBenar);
+                } else {
+                    // For setelah_semua, move to next question immediately
+                    setTimeout(() => {
+                        nextSoal();
+                    }, 1000);
+                }
             }
 
             function submitIsianSingkat() {
@@ -363,7 +370,14 @@
                 $('#answered-count').text(userAnswers.length);
                 $('#jawaban-isian').prop('disabled', true);
 
-                showFeedback(isBenar, soal.jawaban_benar);
+                if (kuisData.penunjukan_jawaban === 'setelah_jawab') {
+                    showFeedback(isBenar, soal.jawaban_benar);
+                } else {
+                    // For setelah_semua, move to next question immediately
+                    setTimeout(() => {
+                        nextSoal();
+                    }, 1000);
+                }
             }
 
             function showFeedback(isBenar, jawabanBenar = null) {
@@ -500,6 +514,11 @@
                 // Confetti effect for high scores
                 if (score >= 80) {
                     launchConfetti();
+                }
+
+                // For "setelah_semua", automatically show detail jawaban
+                if (kuisData.penunjukan_jawaban === 'setelah_semua') {
+                    showDetailJawaban();
                 }
             }
 

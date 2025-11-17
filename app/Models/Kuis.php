@@ -17,6 +17,7 @@ class Kuis extends Model
         'deskripsi',
         'waktu_tipe',
         'durasi_waktu',
+        'penunjukan_jawaban',
         'status',
     ];
 

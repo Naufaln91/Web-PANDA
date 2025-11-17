@@ -50,6 +50,7 @@ class KuisController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu_tipe' => 'required|in:per_soal,keseluruhan,tanpa_waktu',
             'durasi_waktu' => 'nullable|integer|min:5|max:3600',
+            'penunjukan_jawaban' => 'required|in:setelah_jawab,setelah_semua',
         ]);
 
         if ($validator->fails()) {
@@ -65,6 +66,7 @@ class KuisController extends Controller
             'deskripsi' => $request->deskripsi,
             'waktu_tipe' => $request->waktu_tipe,
             'durasi_waktu' => $request->waktu_tipe != 'tanpa_waktu' ? $request->durasi_waktu : null,
+            'penunjukan_jawaban' => $request->penunjukan_jawaban,
             'status' => 'draft',
         ]);
 
@@ -110,6 +112,7 @@ class KuisController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu_tipe' => 'required|in:per_soal,keseluruhan,tanpa_waktu',
             'durasi_waktu' => 'nullable|integer|min:5|max:3600',
+            'penunjukan_jawaban' => 'required|in:setelah_jawab,setelah_semua',
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +127,7 @@ class KuisController extends Controller
             'deskripsi' => $request->deskripsi,
             'waktu_tipe' => $request->waktu_tipe,
             'durasi_waktu' => $request->waktu_tipe != 'tanpa_waktu' ? $request->durasi_waktu : null,
+            'penunjukan_jawaban' => $request->penunjukan_jawaban,
         ]);
 
         return response()->json([
