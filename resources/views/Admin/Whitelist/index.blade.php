@@ -3,81 +3,81 @@
 @section('title', 'Kelola Whitelist - PANDA TK')
 
 @section('content')
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-                    <i class="fas fa-shield-alt mr-3 text-blue-500"></i>
+                <h1 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-shield-alt mr-2 sm:mr-3 text-blue-500"></i>
                     Kelola Whitelist Email
                 </h1>
-                <p class="text-gray-600 mt-2">Kelola akses pengguna melalui email</p>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">Kelola akses pengguna melalui email</p>
             </div>
             <a href="{{ route('admin.dashboard') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center text-sm sm:text-base w-full sm:w-auto justify-center">
                 <i class="fas fa-arrow-left mr-2"></i> Kembali
             </a>
         </div>
 
         <!-- Form Tambah Whitelist -->
         <div
-            class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
-                <h2 class="text-xl font-bold text-white flex items-center">
+            class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl shadow-lg border border-blue-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 sm:px-6 py-3 sm:py-4">
+                <h2 class="text-base sm:text-lg lg:text-xl font-bold text-white flex items-center">
                     <i class="fas fa-plus-circle mr-2"></i>
                     Tambah Email Baru
                 </h2>
             </div>
 
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <form id="form-tambah-whitelist" class="space-y-4">
                     @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <!-- Input Email -->
                         <div class="space-y-2">
-                            <label for="email" class="block text-sm font-semibold text-gray-700">
+                            <label for="email" class="block text-xs sm:text-sm font-semibold text-gray-700">
                                 <i class="fas fa-envelope text-blue-500 mr-1"></i>
                                 Email
                             </label>
                             <div class="relative">
-                                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                    <i class="fas fa-envelope"></i>
+                                <span class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <i class="fas fa-envelope text-sm"></i>
                                 </span>
                                 <input type="email" id="email" name="email"
-                                    class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200"
+                                    class="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 text-sm sm:text-base"
                                     placeholder="Contoh: nama@email.com">
                             </div>
                         </div>
 
                         <!-- Select Role -->
                         <div class="space-y-2">
-                            <label for="role" class="block text-sm font-semibold text-gray-700">
+                            <label for="role" class="block text-xs sm:text-sm font-semibold text-gray-700">
                                 <i class="fas fa-user-tag text-blue-500 mr-1"></i>
                                 Role Pengguna
                             </label>
                             <div class="relative">
-                                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                    <i class="fas fa-briefcase"></i>
+                                <span class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <i class="fas fa-briefcase text-sm"></i>
                                 </span>
                                 <select id="role" name="role"
-                                    class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 appearance-none bg-white">
+                                    class="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 appearance-none bg-white text-sm sm:text-base">
                                     <option value="">Pilih Role</option>
                                     <option value="guru">👨‍🏫 Guru</option>
                                     <option value="wali_murid">👨‍👩‍👧 Wali Murid</option>
                                 </select>
                                 <span
-                                    class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                                    <i class="fas fa-chevron-down"></i>
+                                    class="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-sm"></i>
                                 </span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Error Message -->
-                    <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                    <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 rounded-lg">
                         <div class="flex items-center">
                             <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                            <p class="text-red-700 text-sm font-medium"></p>
+                            <p class="text-red-700 text-xs sm:text-sm font-medium"></p>
                         </div>
                     </div>
 
