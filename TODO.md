@@ -1,7 +1,8 @@
-- [x] Edit alfabet.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
-- [x] Edit angka.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
-- [x] Edit buah.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
-- [x] Edit hewan.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
-- [x] Edit transportasi.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
-- [x] Edit warna.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
-- [x] Test animasi di browser untuk memastikan berfungsi (Server Laravel berjalan di http://127.0.0.1:8000)
+# TODO: Tambahkan Tombol Kembali pada Halaman Index
+
+## Tasks:
+- [x] Edit resources/views/materi/index.blade.php: Tambahkan header dengan tombol kembali seperti di halaman admin
+- [x] Edit resources/views/permainan/index.blade.php: Tambahkan header dengan tombol kembali seperti di halaman admin
+- [x] Edit resources/views/kuis/index.blade.php: Modifikasi header untuk menambahkan tombol kembali di sebelah kiri, dan tombol "Buat Kuis Baru" di sebelah kanan
+- [x] Pastikan semua tombol responsif dengan classes Tailwind yang sesuai
+- [x] Test responsivitas pada layar HP (Browser tool disabled, manual testing recommended)

@@ -4,19 +4,27 @@
 
 @section('content')
     <div class="space-y-4 sm:space-y-6">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
-                <i class="fas fa-clipboard-question mr-2 text-blue-500"></i>
-                Daftar Kuis
-            </h1>
-
-            @if (auth()->user()->isAdmin() || auth()->user()->isGuru())
-                <a href="{{ route('kuis.create') }}"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base text-center">
-                    <i class="fas fa-plus-circle mr-2"></i> Buat Kuis Baru
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+            <div>
+                <h1 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-clipboard-question mr-2 sm:mr-3 text-blue-500"></i>
+                    Daftar Kuis
+                </h1>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">Kerjakan berbagai kuis pembelajaran</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isGuru() ? route('guru.dashboard') : route('wali-murid.dashboard')) }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center text-sm sm:text-base justify-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali
                 </a>
-            @endif
-
+                @if (auth()->user()->isAdmin() || auth()->user()->isGuru())
+                    <a href="{{ route('kuis.create') }}"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition text-sm sm:text-base text-center flex items-center justify-center">
+                        <i class="fas fa-plus-circle mr-2"></i> Buat Kuis Baru
+                    </a>
+                @endif
+            </div>
         </div>
 
         @if ($kuis->isEmpty())
@@ -43,8 +51,8 @@
                                         class="text-green-500 hover:text-green-700 p-1" title="Histori Pengerjaan">
                                         <i class="fas fa-history text-sm sm:text-base"></i>
                                     </a>
-                                    <a href="{{ route('kuis.edit', $item->id) }}" class="text-blue-500 hover:text-blue-700 p-1"
-                                        title="Edit Kuis">
+                                    <a href="{{ route('kuis.edit', $item->id) }}"
+                                        class="text-blue-500 hover:text-blue-700 p-1" title="Edit Kuis">
                                         <i class="fas fa-edit text-sm sm:text-base"></i>
                                     </a>
                                     <button onclick="deleteKuis({{ $item->id }})"
