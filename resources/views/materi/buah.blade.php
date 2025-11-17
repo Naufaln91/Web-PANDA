@@ -30,7 +30,6 @@
                     </div>
 
                     <p id="fruit-name" class="text-2xl text-gray-700 mb-4 font-bold">Apel</p>
-                    <p class="text-2xl text-gray-700 mb-4">Klik buah untuk mendengar cara pengucapannya!</p>
                     <button id="play-sound-btn" onclick="playCurrentSound()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
@@ -98,7 +97,7 @@
             fruits.forEach(fruit => {
                 const div = document.createElement('div');
                 div.className =
-                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition";
+                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition text-5xl";
                 div.innerHTML =
                     `<span class='text-5xl'>${fruit.emoji}</span>`;
                 div.onclick = () => selectFruit(fruit);
@@ -121,8 +120,8 @@
                     speechSynthesis.speak(utterance);
 
                     const el = document.getElementById('selected-fruit');
-                    el.classList.add('animate-bounce');
-                    setTimeout(() => el.classList.remove('animate-bounce'), 800);
+                    el.classList.add('animate-pulse');
+                    setTimeout(() => el.classList.remove('animate-pulse'), 800);
                 } else {
                     alert('Browser Anda tidak mendukung text-to-speech');
                 }

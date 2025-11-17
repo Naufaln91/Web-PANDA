@@ -80,7 +80,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex flex-col">
 
     <!-- Navbar -->
     <nav class="bg-blue-100 shadow-lg sticky top-0 z-50" x-data="{ open: false }">
@@ -280,12 +280,12 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <main class="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white mt-8 sm:mt-12 py-4 sm:py-6">
+    <footer class="bg-white py-4 sm:py-6 shadow-lg">
         <div class="max-w-7xl mx-auto px-3 sm:px-4 text-center text-gray-600">
             <p class="text-xs sm:text-sm">&copy; 2025 PANDA - Platform Pembelajaran Anak. All rights reserved.</p>
         </div>

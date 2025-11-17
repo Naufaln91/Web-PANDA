@@ -17,7 +17,7 @@
         {{-- Daftar warna --}}
         <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
             <div id="warna-container"
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 place-items-center">
+                class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-3 md:gap-4 justify-items-center">
             </div>
 
 
@@ -27,11 +27,10 @@
 
                     {{-- Kontainer untuk Warna --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-color" class="w-32 h-32 rounded-2xl shadow-lg border-2 border-gray-300"></div>
+                        <div id="selected-color" class="w-40 h-40 rounded-2xl shadow-lg border-2 border-gray-300" style="background-color: #ff4d4d;"></div>
                     </div>
 
                     <p id="color-name" class="text-2xl text-gray-700 mb-4 font-bold">Merah</p>
-                    <p class="text-2xl text-gray-700 mb-4">Klik warna untuk mendengar cara pengucapannya!</p>
                     <button id="play-sound-btn" onclick="playCurrentSound()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
@@ -92,10 +91,6 @@
                     hex: '#ffb6c1'
                 },
                 {
-                    name: 'Turquoise',
-                    hex: '#40E0D0'
-                },
-                {
                     name: 'Emas',
                     hex: '#FFD700'
                 },
@@ -108,10 +103,14 @@
             let current = colors[0];
             const container = document.getElementById('warna-container');
 
+            // Inisialisasi tampilan awal
+            document.getElementById('selected-color').style.backgroundColor = colors[0].hex;
+            document.getElementById('color-name').textContent = colors[0].name;
+
             colors.forEach(c => {
                 const div = document.createElement('div');
                 div.className =
-                    "w-24 h-24 md:w-28 md:h-28 rounded-2xl shadow-lg cursor-pointer hover:scale-110 transition border-2 border-white";
+                    "w-[70px] h-[70px] sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg cursor-pointer hover:scale-105 transition border-2 border-white";
                 div.style.backgroundColor = c.hex;
                 div.onclick = () => selectColor(c);
                 container.appendChild(div);

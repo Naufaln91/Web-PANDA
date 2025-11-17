@@ -17,7 +17,7 @@
 
         {{-- Daftar Hewan --}}
         <div class=" card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
-            <div id="hewan-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+            <div id="hewan-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4"></div>
 
 
             {{-- Kartu display utama --}}
@@ -26,11 +26,10 @@
 
                     {{-- Kontainer untuk Hewan --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-hewan" class="text-9xl"></div>
+                        <div id="selected-hewan" class="text-9xl">🐱</div>
                     </div>
 
-                    <p id="hewan-name" class="text-2xl text-gray-700 mb-4 font-bold"></p>
-                    <p class="text-2xl text-gray-700 mb-4">Klik hewan untuk mendengar cara pengucapannya!</p>
+                    <p id="hewan-name" class="text-2xl text-gray-700 mb-4 font-bold">Kucing</p>
                     <button id="play-sound-btn" onclick="playCurrentSound()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
@@ -124,15 +123,19 @@
                 }
             ];
 
-            let current = null;
+            let current = hewans[0];
             const container = document.getElementById('hewan-container');
             const selectedBox = document.getElementById('selected-hewan');
+
+            // Inisialisasi tampilan awal
+            selectedBox.textContent = hewans[0].icon;
+            document.getElementById('hewan-name').textContent = hewans[0].name;
 
             // Buat grid hewan
             hewans.forEach(h => {
                 const div = document.createElement('div');
                 div.className =
-                    "w-full h-20 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition flex items-center justify-center text-5xl";
+                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition flex items-center justify-center text-5xl";
                 div.textContent = h.icon;
                 div.onclick = () => selectHewan(h);
                 container.appendChild(div);

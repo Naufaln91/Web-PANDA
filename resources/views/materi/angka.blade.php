@@ -25,11 +25,10 @@
 
                     {{-- Kontainer untuk Angka --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-number" class="text-9xl font-bold text-blue-600"></div>
+                        <div id="selected-number" class="text-9xl font-bold text-blue-600">1</div>
                     </div>
 
-                    <p id="number-name" class="text-2xl text-gray-700 mb-4 font-bold"></p>
-                    <p class="text-2xl text-gray-700 mb-4">Klik angka untuk mendengar cara pengucapannya!</p>
+                    <p id="number-name" class="text-2xl text-gray-700 mb-4 font-bold">Satu</p>
                     <button id="play-sound-btn" onclick="playCurrentSound()"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition">
                         <i class="fas fa-volume-up mr-2"></i> Dengarkan
@@ -86,11 +85,14 @@
             let current = numbers[0];
             const container = document.getElementById('angka-container');
 
+            // Inisialisasi tampilan awal
+            document.getElementById('selected-number').textContent = numbers[0].value;
+            document.getElementById('number-name').textContent = numbers[0].name;
+
             numbers.forEach(n => {
                 const div = document.createElement('div');
                 div.className =
-                    "w-full h-20 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition border-2 border-white flex items-center justify-center text-3xl font-bold text-white";
-                div.style.backgroundColor = '#4da6ff'; // Warna biru untuk angka
+                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition flex items-center justify-center text-5xl font-bold text-blue-600";
                 div.textContent = n.value;
                 div.onclick = () => selectNumber(n);
                 container.appendChild(div);
@@ -114,8 +116,8 @@
                     speechSynthesis.speak(utterance);
 
                     const box = document.getElementById('selected-number');
-                    box.classList.add('animate-bounce');
-                    setTimeout(() => box.classList.remove('animate-bounce'), 800);
+                    box.classList.add('animate-pulse');
+                    setTimeout(() => box.classList.remove('animate-pulse'), 800);
                 }
             }
         </script>
