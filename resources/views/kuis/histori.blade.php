@@ -127,7 +127,7 @@
                                     <i class="fas fa-hashtag mr-1"></i> No
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                    <i class="fas fa-user mr-1"></i> Siswa
+                                    <i class="fas fa-user mr-1"></i> Siswa/Guru
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                     <i class="fas fa-list-ol mr-1"></i> Soal Dijawab
@@ -162,16 +162,13 @@
                                                 <div
                                                     class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
                                                     <span class="text-white font-bold text-sm">
-                                                        {{ substr($item->user->nama, 0, 1) }}
+                                                        {{ substr($item->user->nama_anak ?: $item->user->nama, 0, 1) }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-semibold text-gray-900">
-                                                    {{ $item->user->nama }}
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    {{ $item->user->nama_anak ? 'Anak: ' . $item->user->nama_anak : '' }}
+                                                    {{ $item->user->nama_anak ?: $item->user->nama }}
                                                 </div>
                                             </div>
                                         </div>
