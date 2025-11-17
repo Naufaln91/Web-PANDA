@@ -1,11 +1,7 @@
-# TODO: Implement Brute Force Protection for Admin Login
-
-## Completed Tasks
-- [x] Analyze current admin login system
-- [x] Create implementation plan
-- [x] Add rate limiting to admin login (max 5 attempts per username/IP)
-- [x] Implement failed attempt tracking with logging
-- [x] Update LoginController with throttling logic
-
-## Pending Tasks
-- [x] Test the rate limiting functionality (syntax check passed, rate limiter working)
+- [x] Edit alfabet.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
+- [x] Edit angka.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
+- [x] Edit buah.blade.php: Ubah animasi dari animate-pulse ke scale-50 dengan transisi
+- [x] Edit hewan.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
+- [x] Edit transportasi.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
+- [x] Edit warna.blade.php: Ubah animasi dari animate-bounce ke scale-50 dengan transisi
+- [x] Test animasi di browser untuk memastikan berfungsi (Server Laravel berjalan di http://127.0.0.1:8000)

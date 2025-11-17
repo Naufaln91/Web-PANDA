@@ -26,7 +26,7 @@
 
                     {{-- Kontainer untuk Hewan --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-hewan" class="text-9xl">🐱</div>
+                        <div id="selected-hewan" class="text-9xl transition-transform duration-300">🐱</div>
                     </div>
 
                     <p id="hewan-name" class="text-2xl text-gray-700 mb-4 font-bold">Kucing</p>
@@ -157,8 +157,8 @@
                     speechSynthesis.cancel();
                     speechSynthesis.speak(utterance);
 
-                    selectedBox.classList.add('animate-bounce');
-                    setTimeout(() => selectedBox.classList.remove('animate-bounce'), 800);
+                    selectedBox.classList.add('scale-50');
+                    setTimeout(() => selectedBox.classList.remove('scale-50'), 300);
                 }
             }
         </script>

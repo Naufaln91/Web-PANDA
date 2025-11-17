@@ -25,7 +25,8 @@
 
                     {{-- Kontainer untuk Angka --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-number" class="text-9xl font-bold text-blue-600">1</div>
+                        <div id="selected-number"
+                            class="text-9xl font-bold text-blue-600 transition-transform duration-300">1</div>
                     </div>
 
                     <p id="number-name" class="text-2xl text-gray-700 mb-4 font-bold">Satu</p>
@@ -116,8 +117,8 @@
                     speechSynthesis.speak(utterance);
 
                     const box = document.getElementById('selected-number');
-                    box.classList.add('animate-pulse');
-                    setTimeout(() => box.classList.remove('animate-pulse'), 800);
+                    box.classList.add('scale-50');
+                    setTimeout(() => box.classList.remove('scale-50'), 300);
                 }
             }
         </script>

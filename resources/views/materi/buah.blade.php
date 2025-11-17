@@ -26,7 +26,7 @@
 
                     {{-- Kontainer untuk Buah --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-fruit" class="text-9xl">🍎</div>
+                        <div id="selected-fruit" class="text-9xl transition-transform duration-300">🍎</div>
                     </div>
 
                     <p id="fruit-name" class="text-2xl text-gray-700 mb-4 font-bold">Apel</p>
@@ -120,8 +120,8 @@
                     speechSynthesis.speak(utterance);
 
                     const el = document.getElementById('selected-fruit');
-                    el.classList.add('animate-pulse');
-                    setTimeout(() => el.classList.remove('animate-pulse'), 800);
+                    el.classList.add('scale-50');
+                    setTimeout(() => el.classList.remove('scale-50'), 300);
                 } else {
                     alert('Browser Anda tidak mendukung text-to-speech');
                 }

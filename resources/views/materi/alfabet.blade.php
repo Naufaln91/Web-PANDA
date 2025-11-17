@@ -26,7 +26,8 @@
 
                     {{-- Kontainer untuk Huruf --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-letter" class="text-9xl font-bold text-blue-600">A</div>
+                        <div id="selected-letter"
+                            class="text-9xl font-bold text-blue-600 transition-transform duration-300">A</div>
                     </div>
 
                     <button id="play-sound-btn" onclick="playCurrentSound()"
@@ -57,7 +58,8 @@
                 const letterDiv = document.createElement('div');
                 letterDiv.className =
                     `${colorClass} hover:scale-110 transition transform cursor-pointer rounded-2xl shadow-lg p-4 sm:p-5 md:p-6 text-center min-h-[60px] sm:min-h-[70px] md:min-h-[80px] flex items-center justify-center`;
-                letterDiv.innerHTML = `<span class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">${letter}</span>`;
+                letterDiv.innerHTML =
+                    `<span class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">${letter}</span>`;
 
                 // --- DIMODIFIKASI: Arahkan ke selectLetter ---
                 letterDiv.onclick = () => selectLetter(letter);
@@ -92,11 +94,11 @@
 
                     // Animasi
                     const letterEl = document.getElementById('selected-letter');
-                    letterEl.classList.add('animate-pulse');
+                    letterEl.classList.add('scale-50');
 
                     setTimeout(() => {
-                        letterEl.classList.remove('animate-pulse');
-                    }, 1000);
+                        letterEl.classList.remove('scale-50');
+                    }, 300);
                 } else {
                     alert('Browser Anda tidak mendukung text-to-speech');
                 }

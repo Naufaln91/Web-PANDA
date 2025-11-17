@@ -27,7 +27,9 @@
 
                     {{-- Kontainer untuk Warna --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-color" class="w-40 h-40 rounded-2xl shadow-lg border-2 border-gray-300" style="background-color: #ff4d4d;"></div>
+                        <div id="selected-color"
+                            class="w-40 h-40 rounded-2xl shadow-lg border-2 border-gray-300 transition-transform duration-300"
+                            style="background-color: #ff4d4d;"></div>
                     </div>
 
                     <p id="color-name" class="text-2xl text-gray-700 mb-4 font-bold">Merah</p>
@@ -134,8 +136,8 @@
                     speechSynthesis.speak(utterance);
 
                     const box = document.getElementById('selected-color');
-                    box.classList.add('animate-bounce');
-                    setTimeout(() => box.classList.remove('animate-bounce'), 800);
+                    box.classList.add('scale-50');
+                    setTimeout(() => box.classList.remove('scale-50'), 300);
                 }
             }
         </script>

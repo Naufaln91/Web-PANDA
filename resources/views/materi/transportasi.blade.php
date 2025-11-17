@@ -24,7 +24,7 @@
 
                     {{-- Kontainer untuk Transportasi --}}
                     <div class="flex justify-center items-center gap-8 mb-6">
-                        <div id="selected-transport" class="text-9xl">🚗</div>
+                        <div id="selected-transport" class="text-9xl transition-transform duration-300">🚗</div>
                     </div>
 
                     <p id="transport-name" class="text-2xl text-gray-700 mb-4 font-bold">Mobil</p>
@@ -116,8 +116,8 @@
                     speechSynthesis.speak(utterance);
 
                     const el = document.getElementById('selected-transport');
-                    el.classList.add('animate-bounce');
-                    setTimeout(() => el.classList.remove('animate-bounce'), 800);
+                    el.classList.add('scale-50');
+                    setTimeout(() => el.classList.remove('scale-50'), 300);
                 }
             }
         </script>
