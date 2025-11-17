@@ -31,6 +31,11 @@ class Kuis extends Model
         return $this->hasMany(Soal::class)->orderBy('urutan');
     }
 
+    public function historiKuis()
+    {
+        return $this->hasMany(HistoriKuis::class);
+    }
+
     public function isDraft()
     {
         return $this->status === 'draft';

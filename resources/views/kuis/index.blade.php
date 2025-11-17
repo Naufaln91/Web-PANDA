@@ -39,11 +39,16 @@
 
                             @if (auth()->user()->isAdmin() || $item->created_by == auth()->id())
                                 <div class="flex space-x-3">
-                                    <a href="{{ route('kuis.edit', $item->id) }}" class="text-blue-500 hover:text-blue-700">
+                                    <a href="{{ route('kuis.histori', $item->id) }}"
+                                        class="text-green-500 hover:text-green-700" title="Histori Pengerjaan">
+                                        <i class="fas fa-history"></i>
+                                    </a>
+                                    <a href="{{ route('kuis.edit', $item->id) }}" class="text-blue-500 hover:text-blue-700"
+                                        title="Edit Kuis">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button onclick="deleteKuis({{ $item->id }})"
-                                        class="text-red-500 hover:text-red-700">
+                                        class="text-red-500 hover:text-red-700" title="Hapus Kuis">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>

@@ -520,6 +520,33 @@
                 if (kuisData.penunjukan_jawaban === 'setelah_semua') {
                     showDetailJawaban();
                 }
+
+                // Simpan hasil ke database
+                saveQuizResult(score, correctAnswers, userAnswers);
+            }
+
+            function saveQuizResult(score, correctCount, answers) {
+                $.ajax({
+                    url: `/kuis/${kuisData.id}/hasil`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        jumlah_soal_dijawab: answers.length,
+                        jumlah_benar: correctCount,
+                        nilai: score,
+                        detail_jawaban: answers
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            console.log('Hasil kuis berhasil disimpan');
+                        } else {
+                            console.error('Gagal menyimpan hasil kuis:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error saving quiz result:', error);
+                    }
+                });
             }
 
             function showDetailJawaban() {

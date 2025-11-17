@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->hasMany(Kuis::class, 'created_by');
     }
 
+    public function historiKuis()
+    {
+        return $this->hasMany(HistoriKuis::class);
+    }
+
     /**
      * Check if the user is an admin.
      * @return bool

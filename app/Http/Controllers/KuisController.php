@@ -7,6 +7,7 @@ use App\Models\Kuis;
 use App\Models\Soal;
 use App\Models\PilihanJawaban;
 use App\Models\User;
+use App\Models\HistoriKuis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -523,6 +524,130 @@ class KuisController extends Controller
         return response()->json([
             'success' => true,
             'soal' => $soal,
+        ]);
+    }
+
+    // Simpan Hasil Kuis
+    public function storeHasil(Request $request, $kuisId)
+    {
+        $kuis = Kuis::findOrFail($kuisId);
+
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'jumlah_soal_dijawab' => 'required|integer|min:0',
+            'jumlah_benar' => 'required|integer|min:0',
+            'nilai' => 'required|integer|min:0|max:100',
+            'detail_jawaban' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak valid.',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        // Simpan histori
+        $histori = HistoriKuis::create([
+            'user_id' => Auth::id(),
+            'kuis_id' => $kuisId,
+            'jumlah_soal_dijawab' => $request->jumlah_soal_dijawab,
+            'jumlah_benar' => $request->jumlah_benar,
+            'nilai' => $request->nilai,
+            'detail_jawaban' => $request->detail_jawaban,
+            'waktu_selesai' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hasil kuis berhasil disimpan.',
+            'histori_id' => $histori->id,
+        ]);
+    }
+
+    // Histori Pengerjaan Kuis
+    public function histori($kuisId)
+    {
+        $kuis = Kuis::findOrFail($kuisId);
+
+        // Cek akses - hanya admin dan guru
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $kuis->created_by != Auth::id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $histori = HistoriKuis::with('user')
+            ->where('kuis_id', $kuisId)
+            ->orderBy('waktu_selesai', 'desc')
+            ->paginate(10);
+
+        return view('kuis.histori', compact('kuis', 'histori'));
+    }
+
+    // API: Get Detail Histori
+    public function getDetailHistori($historiId)
+    {
+        $histori = HistoriKuis::with('user', 'kuis')->findOrFail($historiId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $histori->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'histori' => $histori,
+        ]);
+    }
+
+    // Hapus Histori Kuis
+    public function destroyHistori($historiId)
+    {
+        $histori = HistoriKuis::with('kuis')->findOrFail($historiId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $histori->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        $histori->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Histori kuis berhasil dihapus.',
         ]);
     }
 }

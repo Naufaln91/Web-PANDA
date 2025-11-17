@@ -92,4 +92,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/kuis', [KuisController::class, 'index'])->name('kuis.index');
     Route::get('/kuis/{id}', [KuisController::class, 'show'])->name('kuis.show');
     Route::get('/kuis/{id}/soal', [KuisController::class, 'getSoal'])->name('kuis.get-soal');
+    Route::post('/kuis/{id}/hasil', [KuisController::class, 'storeHasil'])->name('kuis.store-hasil');
+
+    // Histori Kuis (Admin & Guru only)
+    Route::middleware('guru_or_admin')->group(function () {
+        Route::get('/kuis/{id}/histori', [KuisController::class, 'histori'])->name('kuis.histori');
+        Route::get('/api/histori-kuis/{historiId}', [KuisController::class, 'getDetailHistori'])->name('api.histori-kuis.detail');
+        Route::delete('/api/histori-kuis/{historiId}', [KuisController::class, 'destroyHistori'])->name('api.histori-kuis.destroy');
+    });
 });
