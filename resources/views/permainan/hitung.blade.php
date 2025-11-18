@@ -3,20 +3,19 @@
 @section('title', 'Hitung Jumlah Gambar - PANDA TK')
 
 @section('content')
-    <div class="space-y-6 text-center">
-        {{-- Judul dan tombol kembali --}}
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-800">➕ Hitung Jumlah Gambar</h1>
+    <div class="space-y-6">
+        <div class="flex justify-between items-center gap-2">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">➕ Hitung Jumlah Gambar</h1>
             <a href="{{ route('permainan.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition flex items-center justify-center">
+                <i class="fas fa-arrow-left"></i><span class="ml-2">Kembali</span>
             </a>
         </div>
 
         {{-- Area permainan --}}
         <div
             class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
-            <div id="emoji" class="text-8xl md:text-9xl mb-10 leading-snug"></div>
+            <div id="emoji" class="text-8xl md:text-9xl mb-10 leading-snug text-center"></div>
 
             <div id="choices" class="flex flex-wrap justify-center gap-6 mb-8"></div>
 

@@ -4,14 +4,14 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center gap-2">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
                     <i class="fas fa-history mr-2 text-green-500"></i>
                     Histori Pengerjaan Kuis
                 </h1>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mt-4 inline-block">
-                    <p class="text-lg font-semibold text-blue-700">
+                    <p class="text-sm sm:text-base md:text-lg font-semibold text-blue-700">
                         <i class="fas fa-book mr-2 text-blue-600"></i>
                         {{ $kuis->judul }}
                     </p>
@@ -19,8 +19,8 @@
             </div>
 
             <a href="{{ route('kuis.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-6 rounded-lg transition flex items-center justify-center">
+                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
             </a>
         </div>
 

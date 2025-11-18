@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-800">
+        <div class="flex justify-between items-center gap-2">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
                 🚗 Belajar Transportasi
             </h1>
             <a href="{{ route('materi.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition flex items-center justify-center">
+                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
             </a>
         </div>
 

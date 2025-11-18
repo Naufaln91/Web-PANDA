@@ -6,8 +6,8 @@
     <div class="max-w-5xl mx-auto">
         <div class="flex justify-end mb-6">
             <a href="{{ route('kuis.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition inline-block">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition inline-flex items-center justify-center">
+                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
             </a>
         </div>
 
@@ -141,7 +141,7 @@
                     </button>
                     <a href="{{ route('kuis.index') }}"
                         class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 rounded-lg text-xl transition">
-                        <i class="fas fa-home mr-2"></i> Kembali ke Daftar Kuis
+                        <i class="fas fa-home mr-2"></i> <span class="hidden lg:inline">Kembali ke Daftar Kuis</span>
                     </a>
                 </div>
             </div>

@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-800">
+        <div class="flex justify-between items-center gap-2">
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
                 🧩 Permainan Puzzle
             </h1>
             <a href="{{ route('permainan.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200">
-                <i class="fas fa-arrow-left mr-2" aria-hidden="true"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i><span class="ml-2">Kembali</span>
             </a>
         </div>
 

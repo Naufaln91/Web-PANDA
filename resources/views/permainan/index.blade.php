@@ -5,19 +5,17 @@
 @section('content')
     <div class="space-y-4 sm:space-y-6">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-            <div>
-                <h1 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 flex items-center">
-                    <i class="fas fa-gamepad mr-2 sm:mr-3 text-pink-500"></i>
-                    Permainan
-                </h1>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">Mainkan berbagai permainan edukatif</p>
-            </div>
+        <div class="flex justify-between items-center gap-2">
+            <h1 class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-gamepad mr-2 sm:mr-3 text-pink-500"></i>
+                Permainan
+            </h1>
             <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isGuru() ? route('guru.dashboard') : route('wali-murid.dashboard')) }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center text-sm sm:text-base w-full sm:w-auto justify-center">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 sm:py-2.5 px-3 sm:px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center text-sm sm:text-base">
+                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
             </a>
         </div>
+        <p class="text-xs sm:text-sm text-gray-600">Mainkan berbagai permainan edukatif</p>
 
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             @foreach ($permainans as $permainan)

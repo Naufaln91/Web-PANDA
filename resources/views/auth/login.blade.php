@@ -152,8 +152,8 @@
                             </button>
 
                             <button onclick="backToEmail()"
-                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300">
-                                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300 flex items-center justify-center">
+                                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
                             </button>
                         </div>
 
