@@ -18,20 +18,20 @@
                 <h2 class="text-xl font-bold text-gray-700 mb-4">Susun angka dari kecil ke besar!</h2>
 
                 <div class="text-lg mb-3 text-gray-600 font-semibold">
-                    Level: <span id="level-text" class="text-blue-600 font-bold">1 (5 Angka)</span>
+                    Level: <span id="level-text" class="text-blue-600 font-bold">1 (4 Angka)</span>
                 </div>
 
                 <div id="angka-container"
-                    class="flex flex-wrap justify-center gap-4 p-4 rounded-xl min-h-[150px] transition-all duration-300">
+                    class="flex flex-wrap justify-center gap-4 p-4 rounded-xl min-h-[150px] transition-all duration-300 bg-white/50 border-2 border-dashed border-blue-300">
                 </div>
 
-                <div class="mt-4 space-x-2">
+                <div class="mt-4 flex flex-col sm:flex-row sm:gap-3 gap-3 items-center justify-center">
                     <button onclick="cekUrutan()"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition transform hover:scale-105">
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition transform hover:scale-105 w-48">
                         ✅ Cek Urutan
                     </button>
                     <button onclick="resetLevel()"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition transform hover:scale-105">
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg transition transform hover:scale-105 w-48">
                         🔁 Ulang Level
                     </button>
                 </div>
@@ -42,7 +42,6 @@
                     <i class="fas fa-redo mr-2"></i> Main Lagi dari Awal
                 </button>
             </div>
-            <!-- Canvas untuk confetti -->
             <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
         </div>
 
@@ -62,6 +61,15 @@
                     cursor: grab;
                     transition: transform 0.2s, box-shadow 0.2s;
                     user-select: none;
+                    touch-action: none;
+                }
+
+                @media (max-width: 640px) {
+                    .draggable {
+                        width: 70px;
+                        height: 70px;
+                        font-size: 1.8rem;
+                    }
                 }
 
                 .draggable:active {
@@ -144,7 +152,6 @@
                     });
                 }
 
-                // 🎊 Efek confetti sederhana
                 function createConfetti() {
                     const canvas = document.getElementById('confetti-canvas');
                     const ctx = canvas.getContext('2d');
@@ -214,12 +221,24 @@
                         div.draggable = true;
                         div.dataset.number = num;
 
+                        // Desktop drag events
                         div.addEventListener('dragstart', handleDragStart);
                         div.addEventListener('dragover', handleDragOver);
                         div.addEventListener('drop', handleDrop);
                         div.addEventListener('dragenter', handleDragEnter);
                         div.addEventListener('dragleave', handleDragLeave);
                         div.addEventListener('dragend', handleDragEnd);
+
+                        // Mobile touch events
+                        div.addEventListener('touchstart', handleTouchStart, {
+                            passive: false
+                        });
+                        div.addEventListener('touchmove', handleTouchMove, {
+                            passive: false
+                        });
+                        div.addEventListener('touchend', handleTouchEnd, {
+                            passive: false
+                        });
 
                         angkaContainer.appendChild(div);
                     });
@@ -228,6 +247,7 @@
                     document.getElementById('pesan').textContent = '';
                 }
 
+                // Desktop drag handlers
                 function handleDragStart(e) {
                     draggedElement = this;
                     this.classList.add('dragging');
@@ -260,7 +280,6 @@
                     e.preventDefault();
 
                     if (draggedElement !== this) {
-                        // Swap elements
                         const allItems = [...angkaContainer.children];
                         const draggedIndex = allItems.indexOf(draggedElement);
                         const targetIndex = allItems.indexOf(this);
@@ -281,6 +300,56 @@
                     document.querySelectorAll('.draggable').forEach(el => {
                         el.classList.remove('drag-over');
                     });
+                }
+
+                // Mobile touch handlers
+                function handleTouchStart(e) {
+                    e.preventDefault();
+                    draggedElement = this;
+                    this.classList.add('dragging');
+                }
+
+                function handleTouchMove(e) {
+                    e.preventDefault();
+                    if (!draggedElement) return;
+
+                    const touch = e.touches[0];
+                    const currentElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                    document.querySelectorAll('.draggable').forEach(el => {
+                        el.classList.remove('drag-over');
+                    });
+
+                    if (currentElement && currentElement.classList.contains('draggable') && currentElement !==
+                        draggedElement) {
+                        currentElement.classList.add('drag-over');
+                    }
+                }
+
+                function handleTouchEnd(e) {
+                    e.preventDefault();
+                    if (!draggedElement) return;
+
+                    const touch = e.changedTouches[0];
+                    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                    if (dropTarget && dropTarget.classList.contains('draggable') && dropTarget !== draggedElement) {
+                        const allItems = [...angkaContainer.children];
+                        const draggedIndex = allItems.indexOf(draggedElement);
+                        const targetIndex = allItems.indexOf(dropTarget);
+
+                        if (draggedIndex < targetIndex) {
+                            dropTarget.parentNode.insertBefore(draggedElement, dropTarget.nextSibling);
+                        } else {
+                            dropTarget.parentNode.insertBefore(draggedElement, dropTarget);
+                        }
+                    }
+
+                    draggedElement.classList.remove('dragging');
+                    document.querySelectorAll('.draggable').forEach(el => {
+                        el.classList.remove('drag-over');
+                    });
+                    draggedElement = null;
                 }
 
                 function cekUrutan() {
@@ -311,7 +380,6 @@
                         pesan.className = "text-xl font-bold text-purple-600 mt-4 min-h-[2rem]";
                         createConfetti();
                         playSuccessSound();
-                        // Tampilkan tombol restart setelah confetti muncul
                         setTimeout(() => {
                             document.getElementById('restartBtn').classList.remove('hidden');
                         }, 1000);
@@ -322,21 +390,15 @@
                     buatAngka();
                 }
 
-                // TAMBAHAN: Fungsi restart game
                 function restartGame() {
                     level = 1;
-                    matched = 0;
-                    flipped = [];
-                    isChecking = false;
                     document.getElementById('pesan').textContent = '';
                     document.getElementById('restartBtn').classList.add('hidden');
                     buatAngka();
                 }
 
-                // Event listener untuk tombol restart
                 document.getElementById('restartBtn').addEventListener('click', restartGame);
 
-                // Initialize game
                 buatAngka();
             </script>
         @endpush
