@@ -5,12 +5,13 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class PermainanControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_permainan_index()
     {
         /** @var \App\Models\User $user */
@@ -23,7 +24,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewHas('permainans');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_puzzle_page()
     {
         /** @var \App\Models\User $user */
@@ -35,7 +36,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.puzzle');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_hitung_page()
     {
         /** @var \App\Models\User $user */
@@ -47,7 +48,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.hitung');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_cocokkan_pasangan_page()
     {
         /** @var \App\Models\User $user */
@@ -59,7 +60,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.cocokkan_pasangan');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_urutkan_angka_page()
     {
         /** @var \App\Models\User $user */
@@ -71,7 +72,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.urutkan_angka');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_menyusun_kata_page()
     {
         /** @var \App\Models\User $user */
@@ -83,7 +84,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.menyusun_kata');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_labirin_page()
     {
         /** @var \App\Models\User $user */
@@ -95,7 +96,7 @@ class PermainanControllerTest extends TestCase
         $response->assertViewIs('permainan.labirin');
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_permainan_pages()
     {
         $response = $this->get(route('permainan.index'));

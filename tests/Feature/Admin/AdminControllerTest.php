@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\User;
 use App\Models\Whitelist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AdminControllerTest extends TestCase
@@ -17,7 +18,7 @@ class AdminControllerTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_access_whitelist_index()
     {
         /** @var \App\Models\User $admin */
@@ -30,7 +31,7 @@ class AdminControllerTest extends TestCase
         $response->assertViewHas('whitelists');
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_store_whitelist()
     {
         /** @var \App\Models\User $admin */
@@ -48,7 +49,7 @@ class AdminControllerTest extends TestCase
         $this->assertDatabaseHas('whitelists', $data);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_destroy_whitelist()
     {
         /** @var \App\Models\User $admin */
@@ -62,7 +63,7 @@ class AdminControllerTest extends TestCase
         $this->assertDatabaseMissing('whitelists', ['id' => $whitelist->id]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_access_akun_index()
     {
         /** @var \App\Models\User $admin */
@@ -75,7 +76,7 @@ class AdminControllerTest extends TestCase
         $response->assertViewHas(['guru', 'waliMurid']);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_destroy_user()
     {
         /** @var \App\Models\User $admin */
@@ -90,7 +91,7 @@ class AdminControllerTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_cannot_destroy_admin_user()
     {
         /** @var \App\Models\User $admin */
@@ -105,7 +106,7 @@ class AdminControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $anotherAdmin->id]);
     }
 
-    /** @test */
+    #[Test]
     public function non_admin_cannot_access_admin_routes()
     {
         /** @var \App\Models\User $user */

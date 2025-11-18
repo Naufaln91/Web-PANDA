@@ -4,13 +4,14 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function admin_can_access_admin_dashboard()
     {
         /** @var \App\Models\User $admin */
@@ -23,7 +24,7 @@ class DashboardControllerTest extends TestCase
         $response->assertViewHas(['totalUsers', 'totalGuru', 'totalWaliMurid', 'totalWhitelist', 'totalKuis']);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_access_guru_dashboard()
     {
         /** @var \App\Models\User $guru */
@@ -36,7 +37,7 @@ class DashboardControllerTest extends TestCase
         $response->assertViewHas(['myKuis', 'publishedKuis']);
     }
 
-    /** @test */
+    #[Test]
     public function wali_murid_can_access_wali_murid_dashboard()
     {
         /** @var \App\Models\User $waliMurid */
@@ -49,7 +50,7 @@ class DashboardControllerTest extends TestCase
         $response->assertViewHas(['publishedKuis', 'user']);
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_dashboards()
     {
         $response = $this->get(route('admin.dashboard'));
@@ -62,7 +63,7 @@ class DashboardControllerTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    /** @test */
+    #[Test]
     public function wrong_role_cannot_access_other_dashboards()
     {
         /** @var \App\Models\User $guru */

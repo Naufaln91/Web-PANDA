@@ -7,6 +7,7 @@ use App\Models\Whitelist;
 use App\Models\OtpCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LoginControllerTest extends TestCase
@@ -19,7 +20,7 @@ class LoginControllerTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
-    /** @test */
+    #[Test]
     public function show_login_form_redirects_if_authenticated()
     {
         /** @var \App\Models\User $user */
@@ -30,7 +31,7 @@ class LoginControllerTest extends TestCase
         $response->assertRedirect();
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_login_with_credentials()
     {
         /** @var \App\Models\User $admin */
@@ -49,7 +50,7 @@ class LoginControllerTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
-    /** @test */
+    #[Test]
     public function invalid_credentials_fail_login()
     {
         $response = $this->post(route('login.admin'), [
@@ -62,7 +63,7 @@ class LoginControllerTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test */
+    #[Test]
     public function request_otp_for_whitelisted_email()
     {
         Mail::fake();
@@ -78,7 +79,7 @@ class LoginControllerTest extends TestCase
         Mail::assertSent(\App\Mail\OtpEmail::class);
     }
 
-    /** @test */
+    #[Test]
     public function request_otp_fails_for_non_whitelisted_email()
     {
         $response = $this->post(route('login.request-otp'), [
@@ -89,7 +90,7 @@ class LoginControllerTest extends TestCase
         $response->assertJson(['success' => false]);
     }
 
-    /** @test */
+    #[Test]
     public function verify_otp_and_login_existing_user()
     {
         /** @var \App\Models\User $user */
@@ -112,7 +113,7 @@ class LoginControllerTest extends TestCase
         $this->assertDatabaseHas('otp_codes', ['id' => $otp->id, 'is_used' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function verify_otp_for_new_user()
     {
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
@@ -133,7 +134,7 @@ class LoginControllerTest extends TestCase
         $this->assertDatabaseHas('otp_codes', ['id' => $otp->id, 'is_used' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function complete_profile_for_new_guru()
     {
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
@@ -152,7 +153,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function complete_profile_for_new_wali_murid()
     {
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'wali_murid']);
@@ -175,7 +176,7 @@ class LoginControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function logout_clears_session()
     {
         /** @var \App\Models\User $user */

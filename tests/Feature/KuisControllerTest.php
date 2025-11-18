@@ -9,6 +9,7 @@ use App\Models\PilihanJawaban;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class KuisControllerTest extends TestCase
@@ -21,7 +22,7 @@ class KuisControllerTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_kuis_index()
     {
         /** @var \App\Models\User $user */
@@ -34,7 +35,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewHas('kuis');
     }
 
-    /** @test */
+    #[Test]
     public function guru_or_admin_can_access_create_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -46,7 +47,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewIs('kuis.create');
     }
 
-    /** @test */
+    #[Test]
     public function wali_murid_cannot_access_create_kuis()
     {
         /** @var \App\Models\User $waliMurid */
@@ -57,7 +58,7 @@ class KuisControllerTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_store_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -82,7 +83,7 @@ class KuisControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_edit_own_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -96,7 +97,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewHas('kuis');
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_edit_other_kuis()
     {
         /** @var \App\Models\User $guru1 */
@@ -110,7 +111,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_edit_any_kuis()
     {
         /** @var \App\Models\User $admin */
@@ -122,7 +123,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_update_own_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -147,7 +148,7 @@ class KuisControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_publish_kuis_with_soal()
     {
         /** @var \App\Models\User $guru */
@@ -162,7 +163,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseHas('kuis', ['id' => $kuis->id, 'status' => 'published']);
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_publish_kuis_without_soal()
     {
         /** @var \App\Models\User $guru */
@@ -174,7 +175,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => false]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_store_soal()
     {
         Storage::fake('public');
@@ -204,7 +205,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseCount('pilihan_jawaban', 3);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_show_published_kuis()
     {
         /** @var \App\Models\User $user */
@@ -217,7 +218,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewIs('kuis.show');
     }
 
-    /** @test */
+    #[Test]
     public function user_cannot_show_draft_kuis()
     {
         /** @var \App\Models\User $user */
@@ -229,7 +230,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function creator_can_show_draft_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -241,7 +242,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function user_can_get_soal_for_kuis()
     {
         /** @var \App\Models\User $user */
@@ -253,7 +254,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_destroy_own_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -267,7 +268,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseMissing('kuis', ['id' => $kuis->id]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_destroy_other_kuis()
     {
         /** @var \App\Models\User $guru1 */
@@ -281,7 +282,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => false]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_access_histori_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -295,7 +296,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewHas(['kuis', 'histori']);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_access_histori_kuis()
     {
         /** @var \App\Models\User $admin */
@@ -308,7 +309,7 @@ class KuisControllerTest extends TestCase
         $response->assertViewIs('kuis.histori');
     }
 
-    /** @test */
+    #[Test]
     public function wali_murid_cannot_access_histori_kuis()
     {
         /** @var \App\Models\User $waliMurid */
@@ -320,7 +321,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(302);
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_access_histori_other_kuis()
     {
         /** @var \App\Models\User $guru1 */
@@ -334,7 +335,7 @@ class KuisControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_get_detail_histori()
     {
         /** @var \App\Models\User $admin */
@@ -352,7 +353,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_get_detail_histori_own_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -370,7 +371,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_get_detail_histori_other_kuis()
     {
         /** @var \App\Models\User $guru1 */
@@ -390,7 +391,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => false]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_destroy_histori()
     {
         /** @var \App\Models\User $admin */
@@ -410,7 +411,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseMissing('histori_kuis', ['id' => $histori->id]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_destroy_histori_own_kuis()
     {
         /** @var \App\Models\User $guru */
@@ -430,7 +431,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseMissing('histori_kuis', ['id' => $histori->id]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_reorder_soal()
     {
         /** @var \App\Models\User $guru */
@@ -449,7 +450,7 @@ class KuisControllerTest extends TestCase
         $this->assertDatabaseHas('soal', ['id' => $soal2->id, 'urutan' => 1]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_can_get_single_soal()
     {
         /** @var \App\Models\User $guru */
@@ -462,7 +463,7 @@ class KuisControllerTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function guru_cannot_get_single_soal_other_kuis()
     {
         /** @var \App\Models\User $guru1 */

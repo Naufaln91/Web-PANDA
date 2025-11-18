@@ -5,12 +5,13 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class MateriControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_materi_index()
     {
         /** @var \App\Models\User $user */
@@ -23,7 +24,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewHas('materis');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_alfabet_page()
     {
         /** @var \App\Models\User $user */
@@ -35,7 +36,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.alfabet');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_warna_page()
     {
         /** @var \App\Models\User $user */
@@ -47,7 +48,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.warna');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_hewan_page()
     {
         /** @var \App\Models\User $user */
@@ -59,7 +60,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.hewan');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_angka_page()
     {
         /** @var \App\Models\User $user */
@@ -71,7 +72,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.angka');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_buah_page()
     {
         /** @var \App\Models\User $user */
@@ -83,7 +84,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.buah');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_access_transportasi_page()
     {
         /** @var \App\Models\User $user */
@@ -95,7 +96,7 @@ class MateriControllerTest extends TestCase
         $response->assertViewIs('materi.transportasi');
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_materi_pages()
     {
         $response = $this->get(route('materi.index'));
