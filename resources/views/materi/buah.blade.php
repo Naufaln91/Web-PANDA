@@ -15,9 +15,7 @@
         </div>
 
         <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
-            <div id="fruit-container" class="grid grid-cols-3 md:grid-cols-6 gap-4">
-                <!-- Buah akan di-generate oleh JavaScript -->
-            </div>
+            <div id="fruit-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4"></div>
 
 
             {{-- Kartu display utama --}}
@@ -97,7 +95,7 @@
             fruits.forEach(fruit => {
                 const div = document.createElement('div');
                 div.className =
-                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition text-5xl";
+                    "rounded-2xl bg-white shadow-lg p-6 text-center cursor-pointer hover:scale-110 transition flex items-center justify-center text-5xl";
                 div.innerHTML =
                     `<span class='text-5xl'>${fruit.emoji}</span>`;
                 div.onclick = () => selectFruit(fruit);
