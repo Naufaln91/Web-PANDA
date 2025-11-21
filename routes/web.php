@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\DashboardController;
@@ -9,9 +10,7 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\PermainanController;
 
 // Redirect root ke login
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [DashboardController::class, 'index']);
 
 // Auth Routes
 Route::middleware('guest')->group(function () {
