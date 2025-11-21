@@ -29,7 +29,7 @@ class OtpEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Kode OTP PANDA - Platform Pembelajaran Anak',
+            subject: 'Kode OTP PANDA - Pembelajaran Anak Dengan Asyik',
         );
     }
 

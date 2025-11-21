@@ -70,7 +70,9 @@
 
         /* Better touch targets for mobile */
         @media (max-width: 768px) {
-            button, a {
+
+            button,
+            a {
                 min-height: 44px;
                 min-width: 44px;
             }
@@ -103,15 +105,18 @@
                             <i class="fas fa-home mr-1"></i> Dashboard
                         </a>
 
-                        <a href="{{ route('materi.index') }}" class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
+                        <a href="{{ route('materi.index') }}"
+                            class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
                             <i class="fas fa-book mr-1"></i> Materi
                         </a>
 
-                        <a href="{{ route('permainan.index') }}" class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
+                        <a href="{{ route('permainan.index') }}"
+                            class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
                             <i class="fas fa-gamepad mr-1"></i> Permainan
                         </a>
 
-                        <a href="{{ route('kuis.index') }}" class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
+                        <a href="{{ route('kuis.index') }}"
+                            class="text-gray-700 hover:text-blue-600 transition text-sm lg:text-base">
                             <i class="fas fa-clipboard-question mr-1"></i> Kuis
                         </a>
 
@@ -287,7 +292,7 @@
     <!-- Footer -->
     <footer class="bg-white py-4 sm:py-6 shadow-lg">
         <div class="max-w-7xl mx-auto px-3 sm:px-4 text-center text-gray-600">
-            <p class="text-xs sm:text-sm">&copy; 2025 PANDA - Platform Pembelajaran Anak. All rights reserved.</p>
+            <p class="text-xs sm:text-sm">&copy; 2025 PANDA - Pembelajaran Anak Dengan Asyik. All rights reserved.</p>
         </div>
     </footer>
 

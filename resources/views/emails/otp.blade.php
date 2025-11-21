@@ -105,7 +105,7 @@
         <div class="header">
             <div class="logo">🐼</div>
             <h1 class="title">PANDA</h1>
-            <p class="subtitle">Platform Pembelajaran Anak</p>
+            <p class="subtitle">Pembelajaran Anak Dengan Asyik</p>
         </div>
 
         <div class="otp-container">
@@ -132,7 +132,7 @@
             <div class="footer-logo">🐼</div>
             <p>
                 <strong>PANDA</strong><br>
-                Platform Pembelajaran Anak Digital<br>
+                Pembelajaran Anak Dengan Asyik<br>
                 © 2025 PANDA. All rights reserved.
             </p>
         </div>

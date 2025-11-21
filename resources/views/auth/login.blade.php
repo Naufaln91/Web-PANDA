@@ -22,7 +22,7 @@
                     class="bg-gradient-to-br from-blue-500 to-indigo-600 p-12 flex flex-col justify-center items-center text-white">
                     <div class="text-8xl mb-6">🐼</div>
                     <h1 class="text-4xl font-bold mb-4">PANDA</h1>
-                    <p class="text-center text-lg opacity-90">Platform Pembelajaran Anak</p>
+                    <p class="text-center text-lg opacity-90">Pembelajaran Anak Dengan Asyik</p>
                     <div class="mt-8 text-center">
                         <div class="flex justify-center space-x-6 text-5xl">
                             <span>📚</span>
