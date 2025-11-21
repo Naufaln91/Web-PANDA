@@ -18,6 +18,7 @@ class LoginControllerTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        $this->startSession();
     }
 
     #[Test]
@@ -42,6 +43,7 @@ class LoginControllerTest extends TestCase
         ]);
 
         $response = $this->post(route('login.admin'), [
+            '_token' => session('_token'),
             'username' => 'admin',
             'password' => 'password',
         ]);
@@ -54,6 +56,7 @@ class LoginControllerTest extends TestCase
     public function invalid_credentials_fail_login()
     {
         $response = $this->post(route('login.admin'), [
+            '_token' => session('_token'),
             'username' => 'admin',
             'password' => 'wrong',
         ]);
@@ -70,6 +73,7 @@ class LoginControllerTest extends TestCase
         $whitelist = Whitelist::factory()->create(['email' => 'test@example.com', 'role' => 'guru']);
 
         $response = $this->post(route('login.request-otp'), [
+            '_token' => session('_token'),
             'email' => 'test@example.com',
         ]);
 
@@ -83,6 +87,7 @@ class LoginControllerTest extends TestCase
     public function request_otp_fails_for_non_whitelisted_email()
     {
         $response = $this->post(route('login.request-otp'), [
+            '_token' => session('_token'),
             'email' => 'notwhitelisted@example.com',
         ]);
 
@@ -103,6 +108,7 @@ class LoginControllerTest extends TestCase
         ]);
 
         $response = $this->post(route('login.verify-otp'), [
+            '_token' => session('_token'),
             'email' => 'test@example.com',
             'otp_code' => $plainCode,
         ]);
@@ -125,6 +131,7 @@ class LoginControllerTest extends TestCase
         ]);
 
         $response = $this->post(route('login.verify-otp'), [
+            '_token' => session('_token'),
             'email' => 'new@example.com',
             'otp_code' => $plainCode,
         ]);
@@ -140,6 +147,7 @@ class LoginControllerTest extends TestCase
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'guru']);
 
         $response = $this->post(route('login.complete-profile'), [
+            '_token' => session('_token'),
             'email' => 'new@example.com',
             'nama' => 'Guru Baru',
         ]);
@@ -159,6 +167,7 @@ class LoginControllerTest extends TestCase
         Whitelist::factory()->create(['email' => 'new@example.com', 'role' => 'wali_murid']);
 
         $response = $this->post(route('login.complete-profile'), [
+            '_token' => session('_token'),
             'email' => 'new@example.com',
             'nama_orangtua' => 'Orang Tua',
             'nama_anak' => 'Anak',
@@ -182,7 +191,7 @@ class LoginControllerTest extends TestCase
         /** @var \App\Models\User $user */
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post(route('logout'));
+        $response = $this->actingAs($user)->post(route('logout'), ['_token' => session('_token')]);
 
         $response->assertRedirect(route('login'));
         $this->assertGuest();

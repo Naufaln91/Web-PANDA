@@ -16,6 +16,7 @@ class AdminControllerTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        $this->startSession();
     }
 
     #[Test]
@@ -42,8 +43,9 @@ class AdminControllerTest extends TestCase
             'role' => 'guru',
         ];
 
-        $response = $this->actingAs($admin)->post(route('admin.whitelist.store'), $data)
-            ->assertStatus(200)
+        $response = $this->actingAs($admin)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->post(route('admin.whitelist.store'), $data);
+
+        $response->assertStatus(200)
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseHas('whitelists', $data);
@@ -56,10 +58,10 @@ class AdminControllerTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
         $whitelist = Whitelist::factory()->create();
 
-        $response = $this->actingAs($admin)->delete(route('admin.whitelist.destroy', $whitelist->id));
+        $response = $this->actingAs($admin)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('admin.whitelist.destroy', $whitelist->id));
 
-        $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
+        $response->assertStatus(200)
+            ->assertJson(['success' => true]);
         $this->assertDatabaseMissing('whitelists', ['id' => $whitelist->id]);
     }
 
@@ -84,8 +86,9 @@ class AdminControllerTest extends TestCase
         /** @var \App\Models\User $user */
         $user = User::factory()->create(['role' => 'guru']);
 
-        $response = $this->actingAs($admin)->delete(route('admin.akun.destroy', $user->id))
-            ->assertStatus(200)
+        $response = $this->actingAs($admin)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('admin.akun.destroy', $user->id));
+
+        $response->assertStatus(200)
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
@@ -99,7 +102,7 @@ class AdminControllerTest extends TestCase
         /** @var \App\Models\User $anotherAdmin */
         $anotherAdmin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->delete(route('admin.akun.destroy', $anotherAdmin->id))
+        $this->actingAs($admin)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('admin.akun.destroy', $anotherAdmin->id))
             ->assertStatus(200)
             ->assertJson(['success' => false]);
 
@@ -115,7 +118,7 @@ class AdminControllerTest extends TestCase
         $response = $this->actingAs($user)->get(route('admin.whitelist.index'));
         $response->assertRedirect(route('login'));
 
-        $response = $this->actingAs($user)->post(route('admin.whitelist.store'), []);
+        $response = $this->actingAs($user)->post(route('admin.whitelist.store'), ['_token' => session('_token')]);
         $response->assertRedirect(route('login'));
     }
 }

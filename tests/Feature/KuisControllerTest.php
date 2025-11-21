@@ -20,6 +20,7 @@ class KuisControllerTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        $this->startSession();
     }
 
     #[Test]
@@ -65,6 +66,7 @@ class KuisControllerTest extends TestCase
         $guru = User::factory()->create(['role' => 'guru']);
 
         $data = [
+            '_token' => session('_token'),
             'judul' => 'Kuis Test',
             'deskripsi' => 'Deskripsi test',
             'waktu_tipe' => 'per_soal',
@@ -131,6 +133,7 @@ class KuisControllerTest extends TestCase
         $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
         $data = [
+            '_token' => session('_token'),
             'judul' => 'Updated Title',
             'deskripsi' => 'Updated description',
             'waktu_tipe' => 'keseluruhan',
@@ -156,7 +159,7 @@ class KuisControllerTest extends TestCase
         $kuis = Kuis::factory()->create(['created_by' => $guru->id, 'status' => 'draft']);
         Soal::factory()->create(['kuis_id' => $kuis->id]);
 
-        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['status' => 'published'])
+        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['_token' => session('_token'), 'status' => 'published'])
             ->assertStatus(200)
             ->assertJson(['success' => true]);
 
@@ -170,7 +173,7 @@ class KuisControllerTest extends TestCase
         $guru = User::factory()->create(['role' => 'guru']);
         $kuis = Kuis::factory()->create(['created_by' => $guru->id, 'status' => 'draft']);
 
-        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['status' => 'published'])
+        $response = $this->actingAs($guru)->put(route('kuis.update-status', $kuis->id), ['_token' => session('_token'), 'status' => 'published'])
             ->assertStatus(200)
             ->assertJson(['success' => false]);
     }
@@ -184,6 +187,7 @@ class KuisControllerTest extends TestCase
         $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
         $data = [
+            '_token' => session('_token'),
             'tipe' => 'pilihan_ganda',
             'konten_soal' => 'Soal test?',
             'gambar_soal' => UploadedFile::fake()->image('soal.jpg'),
@@ -261,8 +265,9 @@ class KuisControllerTest extends TestCase
         $guru = User::factory()->create(['role' => 'guru']);
         $kuis = Kuis::factory()->create(['created_by' => $guru->id]);
 
-        $response = $this->actingAs($guru)->delete(route('kuis.destroy', $kuis->id))
-            ->assertStatus(200)
+        $response = $this->actingAs($guru)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('kuis.destroy', $kuis->id));
+
+        $response->assertStatus(200)
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseMissing('kuis', ['id' => $kuis->id]);
@@ -277,8 +282,9 @@ class KuisControllerTest extends TestCase
         $guru2 = User::factory()->create(['role' => 'guru']);
         $kuis = Kuis::factory()->create(['created_by' => $guru2->id]);
 
-        $response = $this->actingAs($guru1)->delete(route('kuis.destroy', $kuis->id))
-            ->assertStatus(200)
+        $response = $this->actingAs($guru1)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('kuis.destroy', $kuis->id));
+
+        $response->assertStatus(200)
             ->assertJson(['success' => false]);
     }
 
@@ -404,8 +410,9 @@ class KuisControllerTest extends TestCase
             'kuis_id' => $kuis->id,
         ]);
 
-        $response = $this->actingAs($admin)->delete(route('api.histori-kuis.destroy', $histori->id))
-            ->assertStatus(200)
+        $response = $this->actingAs($admin)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('api.histori-kuis.destroy', $histori->id));
+
+        $response->assertStatus(200)
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseMissing('histori_kuis', ['id' => $histori->id]);
@@ -424,7 +431,7 @@ class KuisControllerTest extends TestCase
             'kuis_id' => $kuis->id,
         ]);
 
-        $response = $this->actingAs($guru)->delete(route('api.histori-kuis.destroy', $histori->id))
+        $this->actingAs($guru)->withHeaders(['X-CSRF-TOKEN' => session('_token')])->delete(route('api.histori-kuis.destroy', $histori->id))
             ->assertStatus(200)
             ->assertJson(['success' => true]);
 
@@ -441,6 +448,7 @@ class KuisControllerTest extends TestCase
         $soal2 = Soal::factory()->create(['kuis_id' => $kuis->id, 'urutan' => 2]);
 
         $response = $this->actingAs($guru)->post(route('kuis.soal.reorder', $kuis->id), [
+            '_token' => session('_token'),
             'soal_ids' => [$soal2->id, $soal1->id]
         ])
             ->assertStatus(200)
