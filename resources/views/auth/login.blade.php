@@ -19,12 +19,12 @@
             <div class="grid md:grid-cols-2">
                 <!-- Left Side - Illustration -->
                 <div
-                    class="bg-gradient-to-br from-blue-500 to-indigo-600 p-12 flex flex-col justify-center items-center text-white">
-                    <div class="text-8xl mb-6">🐼</div>
-                    <h1 class="text-4xl font-bold mb-4">PANDA</h1>
-                    <p class="text-center text-lg opacity-90">Pembelajaran Anak Dengan Asyik</p>
+                    class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 sm:p-12 flex flex-col justify-center items-center text-white">
+                    <div class="text-6xl sm:text-8xl mb-6">🐼</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold mb-4">PANDA</h1>
+                    <p class="text-center text-base sm:text-lg opacity-90">Pembelajaran Anak Dengan Asyik</p>
                     <div class="mt-8 text-center">
-                        <div class="flex justify-center space-x-6 text-5xl">
+                        <div class="flex justify-center space-x-4 sm:space-x-6 text-4xl sm:text-5xl">
                             <span>📚</span>
                             <span>🎮</span>
                             <span>✏️</span>
@@ -33,9 +33,9 @@
                 </div>
 
                 <!-- Right Side - Login Forms -->
-                <div class="p-12">
+                <div class="p-6 sm:p-12">
                     <!-- Tab Buttons -->
-                    <div class="flex space-x-2 mb-8">
+                    <div class="flex space-x-1 sm:space-x-2 mb-6 sm:mb-8">
                         <button onclick="showTab('admin')" id="tab-admin"
                             class="flex-1 py-3 px-4 rounded-lg font-semibold transition bg-blue-500 text-white">
                             Admin
@@ -59,31 +59,35 @@
                         <form action="{{ route('login.admin') }}" method="POST">
                             @csrf
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Username</label>
+                                <label
+                                    class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Username</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <i class="fas fa-user"></i>
                                     </span>
                                     <input type="text" name="username" required
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
                                         placeholder="Masukkan username">
                                 </div>
                             </div>
 
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                            <div class="mb-4 sm:mb-6">
+                                <label
+                                    class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Password</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <i class="fas fa-lock"></i>
                                     </span>
                                     <input type="password" name="password" required
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
                                         placeholder="Masukkan password">
                                 </div>
                             </div>
 
                             <button type="submit"
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-sign-in-alt mr-2"></i> Login
                             </button>
                         </form>
@@ -96,20 +100,21 @@
                         <!-- Step 1: Input Email -->
                         <div id="step-email">
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Email</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <i class="fas fa-envelope"></i>
                                     </span>
                                     <input type="email" id="email"
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
                                         placeholder="nama@email.com">
                                 </div>
                                 <p id="error-email" class="text-red-500 text-sm mt-1 hidden"></p>
                             </div>
 
                             <button onclick="requestOtp()" id="btn-request-otp"
-                                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-paper-plane mr-2"></i> Minta Kode OTP
                             </button>
                         </div>
@@ -136,10 +141,10 @@
 
                             <div class="mb-4">
                                 <button onclick="resendOtp()" id="btn-resend-otp"
-                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">
                                     <i class="fas fa-envelope mr-2"></i> Kirim Ulang OTP
                                 </button>
-                                <p id="resend-info" class="text-sm text-gray-600 mt-1 text-center">
+                                <p id="resend-info" class="text-xs sm:text-sm text-gray-600 mt-1 text-center">
                                     <span id="resend-countdown" class="hidden">Kirim ulang tersedia dalam <span
                                             id="countdown-timer">30</span> detik</span>
                                     <span id="resend-limit" class="hidden">Batas kirim ulang tercapai</span>
@@ -147,12 +152,12 @@
                             </div>
 
                             <button onclick="verifyOtp()" id="btn-verify-otp"
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-check mr-2"></i> Verifikasi OTP
                             </button>
 
                             <button onclick="backToEmail()"
-                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300 flex items-center justify-center">
+                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300 flex items-center justify-center text-sm sm:text-base">
                                 <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
                             </button>
                         </div>
