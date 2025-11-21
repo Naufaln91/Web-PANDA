@@ -216,6 +216,7 @@
     @endpush
 
     @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
         <script>
             const kuisData = @json($kuis);
             let currentSoalIndex = 0;
@@ -323,10 +324,14 @@
 
                 isAnswered = true;
 
+                // Ensure boolean
+                const isCorrect = (isBenar == 1 || isBenar === true || isBenar === 'true');
+
                 // Save answer
                 userAnswers.push({
                     soal_index: currentSoalIndex,
-                    is_correct: isBenar
+                    is_correct: isCorrect,
+                    answer_id: pilihanId
                 });
 
                 // Update answered count
@@ -364,7 +369,8 @@
                 // Save answer
                 userAnswers.push({
                     soal_index: currentSoalIndex,
-                    is_correct: isBenar
+                    is_correct: isBenar,
+                    answer_text: jawaban
                 });
 
                 $('#answered-count').text(userAnswers.length);
@@ -516,10 +522,10 @@
                     launchConfetti();
                 }
 
-                // For "setelah_semua", automatically show detail jawaban
-                if (kuisData.penunjukan_jawaban === 'setelah_semua') {
-                    showDetailJawaban();
-                }
+                // For "setelah_semua", do NOT automatically show detail jawaban
+                // if (kuisData.penunjukan_jawaban === 'setelah_semua') {
+                //     showDetailJawaban();
+                // }
 
                 // Simpan hasil ke database
                 saveQuizResult(score, correctAnswers, userAnswers);
@@ -560,21 +566,80 @@
                     const userAnswer = userAnswers.find(a => a.soal_index === index);
                     const isCorrect = userAnswer ? userAnswer.is_correct : false;
 
+                    let userAnswerContent = '-';
+                    let correctAnswerContent = '-';
+
+                    if (soal.tipe === 'pilihan_ganda') {
+                        // User Answer
+                        if (userAnswer && userAnswer.answer_id) {
+                            const selectedPilihan = soal.pilihan_jawaban.find(p => p.id === userAnswer.answer_id);
+                            if (selectedPilihan) {
+                                userAnswerContent = selectedPilihan.konten_pilihan;
+                                if (selectedPilihan.gambar_pilihan) {
+                                    userAnswerContent +=
+                                        `<br><img src="/storage/${selectedPilihan.gambar_pilihan}" class="h-20 rounded mt-2">`;
+                                }
+                            }
+                        }
+
+                        // Correct Answer (if wrong)
+                        if (!isCorrect) {
+                            const correctPilihan = soal.pilihan_jawaban.find(p => p.is_benar == 1);
+                            if (correctPilihan) {
+                                correctAnswerContent = correctPilihan.konten_pilihan;
+                                if (correctPilihan.gambar_pilihan) {
+                                    correctAnswerContent +=
+                                        `<br><img src="/storage/${correctPilihan.gambar_pilihan}" class="h-20 rounded mt-2">`;
+                                }
+                            }
+                        }
+                    } else {
+                        // Isian Singkat
+                        userAnswerContent = userAnswer ? userAnswer.answer_text : '-';
+                        if (!isCorrect) {
+                            correctAnswerContent = soal.jawaban_benar;
+                        }
+                    }
+
                     html += `
-            <div class="card ${isCorrect ? 'border-l-8 border-green-500' : 'border-l-8 border-red-500'}">
-                <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-${isCorrect ? 'check' : 'times'}-circle text-4xl text-${isCorrect ? 'green' : 'red'}-500"></i>
+            <div class="card mb-4 overflow-hidden border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow-sm hover:shadow-md transition-shadow">
+                <div class="p-4 sm:p-6">
+                    <!-- Header: Status & Question Number -->
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-gray-100 text-gray-600 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wider">
+                            Soal ${index + 1}
+                        </span>
+                        <span class="flex items-center ${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold text-sm sm:text-base">
+                            <i class="fas fa-${isCorrect ? 'check' : 'times'}-circle mr-2 text-lg"></i>
+                            ${isCorrect ? 'Benar' : 'Salah'}
+                        </span>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-600 mb-1">Soal ${index + 1}</p>
-                        <p class="text-lg font-semibold text-gray-800 mb-2">${soal.konten_soal}</p>
-                        <p class="text-sm">
-                            <span class="font-semibold">Status:</span> 
-                            <span class="text-${isCorrect ? 'green' : 'red'}-600 font-bold">
-                                ${isCorrect ? 'Benar ✓' : 'Salah ✗'}
-                            </span>
-                        </p>
+
+                    <!-- Question Content -->
+                    <div class="mb-6">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 leading-relaxed">${soal.konten_soal}</p>
+                        ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="w-full max-w-md mt-4 rounded-lg shadow-sm border border-gray-100" alt="Gambar Soal">` : ''}
+                    </div>
+
+                    <!-- Answers Section -->
+                    <div class="bg-gray-50 rounded-xl p-4 sm:p-5 space-y-4">
+                        <!-- User Answer -->
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Kamu</p>
+                            <div class="${isCorrect ? 'text-green-700' : 'text-red-700'} font-medium text-base sm:text-lg">
+                                ${userAnswerContent}
+                            </div>
+                        </div>
+
+                        <!-- Correct Answer (Only if wrong) -->
+                        ${!isCorrect ? `
+                                                                <div class="pt-3 border-t border-gray-200">
+                                                                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Benar</p>
+                                                                    <div class="text-green-700 font-medium text-base sm:text-lg">
+                                                                        ${correctAnswerContent}
+                                                                    </div>
+                                                                </div>
+                                                                ` : ''}
                     </div>
                 </div>
             </div>
@@ -616,43 +681,43 @@
             }
 
             function launchConfetti() {
-                const duration = 3000;
-                const end = Date.now() + duration;
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = {
+                    startVelocity: 30,
+                    spread: 360,
+                    ticks: 60,
+                    zIndex: 10000
+                };
 
-                (function frame() {
-                    for (let i = 0; i < 3; i++) {
-                        const confetti = document.createElement('div');
-                        confetti.style.position = 'fixed';
-                        confetti.style.left = Math.random() * window.innerWidth + 'px';
-                        confetti.style.top = '-20px';
-                        confetti.style.width = '10px';
-                        confetti.style.height = '10px';
-                        confetti.style.backgroundColor = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'][
-                            Math.floor(Math.random() * 6)
-                        ];
-                        confetti.style.borderRadius = '50%';
-                        confetti.style.zIndex = '10000';
-                        confetti.style.pointerEvents = 'none';
-                        document.body.appendChild(confetti);
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
 
-                        let pos = -20;
-                        const speed = 2 + Math.random() * 3;
-                        const fall = setInterval(() => {
-                            pos += speed;
-                            confetti.style.top = pos + 'px';
-                            confetti.style.transform = `rotate(${pos * 2}deg)`;
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
 
-                            if (pos > window.innerHeight) {
-                                clearInterval(fall);
-                                confetti.remove();
-                            }
-                        }, 20);
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
                     }
 
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
-                    }
-                })();
+                    var particleCount = 50 * (timeLeft / duration);
+                    // since particles fall down, start a bit higher than random
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: randomInRange(0.1, 0.3),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: randomInRange(0.7, 0.9),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                }, 250);
             }
 
             // Prevent accidental page leave

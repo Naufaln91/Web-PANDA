@@ -594,7 +594,7 @@ class KuisController extends Controller
     // API: Get Detail Histori
     public function getDetailHistori($historiId)
     {
-        $histori = HistoriKuis::with('user', 'kuis')->findOrFail($historiId);
+        $histori = HistoriKuis::with(['user', 'kuis.soal.pilihanJawaban'])->findOrFail($historiId);
 
         // Cek akses
         /** @var User $user */

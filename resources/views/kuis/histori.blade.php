@@ -306,36 +306,114 @@
                 const content = $('#detailContent');
 
                 let html = `
-                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                        <h4 class="font-semibold text-gray-800">${histori.user.nama}</h4>
-                        <p class="text-sm text-gray-600">Nilai: ${histori.nilai} | Soal Dijawab: ${histori.jumlah_soal_dijawab} | Benar: ${histori.jumlah_benar}</p>
-                        <p class="text-sm text-gray-600">Waktu: ${new Date(histori.waktu_selesai).toLocaleString('id-ID')}</p>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4 border border-gray-200">
+                        <h4 class="font-bold text-lg text-gray-800 mb-1">${histori.user.nama_anak || histori.user.nama || histori.user.username || histori.user.email || 'User'}</h4>
+                        <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+                            <span class="flex items-center"><i class="fas fa-star text-yellow-500 mr-1"></i> Nilai: <span class="font-bold text-gray-800 ml-1">${histori.nilai}</span></span>
+                            <span class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-1"></i> Benar: <span class="font-bold text-gray-800 ml-1">${histori.jumlah_benar}</span></span>
+                            <span class="flex items-center"><i class="fas fa-clock text-blue-500 mr-1"></i> ${new Date(histori.waktu_selesai).toLocaleString('id-ID')}</span>
+                        </div>
                     </div>
                 `;
 
-                if (histori.detail_jawaban && histori.detail_jawaban.length > 0) {
-                    html += '<div class="space-y-3">';
-                    histori.detail_jawaban.forEach((jawaban, index) => {
-                        const statusClass = jawaban.is_correct ? 'text-green-600' : 'text-red-600';
-                        const statusIcon = jawaban.is_correct ? 'fa-check-circle' : 'fa-times-circle';
+                if (histori.detail_jawaban && histori.detail_jawaban.length > 0 && histori.kuis && histori.kuis.soal) {
+                    html += '<div class="space-y-4">';
+
+                    // Map soal by index to ensure correct matching
+                    histori.kuis.soal.forEach((soal, index) => {
+                        // Find user answer for this question index (use loose equality for index)
+                        const userAnswer = histori.detail_jawaban.find(a => a.soal_index == index);
+                        // Ensure isCorrect is strictly boolean (handle 1/0, "1"/"0", true/false)
+                        const isCorrect = userAnswer ? (userAnswer.is_correct == 1 || userAnswer.is_correct === true ||
+                            userAnswer.is_correct === 'true') : false;
+
+                        let userAnswerContent = '-';
+                        let correctAnswerContent = '-';
+
+                        if (soal.tipe === 'pilihan_ganda') {
+                            // User Answer
+                            if (userAnswer && userAnswer.answer_id) {
+                                // Use loose equality for ID comparison
+                                const selectedPilihan = soal.pilihan_jawaban.find(p => p.id == userAnswer.answer_id);
+                                if (selectedPilihan) {
+                                    userAnswerContent = selectedPilihan.konten_pilihan;
+                                    if (selectedPilihan.gambar_pilihan) {
+                                        userAnswerContent +=
+                                            `<br><img src="/storage/${selectedPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
+                                    }
+                                }
+                            } else if (userAnswer && userAnswer.answer_text) {
+                                // Fallback if stored as text
+                                userAnswerContent = userAnswer.answer_text;
+                            }
+
+                            // Correct Answer (if wrong)
+                            if (!isCorrect) {
+                                const correctPilihan = soal.pilihan_jawaban.find(p => p.is_benar == 1);
+                                if (correctPilihan) {
+                                    correctAnswerContent = correctPilihan.konten_pilihan;
+                                    if (correctPilihan.gambar_pilihan) {
+                                        correctAnswerContent +=
+                                            `<br><img src="/storage/${correctPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Isian Singkat
+                            userAnswerContent = userAnswer ? (userAnswer.answer_text || '-') : '-';
+                            if (!isCorrect) {
+                                correctAnswerContent = soal.jawaban_benar;
+                            }
+                        }
 
                         html += `
-                            <div class="border rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="font-medium">Soal ${index + 1}</span>
-                                    <i class="fas ${statusIcon} ${statusClass}"></i>
+                            <div class="card border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow-sm overflow-hidden">
+                                <div class="p-4">
+                                    <!-- Header -->
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="bg-gray-100 text-gray-600 py-0.5 px-2 rounded text-xs font-bold uppercase">Soal ${index + 1}</span>
+                                        <span class="flex items-center ${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold text-sm">
+                                            <i class="fas fa-${isCorrect ? 'check' : 'times'}-circle mr-1"></i>
+                                            ${isCorrect ? 'Benar' : 'Salah'}
+                                        </span>
+                                    </div>
+
+                                    <!-- Question -->
+                                    <div class="mb-4">
+                                        <p class="font-semibold text-gray-800">${soal.konten_soal}</p>
+                                        ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="w-full max-w-xs mt-3 rounded-lg shadow-sm border border-gray-100" alt="Gambar Soal">` : ''}
+                                    </div>
+
+                                    <!-- Answers -->
+                                    <div class="bg-gray-50 rounded-lg p-3 text-sm space-y-3">
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase font-bold mb-1">Jawaban</p>
+                                            <div class="${isCorrect ? 'text-green-700' : 'text-red-700'} font-medium">
+                                                ${userAnswerContent}
+                                            </div>
+                                        </div>
+                                        
+                                        ${!isCorrect ? `
+                                                                                <div class="pt-2 border-t border-gray-200">
+                                                                                    <p class="text-xs text-gray-500 uppercase font-bold mb-1">Jawaban Benar</p>
+                                                                                    <div class="text-green-700 font-medium">
+                                                                                        ${correctAnswerContent}
+                                                                                    </div>
+                                                                                </div>
+                                                                                ` : ''}
+                                    </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mt-1">
-                                    Status: <span class="${statusClass} font-medium">
-                                        ${jawaban.is_correct ? 'Benar' : 'Salah'}
-                                    </span>
-                                </p>
                             </div>
                         `;
                     });
                     html += '</div>';
                 } else {
-                    html += '<p class="text-gray-500 text-center py-4">Detail jawaban tidak tersedia</p>';
+                    html += `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-circle text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500">Detail jawaban tidak tersedia atau data soal telah dihapus.</p>
+                        </div>
+                    `;
                 }
 
                 content.html(html);
