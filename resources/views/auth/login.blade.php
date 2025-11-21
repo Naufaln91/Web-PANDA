@@ -158,7 +158,7 @@
 
                             <button onclick="backToEmail()"
                                 class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300 flex items-center justify-center text-sm sm:text-base">
-                                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
+                                <i class="fas fa-arrow-left "></i><span class="ml-2 hidden sm:inline">Kembali</span>
                             </button>
                         </div>
 

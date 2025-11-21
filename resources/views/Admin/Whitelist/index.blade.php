@@ -12,7 +12,7 @@
             </h1>
             <a href="{{ route('admin.dashboard') }}"
                 class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 sm:py-2.5 px-3 sm:px-5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center text-sm sm:text-base">
-                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
+                <i class="fas fa-arrow-left "></i><span class="ml-2 hidden sm:inline">Kembali</span>
             </a>
         </div>
         <p class="text-xs sm:text-sm text-gray-600">Kelola akses pengguna melalui email</p>

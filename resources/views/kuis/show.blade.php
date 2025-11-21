@@ -7,7 +7,7 @@
         <div class="flex justify-end mb-6">
             <a href="{{ route('kuis.index') }}"
                 class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition inline-flex items-center justify-center">
-                <i class="fas fa-arrow-left "></i><span class="ml-2">Kembali</span>
+                <i class="fas fa-arrow-left "></i><span class="ml-2 hidden sm:inline">Kembali</span>
             </a>
         </div>
 
