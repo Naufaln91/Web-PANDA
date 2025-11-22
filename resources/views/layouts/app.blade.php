@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'PANDA - Platform Pembelajaran')</title>
+    <title>@yield('title', 'PANDA - Pembelajaran Anak Dengan Asyik')</title>
 
     <!-- Tailwind CSS (Built with Vite) -->
     @vite(['resources/css/app.css'])
@@ -93,7 +93,7 @@
                     <div class="text-2xl sm:text-3xl">🐼</div>
                     <div>
                         <h1 class="text-base sm:text-xl font-bold text-gray-800">PANDA</h1>
-                        <p class="text-[10px] sm:text-xs text-gray-500">Platform Pembelajaran</p>
+                        <p class="text-[10px] sm:text-xs text-gray-500">Pembelajaran Anak Dengan Asyik</p>
                     </div>
                 </div>
 
