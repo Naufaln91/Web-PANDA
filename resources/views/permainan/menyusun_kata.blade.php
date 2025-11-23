@@ -474,7 +474,9 @@
                 updateKataArea();
                 result.textContent = '';
 
-                hurufButtons.forEach(btn => {
+                // Re-enable all buttons in the container
+                const buttons = hurufContainer.querySelectorAll('button');
+                buttons.forEach(btn => {
                     btn.disabled = false;
                     btn.classList.remove('opacity-30', 'cursor-not-allowed', 'scale-90');
                     btn.classList.add('hover:scale-110');
@@ -486,14 +488,32 @@
             }
 
             function lewatiSoal() {
-                if (confirm('Yakin ingin melewati soal ini?')) {
-                    if (soalSekarang >= semuaItem.length) {
-                        result.textContent = "🏆 Semua Soal Sudah Selesai!";
-                        result.className = "text-purple-600 font-bold text-2xl";
-                    } else {
-                        newQuestion();
+                Swal.fire({
+                    title: 'Yakin ingin melewati?',
+                    text: "Kamu tidak akan mendapatkan poin untuk soal ini.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#a855f7', // purple-500
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Lewati!',
+                    cancelButtonText: 'Batal',
+                    background: '#fff',
+                    borderRadius: '1rem',
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl',
+                        confirmButton: 'rounded-full px-6 py-2 font-bold',
+                        cancelButton: 'rounded-full px-6 py-2 font-bold'
                     }
-                }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (soalSekarang >= semuaItem.length) {
+                            document.getElementById('result').textContent = "🏆 Semua Soal Sudah Selesai!";
+                            document.getElementById('result').className = "text-purple-600 font-bold text-2xl";
+                        } else {
+                            newQuestion();
+                        }
+                    }
+                });
             }
 
             function tampilkanHint() {

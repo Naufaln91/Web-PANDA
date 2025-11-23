@@ -19,7 +19,7 @@
 
             <div id="choices" class="flex flex-wrap justify-center gap-6 mb-8"></div>
 
-            <p id="result" class="text-2xl font-bold min-h-[2rem]"></p>
+            <p id="result" class="text-2xl font-bold min-h-[2rem] text-center"></p>
 
             <!-- Canvas untuk confetti -->
             <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
@@ -169,7 +169,7 @@
 
                 if (num === current.count) {
                     result.textContent = "🎉 Benar sekali!";
-                    result.className = "text-green-600 font-bold text-2xl";
+                    result.className = "text-green-600 font-bold text-2xl text-center";
                     emojiBox.classList.add('animate-bounce');
 
                     playSuccessSound();
@@ -181,7 +181,7 @@
                     }, 2000);
                 } else {
                     result.textContent = "❌ Salah, coba lagi!";
-                    result.className = "text-red-600 font-bold text-2xl";
+                    result.className = "text-red-600 font-bold text-2xl text-center";
                     playErrorSound();
                 }
             }
