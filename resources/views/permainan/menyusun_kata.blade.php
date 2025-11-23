@@ -17,6 +17,9 @@
         <div
             class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
 
+            {{-- Canvas untuk confetti --}}
+            <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+
             {{-- Progress Bar --}}
             <div class="mb-6">
                 <div class="flex justify-between items-center mb-2">
@@ -281,43 +284,50 @@
             }
 
             function createConfetti() {
-                const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#ec4899', '#f97316'];
-                for (let i = 0; i < 100; i++) {
-                    setTimeout(() => {
-                        const confetti = document.createElement('div');
-                        confetti.style.position = 'fixed';
-                        confetti.style.left = Math.random() * 100 + '%';
-                        confetti.style.top = '-20px';
-                        confetti.style.width = Math.random() * 12 + 6 + 'px';
-                        confetti.style.height = Math.random() * 12 + 6 + 'px';
-                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                        confetti.style.zIndex = '9999';
-                        confetti.style.pointerEvents = 'none';
-                        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                        confetti.style.opacity = '0.9';
-                        document.body.appendChild(confetti);
+                const canvas = document.getElementById('confetti-canvas');
+                const ctx = canvas.getContext('2d');
+                const particles = [];
 
-                        let pos = -20;
-                        let rotation = Math.random() * 360;
-                        const drift = (Math.random() - 0.5) * 4;
-                        let left = parseFloat(confetti.style.left);
+                const colors = ['#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'];
 
-                        const fall = setInterval(() => {
-                            pos += 6;
-                            rotation += 8;
-                            left += drift;
-                            confetti.style.top = pos + 'px';
-                            confetti.style.left = left + '%';
-                            confetti.style.transform = `rotate(${rotation}deg)`;
+                const W = canvas.width = canvas.offsetWidth;
+                const H = canvas.height = canvas.offsetHeight;
 
-                            if (pos > window.innerHeight + 50) {
-                                clearInterval(fall);
-                                confetti.remove();
-                            }
-                        }, 16);
-                    }, i * 15);
+                for (let i = 0; i < 60; i++) {
+                    particles.push({
+                        x: Math.random() * W,
+                        y: Math.random() * -H / 2,
+                        r: Math.random() * 6 + 3,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        speed: Math.random() * 3 + 2,
+                        tilt: Math.random() * 10 - 5
+                    });
                 }
+
+                function draw() {
+                    ctx.clearRect(0, 0, W, H);
+                    particles.forEach(p => {
+                        ctx.beginPath();
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(p.x, p.y, p.r, p.r);
+                    });
+                }
+
+                function update() {
+                    particles.forEach(p => {
+                        p.y += p.speed;
+                        p.x += Math.sin(p.tilt);
+                    });
+                }
+
+                function loop() {
+                    draw();
+                    update();
+                    if (particles.some(p => p.y < H)) {
+                        requestAnimationFrame(loop);
+                    }
+                }
+                loop();
             }
 
             function shuffle(array) {

@@ -15,13 +15,35 @@
         </div>
 
         <!-- Level Selection -->
-        <div class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md">
+        <div
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
             <div class="card">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">
                     <i class="fas fa-layer-group mr-2 text-purple-500" aria-hidden="true"></i>
                     Pilih Level Kesulitan
                 </h2>
-                <div class="flex gap-4 flex-wrap mb-4" role="group" aria-label="Pilih tingkat kesulitan puzzle">
+                <!-- Mobile View (Optimized) -->
+                <div class="flex md:hidden gap-2 flex-nowrap mb-4" role="group"
+                    aria-label="Pilih tingkat kesulitan puzzle">
+                    <button onclick="PuzzleGame.setDifficulty(2)"
+                        class="difficulty-btn bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-300 flex-1 text-sm"
+                        aria-label="Level mudah - 2x2">
+                        😊 2x2
+                    </button>
+                    <button onclick="PuzzleGame.setDifficulty(3)"
+                        class="difficulty-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-300 flex-1 text-sm"
+                        aria-label="Level sedang - 3x3">
+                        🤔 3x3
+                    </button>
+                    <button onclick="PuzzleGame.setDifficulty(4)"
+                        class="difficulty-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 flex-1 text-sm"
+                        aria-label="Level sulit - 4x4">
+                        😤 4x4
+                    </button>
+                </div>
+
+                <!-- Desktop View (Original) -->
+                <div class="hidden md:flex gap-4 flex-wrap mb-4" role="group" aria-label="Pilih tingkat kesulitan puzzle">
                     <button onclick="PuzzleGame.setDifficulty(2)"
                         class="difficulty-btn bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-300"
                         aria-label="Level mudah - 2x2">
@@ -81,6 +103,9 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Canvas untuk confetti --}}
+            <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
         </div>
 
         @push('styles')
@@ -307,49 +332,50 @@
                     // Confetti animation with performance optimization
                     const ConfettiManager = {
                         create() {
-                            const fragment = document.createDocumentFragment();
+                            const canvas = document.getElementById('confetti-canvas');
+                            const ctx = canvas.getContext('2d');
+                            const particles = [];
 
-                            for (let i = 0; i < CONFIG.confettiCount; i++) {
-                                setTimeout(() => {
-                                    const confetti = this.createConfettiElement();
-                                    fragment.appendChild(confetti);
-                                    document.body.appendChild(confetti);
-                                    this.animateConfetti(confetti);
-                                }, i * 30);
+                            const colors = ['#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'];
+
+                            const W = canvas.width = canvas.offsetWidth;
+                            const H = canvas.height = canvas.offsetHeight;
+
+                            for (let i = 0; i < 60; i++) {
+                                particles.push({
+                                    x: Math.random() * W,
+                                    y: Math.random() * -H / 2,
+                                    r: Math.random() * 6 + 3,
+                                    color: colors[Math.floor(Math.random() * colors.length)],
+                                    speed: Math.random() * 3 + 2,
+                                    tilt: Math.random() * 10 - 5
+                                });
                             }
-                        },
 
-                        createConfettiElement() {
-                            const confetti = document.createElement('div');
-                            confetti.className = 'confetti';
-                            confetti.style.left = Math.random() * 100 + '%';
-                            confetti.style.background = this.getRandomColor();
-                            return confetti;
-                        },
+                            function draw() {
+                                ctx.clearRect(0, 0, W, H);
+                                particles.forEach(p => {
+                                    ctx.beginPath();
+                                    ctx.fillStyle = p.color;
+                                    ctx.fillRect(p.x, p.y, p.r, p.r);
+                                });
+                            }
 
-                        getRandomColor() {
-                            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-                            return colors[Math.floor(Math.random() * colors.length)];
-                        },
+                            function update() {
+                                particles.forEach(p => {
+                                    p.y += p.speed;
+                                    p.x += Math.sin(p.tilt);
+                                });
+                            }
 
-                        animateConfetti(element) {
-                            let pos = -10;
-                            let rotation = 0;
-
-                            const animate = () => {
-                                pos += 5;
-                                rotation += 15;
-                                element.style.top = pos + 'px';
-                                element.style.transform = `rotate(${rotation}deg)`;
-
-                                if (pos > window.innerHeight) {
-                                    element.remove();
-                                } else {
-                                    requestAnimationFrame(animate);
+                            function loop() {
+                                draw();
+                                update();
+                                if (particles.some(p => p.y < H)) {
+                                    requestAnimationFrame(loop);
                                 }
-                            };
-
-                            requestAnimationFrame(animate);
+                            }
+                            loop();
                         }
                     };
 
@@ -385,9 +411,20 @@
                             pieceEl.style.backgroundPosition =
                                 `-${piece.correctCol * pieceSize}px -${piece.correctRow * pieceSize}px`;
 
-                            // Event listeners
+                            // Desktop event listeners
                             pieceEl.addEventListener('dragstart', this.handleDragStart.bind(this));
                             pieceEl.addEventListener('dragend', this.handleDragEnd.bind(this));
+
+                            // Mobile touch event listeners for immediate dragging
+                            pieceEl.addEventListener('touchstart', this.handleTouchStart.bind(this), {
+                                passive: false
+                            });
+                            pieceEl.addEventListener('touchmove', this.handleTouchMove.bind(this), {
+                                passive: false
+                            });
+                            pieceEl.addEventListener('touchend', this.handleTouchEnd.bind(this), {
+                                passive: false
+                            });
 
                             return pieceEl;
                         },
@@ -405,6 +442,91 @@
                         handleDragEnd(e) {
                             e.target.classList.remove('dragging');
                             state.draggedPiece = null;
+                        },
+
+                        // Mobile touch handlers for immediate dragging
+                        handleTouchStart(e) {
+                            e.preventDefault();
+                            const touch = e.touches[0];
+                            const target = e.currentTarget;
+
+                            state.draggedPiece = target;
+                            target.classList.add('dragging');
+
+                            // Store initial touch position and piece position
+                            target.dataset.touchStartX = touch.clientX;
+                            target.dataset.touchStartY = touch.clientY;
+                            target.dataset.initialLeft = target.offsetLeft;
+                            target.dataset.initialTop = target.offsetTop;
+                        },
+
+                        handleTouchMove(e) {
+                            e.preventDefault();
+                            if (!state.draggedPiece) return;
+
+                            const touch = e.touches[0];
+                            const target = state.draggedPiece;
+
+                            // Move the piece with the touch
+                            const deltaX = touch.clientX - parseFloat(target.dataset.touchStartX);
+                            const deltaY = touch.clientY - parseFloat(target.dataset.touchStartY);
+
+                            target.style.position = 'relative';
+                            target.style.left = deltaX + 'px';
+                            target.style.top = deltaY + 'px';
+                            target.style.zIndex = '1000';
+
+                            // Highlight slots that are under the touch
+                            this.highlightSlotUnderTouch(touch);
+                        },
+
+                        handleTouchEnd(e) {
+                            e.preventDefault();
+                            if (!state.draggedPiece) return;
+
+                            const touch = e.changedTouches[0];
+                            const target = state.draggedPiece;
+
+                            // Reset piece styling
+                            target.classList.remove('dragging');
+                            target.style.position = '';
+                            target.style.left = '';
+                            target.style.top = '';
+                            target.style.zIndex = '';
+
+                            // Find slot under touch
+                            const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+                            const targetSlot = elementUnderTouch?.classList.contains('puzzle-slot') ?
+                                elementUnderTouch : elementUnderTouch?.closest('.puzzle-slot');
+
+                            // Remove drag-over class from all slots
+                            document.querySelectorAll('.puzzle-slot.drag-over').forEach(slot => {
+                                slot.classList.remove('drag-over');
+                            });
+
+                            // Complete the swap if dropped on valid slot
+                            if (targetSlot) {
+                                DragDropManager.swapPieces(targetSlot);
+                                GameLogic.checkWin();
+                            }
+
+                            state.draggedPiece = null;
+                        },
+
+                        highlightSlotUnderTouch(touch) {
+                            // Remove previous highlights
+                            document.querySelectorAll('.puzzle-slot.drag-over').forEach(slot => {
+                                slot.classList.remove('drag-over');
+                            });
+
+                            // Add highlight to slot under touch
+                            const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+                            const slotUnderTouch = elementUnderTouch?.classList.contains('puzzle-slot') ?
+                                elementUnderTouch : elementUnderTouch?.closest('.puzzle-slot');
+
+                            if (slotUnderTouch && !slotUnderTouch.contains(state.draggedPiece)) {
+                                slotUnderTouch.classList.add('drag-over');
+                            }
                         }
                     };
 

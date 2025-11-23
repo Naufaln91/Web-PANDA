@@ -14,7 +14,7 @@
         </div>
 
         <div
-            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-16">
+            class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-16 relative overflow-hidden">
 
             <div class="text-center">
                 <div id="maze-container" class="inline-block relative p-4 rounded-lg shadow-lg">
@@ -35,15 +35,15 @@
                     <button onclick="move('right')"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-full text-2xl w-20 h-20">➡️</button>
                 </div>
+
+                {{-- Pesan status permainan --}}
+                <p id="message" class="text-xl font-bold text-center mt-4 min-h-[2rem]"></p>
             </div>
 
+            {{-- Canvas untuk confetti --}}
+            <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
         </div>
-        <p id="message" class="text-2xl font-bold mt-4 text-center"></p>
     </div>
-
-    {{-- 3. TAMBAHKAN CDN UNTUK CONFETTI --}}
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
 
     @push('scripts')
         <script>
@@ -168,6 +168,9 @@
 
 
             // 🔹 Gerakan pemain
+            let moveInterval = null;
+            let currentDirection = null;
+
             function move(direction) {
                 let newX = player.x;
                 let newY = player.y;
@@ -185,55 +188,148 @@
                 }
             }
 
+            // 🔹 Fungsi untuk memulai gerakan berkelanjutan
+            function startContinuousMove(direction) {
+                // Hentikan gerakan sebelumnya jika ada
+                stopContinuousMove();
+
+                // Gerak pertama langsung
+                currentDirection = direction;
+                move(direction);
+
+                // Mulai interval untuk gerakan berkelanjutan
+                moveInterval = setInterval(() => {
+                    move(currentDirection);
+                }, 150); // Gerak setiap 150ms
+            }
+
+            // 🔹 Fungsi untuk menghentikan gerakan berkelanjutan
+            function stopContinuousMove() {
+                if (moveInterval) {
+                    clearInterval(moveInterval);
+                    moveInterval = null;
+                }
+                currentDirection = null;
+            }
+
+            // 🔹 Setup event listeners untuk tombol navigasi
+            function setupNavigationButtons() {
+                const buttons = {
+                    up: document.querySelector('button[onclick="move(\'up\')"]'),
+                    down: document.querySelector('button[onclick="move(\'down\')"]'),
+                    left: document.querySelector('button[onclick="move(\'left\')"]'),
+                    right: document.querySelector('button[onclick="move(\'right\')"]')
+                };
+
+                Object.keys(buttons).forEach(direction => {
+                    const button = buttons[direction];
+                    if (button) {
+                        // Hapus onclick attribute (kita ganti dengan event listener)
+                        button.removeAttribute('onclick');
+
+                        // Mouse events
+                        button.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                            startContinuousMove(direction);
+                        });
+
+                        button.addEventListener('mouseup', stopContinuousMove);
+                        button.addEventListener('mouseleave', stopContinuousMove);
+
+                        // Touch events untuk mobile
+                        button.addEventListener('touchstart', (e) => {
+                            e.preventDefault();
+                            startContinuousMove(direction);
+                        });
+
+                        button.addEventListener('touchend', (e) => {
+                            e.preventDefault();
+                            stopContinuousMove();
+                        });
+
+                        button.addEventListener('touchcancel', stopContinuousMove);
+                    }
+                });
+            }
+
             // ========================================================
-            // 4. PENAMBAHAN FUNGSI BARU (Sound & Confetti)
+            // 4. FUNGSI AUDIO DAN CONFETTI (Sesuai dengan urutkan_angka)
             // ========================================================
 
-            // 🔹 Fungsi untuk memainkan sound effect (tanpa file)
-            function playWinSound() {
-                try {
-                    // Buat AudioContext
-                    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+            let audioContext = null;
 
-                    // Buat Oscillator (sumber suara)
-                    const oscillator = audioCtx.createOscillator();
-                    const gainNode = audioCtx.createGain(); // Untuk kontrol volume
-
-                    // Atur jenis suara (sine, square, sawtooth, triangle)
-                    oscillator.type = 'sine';
-
-                    // Atur frekuensi (nada) - kita buat nada naik
-                    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Mulai dari 440 Hz (Nada A)
-                    oscillator.frequency.linearRampToValueAtTime(880, audioCtx.currentTime +
-                        0.3); // Naik ke 880 Hz dalam 0.3 detik
-
-                    // Atur volume agar tidak terlalu keras dan ada fade out
-                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volume awal
-                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5); // Fade out dalam 0.5 detik
-
-                    // Hubungkan semuanya
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-
-                    // Mulai dan Hentikan suara
-                    oscillator.start();
-                    oscillator.stop(audioCtx.currentTime + 0.5); // Berhenti setelah 0.5 detik
-                } catch (e) {
-                    console.error("Web Audio API tidak didukung di browser ini.", e);
+            function initAudio() {
+                if (!audioContext) {
+                    audioContext = new(window.AudioContext || window.webkitAudioContext)();
                 }
             }
 
-            // 🔹 Fungsi untuk memicu confetti
-            function triggerConfetti() {
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 150, // Jumlah confetti
-                        spread: 80, // Seberapa lebar sebarannya
-                        origin: {
-                            y: 0.6
-                        } // Mulai dari tengah layar
+            // 🔹 Fungsi untuk memainkan sound effect sukses (sama seperti urutkan_angka)
+            function playSuccessSound() {
+                initAudio();
+                const freqs = [523.25, 659.25, 783.99, 1046.50];
+                freqs.forEach((f, i) => {
+                    setTimeout(() => {
+                        const o = audioContext.createOscillator();
+                        const g = audioContext.createGain();
+                        o.connect(g);
+                        g.connect(audioContext.destination);
+                        o.type = 'sine';
+                        o.frequency.value = f;
+                        g.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        o.start(audioContext.currentTime);
+                        o.stop(audioContext.currentTime + 0.3);
+                    }, i * 100);
+                });
+            }
+
+            // 🔹 Fungsi untuk membuat confetti canvas (sama seperti urutkan_angka)
+            function createConfetti() {
+                const canvas = document.getElementById('confetti-canvas');
+                const ctx = canvas.getContext('2d');
+                const particles = [];
+
+                const colors = ['#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'];
+
+                const W = canvas.width = canvas.offsetWidth;
+                const H = canvas.height = canvas.offsetHeight;
+
+                for (let i = 0; i < 60; i++) {
+                    particles.push({
+                        x: Math.random() * W,
+                        y: Math.random() * -H / 2,
+                        r: Math.random() * 6 + 3,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        speed: Math.random() * 3 + 2,
+                        tilt: Math.random() * 10 - 5
                     });
                 }
+
+                function draw() {
+                    ctx.clearRect(0, 0, W, H);
+                    particles.forEach(p => {
+                        ctx.beginPath();
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(p.x, p.y, p.r, p.r);
+                    });
+                }
+
+                function update() {
+                    particles.forEach(p => {
+                        p.y += p.speed;
+                        p.x += Math.sin(p.tilt);
+                    });
+                }
+
+                function loop() {
+                    draw();
+                    update();
+                    if (particles.some(p => p.y < H)) {
+                        requestAnimationFrame(loop);
+                    }
+                }
+                loop();
             }
 
 
@@ -242,27 +338,22 @@
                 if (player.x === exit.x && player.y === exit.y) {
                     message.textContent = "🎉 Hebat! Kamu sampai ke garis finish!";
 
-                    // 5. MODIFIKASI: Panggil fungsi baru & hapus suara Google
-                    playWinSound(); // Mainkan suara kemenangan
-                    triggerConfetti(); // Tembakkan confetti
-
-                    /* Suara Google (SpeechSynthesis) dihapus
-                    if ('speechSynthesis' in window) {
-                        ...
-                    }
-                    */
+                    // Mainkan suara kemenangan dan confetti (sama seperti urutkan_angka)
+                    playSuccessSound();
+                    createConfetti();
 
                     setTimeout(() => {
                         message.textContent = "Labirin baru muncul!";
                         maze = generateMaze();
                         drawMaze();
-                    }, 1500);
+                    }, 2500);
                 }
             }
 
             // 🔹 Jalankan game pertama kali
             maze = generateMaze();
             drawMaze();
+            setupNavigationButtons(); // Setup tombol dengan continuous movement
         </script>
     @endpush
 @endsection

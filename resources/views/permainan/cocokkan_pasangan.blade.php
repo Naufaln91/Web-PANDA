@@ -18,7 +18,7 @@
             class="card bg-gradient-to-r from-blue-100 to-indigo-100 py-12 px-6 rounded-2xl shadow-md relative overflow-hidden">
             <div class="flex flex-col items-center justify-center min-h-[70vh]">
                 <div id="game" class="grid gap-4 justify-center mb-3"></div>
-                <p id="status" class="text-xl font-bold text-green-600 mt-2"></p>
+                <p id="status" class="text-xl font-bold text-green-600 mt-2 text-center"></p>
                 <button id="restartBtn"
                     class="hidden bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition mt-6">
                     <i class="fas fa-redo mr-2"></i> Main Lagi dari Awal
@@ -56,28 +56,134 @@
                     document.getElementById('status').textContent = '';
                     document.getElementById('restartBtn').classList.add('hidden');
 
-                    // Tentukan kolom dengan style inline
+                    // Deteksi ukuran layar
+                    const isMobile = window.innerWidth < 640;
+                    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
+
+                    // Tentukan kolom berdasarkan device dan jumlah kartu
                     let gridCols;
                     const totalCards = items.length;
 
-                    if (totalCards <= 4) {
-                        gridCols = 2;
-                    } else if (totalCards <= 9) {
-                        gridCols = 3;
-                    } else if (totalCards <= 16) {
-                        gridCols = 4;
+                    if (isMobile) {
+                        // Mobile: dominasi vertikal dengan kolom lebih sedikit
+                        if (totalCards <= 4) {
+                            gridCols = 2;
+                        } else if (totalCards <= 6) {
+                            gridCols = 2; // 2 kolom untuk 6 kartu
+                        } else if (totalCards <= 8) {
+                            gridCols = 2; // 2 kolom untuk 8 kartu
+                        } else if (totalCards <= 12) {
+                            gridCols = 3; // 3 kolom untuk 12 kartu
+                        } else if (totalCards <= 16) {
+                            gridCols = 3; // 3 kolom untuk 16 kartu
+                        } else {
+                            gridCols = 4; // 4 kolom untuk 20 kartu
+                        }
                     } else {
-                        gridCols = 5; // untuk 20 kartu
+                        // Desktop/Tablet: lebih banyak kolom (memanjang horizontal)
+                        if (totalCards <= 4) {
+                            gridCols = 2;
+                        } else if (totalCards <= 6) {
+                            gridCols = 3;
+                        } else if (totalCards <= 12) {
+                            gridCols = 4;
+                        } else if (totalCards <= 16) {
+                            gridCols = 4;
+                        } else {
+                            gridCols = 5; // 5 kolom untuk 20 kartu
+                        }
                     }
 
-                    game.className = 'grid gap-4 justify-center mb-3';
-                    game.style.gridTemplateColumns = `repeat(${gridCols}, minmax(0, 1fr))`;
+                    // Hitung ukuran kartu berdasarkan jumlah kolom dan total kartu
+                    let cardSize, fontSize, gapSize;
+
+                    if (isMobile) {
+                        // Mobile: ukuran lebih besar karena kolom lebih sedikit
+                        if (totalCards <= 4) {
+                            cardSize = 140;
+                            fontSize = '4.5rem';
+                            gapSize = 16;
+                        } else if (totalCards <= 6) {
+                            cardSize = 140;
+                            fontSize = '4.5rem';
+                            gapSize = 16;
+                        } else if (totalCards <= 8) {
+                            cardSize = 140;
+                            fontSize = '4.5rem';
+                            gapSize = 16;
+                        } else if (totalCards <= 12) {
+                            cardSize = 100;
+                            fontSize = '3.5rem';
+                            gapSize = 12;
+                        } else if (totalCards <= 16) {
+                            cardSize = 95;
+                            fontSize = '3.2rem';
+                            gapSize = 10;
+                        } else {
+                            cardSize = 75;
+                            fontSize = '2.8rem';
+                            gapSize = 8;
+                        }
+                    } else if (isTablet) {
+                        // Tablet: ukuran sedang
+                        if (totalCards <= 4) {
+                            cardSize = 150;
+                            fontSize = '5rem';
+                            gapSize = 18;
+                        } else if (totalCards <= 6) {
+                            cardSize = 120;
+                            fontSize = '4.2rem';
+                            gapSize = 16;
+                        } else if (totalCards <= 12) {
+                            cardSize = 110;
+                            fontSize = '3.8rem';
+                            gapSize = 14;
+                        } else if (totalCards <= 16) {
+                            cardSize = 100;
+                            fontSize = '3.5rem';
+                            gapSize = 12;
+                        } else {
+                            cardSize = 95;
+                            fontSize = '3.2rem';
+                            gapSize = 10;
+                        }
+                    } else {
+                        // Desktop: ukuran lebih besar dan nyaman
+                        if (totalCards <= 4) {
+                            cardSize = 160;
+                            fontSize = '5.5rem';
+                            gapSize = 20;
+                        } else if (totalCards <= 6) {
+                            cardSize = 135;
+                            fontSize = '4.8rem';
+                            gapSize = 18;
+                        } else if (totalCards <= 12) {
+                            cardSize = 120;
+                            fontSize = '4.2rem';
+                            gapSize = 16;
+                        } else if (totalCards <= 16) {
+                            cardSize = 110;
+                            fontSize = '3.8rem';
+                            gapSize = 14;
+                        } else {
+                            cardSize = 105;
+                            fontSize = '3.5rem';
+                            gapSize = 12;
+                        }
+                    }
+
+                    game.className = 'grid justify-center mb-3';
+                    game.style.gridTemplateColumns = `repeat(${gridCols}, ${cardSize}px)`;
+                    game.style.gap = `${gapSize}px`;
                     game.innerHTML = '';
 
                     items.forEach((emoji) => {
                         const card = document.createElement('div');
                         card.className =
-                            "bg-blue-200 w-[120px] h-[120px] rounded-2xl flex items-center justify-center text-6xl cursor-pointer shadow-lg hover:scale-105 transition";
+                            "bg-blue-200 rounded-2xl flex items-center justify-center cursor-pointer shadow-lg hover:scale-105 transition";
+                        card.style.width = `${cardSize}px`;
+                        card.style.height = `${cardSize}px`;
+                        card.style.fontSize = fontSize;
                         card.dataset.value = emoji;
                         card.onclick = () => flipCard(card);
                         game.appendChild(card);
@@ -190,7 +296,7 @@
                     });
                 }
 
-                // --- Efek confetti 🎊 (sama seperti permainan hitung) ---
+                // --- Efek confetti 🎊 ---
                 function createConfetti() {
                     const canvas = document.getElementById('confetti-canvas');
                     const ctx = canvas.getContext('2d');
