@@ -247,28 +247,29 @@
 
     @push('scripts')
         <script>
-            // Search Functionality
-            $('#search-input').on('keyup', function() {
-                const searchValue = $(this).val().toLowerCase();
-                let visibleRows = 0;
+            document.addEventListener('vite:loaded', function() {
+                // Search Functionality
+                $('#search-input').on('keyup', function() {
+                    const searchValue = $(this).val().toLowerCase();
+                    let visibleRows = 0;
 
-                $('#histori-table-body tr').each(function() {
-                    if ($(this).attr('id') === 'empty-row') return;
+                    $('#histori-table-body tr').each(function() {
+                        if ($(this).attr('id') === 'empty-row') return;
 
-                    const nama = $(this).find('td:eq(1)').text().toLowerCase();
+                        const nama = $(this).find('td:eq(1)').text().toLowerCase();
 
-                    if (nama.includes(searchValue)) {
-                        $(this).show();
-                        visibleRows++;
-                    } else {
-                        $(this).hide();
-                    }
-                });
+                        if (nama.includes(searchValue)) {
+                            $(this).show();
+                            visibleRows++;
+                        } else {
+                            $(this).hide();
+                        }
+                    });
 
-                // Show/hide empty message
-                if (visibleRows === 0 && searchValue !== '') {
-                    if ($('#no-results').length === 0) {
-                        $('#histori-table-body').append(`
+                    // Show/hide empty message
+                    if (visibleRows === 0 && searchValue !== '') {
+                        if ($('#no-results').length === 0) {
+                            $('#histori-table-body').append(`
                             <tr id="no-results">
                                 <td colspan="8" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center text-gray-400">
@@ -279,33 +280,33 @@
                                 </td>
                             </tr>
                         `);
-                    }
-                } else {
-                    $('#no-results').remove();
-                }
-            });
-
-            function showDetail(historiId) {
-                // Fetch detail data
-                $.ajax({
-                    url: `/api/histori-kuis/${historiId}`,
-                    method: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            displayDetailModal(response.histori);
                         }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Gagal memuat detail jawaban', 'error');
+                    } else {
+                        $('#no-results').remove();
                     }
                 });
-            }
 
-            function displayDetailModal(histori) {
-                const modal = $('#detailModal');
-                const content = $('#detailContent');
+                function showDetail(historiId) {
+                    // Fetch detail data
+                    $.ajax({
+                        url: `/api/histori-kuis/${historiId}`,
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.success) {
+                                displayDetailModal(response.histori);
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Gagal memuat detail jawaban', 'error');
+                        }
+                    });
+                }
 
-                let html = `
+                function displayDetailModal(histori) {
+                    const modal = $('#detailModal');
+                    const content = $('#detailContent');
+
+                    let html = `
                     <div class="bg-gray-50 p-4 rounded-lg mb-4 border border-gray-200">
                         <h4 class="font-bold text-lg text-gray-800 mb-1">${histori.user.nama_anak || histori.user.nama || histori.user.username || histori.user.email || 'User'}</h4>
                         <div class="flex flex-wrap gap-3 text-sm text-gray-600">
@@ -316,57 +317,60 @@
                     </div>
                 `;
 
-                if (histori.detail_jawaban && histori.detail_jawaban.length > 0 && histori.kuis && histori.kuis.soal) {
-                    html += '<div class="space-y-4">';
+                    if (histori.detail_jawaban && histori.detail_jawaban.length > 0 && histori.kuis && histori.kuis
+                        .soal) {
+                        html += '<div class="space-y-4">';
 
-                    // Map soal by index to ensure correct matching
-                    histori.kuis.soal.forEach((soal, index) => {
-                        // Find user answer for this question index (use loose equality for index)
-                        const userAnswer = histori.detail_jawaban.find(a => a.soal_index == index);
-                        // Ensure isCorrect is strictly boolean (handle 1/0, "1"/"0", true/false)
-                        const isCorrect = userAnswer ? (userAnswer.is_correct == 1 || userAnswer.is_correct === true ||
-                            userAnswer.is_correct === 'true') : false;
+                        // Map soal by index to ensure correct matching
+                        histori.kuis.soal.forEach((soal, index) => {
+                            // Find user answer for this question index (use loose equality for index)
+                            const userAnswer = histori.detail_jawaban.find(a => a.soal_index == index);
+                            // Ensure isCorrect is strictly boolean (handle 1/0, "1"/"0", true/false)
+                            const isCorrect = userAnswer ? (userAnswer.is_correct == 1 || userAnswer
+                                .is_correct === true ||
+                                userAnswer.is_correct === 'true') : false;
 
-                        let userAnswerContent = '-';
-                        let correctAnswerContent = '-';
+                            let userAnswerContent = '-';
+                            let correctAnswerContent = '-';
 
-                        if (soal.tipe === 'pilihan_ganda') {
-                            // User Answer
-                            if (userAnswer && userAnswer.answer_id) {
-                                // Use loose equality for ID comparison
-                                const selectedPilihan = soal.pilihan_jawaban.find(p => p.id == userAnswer.answer_id);
-                                if (selectedPilihan) {
-                                    userAnswerContent = selectedPilihan.konten_pilihan;
-                                    if (selectedPilihan.gambar_pilihan) {
-                                        userAnswerContent +=
-                                            `<br><img src="/storage/${selectedPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
+                            if (soal.tipe === 'pilihan_ganda') {
+                                // User Answer
+                                if (userAnswer && userAnswer.answer_id) {
+                                    // Use loose equality for ID comparison
+                                    const selectedPilihan = soal.pilihan_jawaban.find(p => p.id == userAnswer
+                                        .answer_id);
+                                    if (selectedPilihan) {
+                                        userAnswerContent = selectedPilihan.konten_pilihan;
+                                        if (selectedPilihan.gambar_pilihan) {
+                                            userAnswerContent +=
+                                                `<br><img src="/storage/${selectedPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
+                                        }
+                                    }
+                                } else if (userAnswer && userAnswer.answer_text) {
+                                    // Fallback if stored as text
+                                    userAnswerContent = userAnswer.answer_text;
+                                }
+
+                                // Correct Answer (if wrong)
+                                if (!isCorrect) {
+                                    const correctPilihan = soal.pilihan_jawaban.find(p => p.is_benar == 1);
+                                    if (correctPilihan) {
+                                        correctAnswerContent = correctPilihan.konten_pilihan;
+                                        if (correctPilihan.gambar_pilihan) {
+                                            correctAnswerContent +=
+                                                `<br><img src="/storage/${correctPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
+                                        }
                                     }
                                 }
-                            } else if (userAnswer && userAnswer.answer_text) {
-                                // Fallback if stored as text
-                                userAnswerContent = userAnswer.answer_text;
-                            }
-
-                            // Correct Answer (if wrong)
-                            if (!isCorrect) {
-                                const correctPilihan = soal.pilihan_jawaban.find(p => p.is_benar == 1);
-                                if (correctPilihan) {
-                                    correctAnswerContent = correctPilihan.konten_pilihan;
-                                    if (correctPilihan.gambar_pilihan) {
-                                        correctAnswerContent +=
-                                            `<br><img src="/storage/${correctPilihan.gambar_pilihan}" class="h-16 rounded mt-2 border border-gray-200">`;
-                                    }
+                            } else {
+                                // Isian Singkat
+                                userAnswerContent = userAnswer ? (userAnswer.answer_text || '-') : '-';
+                                if (!isCorrect) {
+                                    correctAnswerContent = soal.jawaban_benar;
                                 }
                             }
-                        } else {
-                            // Isian Singkat
-                            userAnswerContent = userAnswer ? (userAnswer.answer_text || '-') : '-';
-                            if (!isCorrect) {
-                                correctAnswerContent = soal.jawaban_benar;
-                            }
-                        }
 
-                        html += `
+                            html += `
                             <div class="card border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow-sm overflow-hidden">
                                 <div class="p-4">
                                     <!-- Header -->
@@ -394,79 +398,83 @@
                                         </div>
                                         
                                         ${!isCorrect ? `
-                                                                                <div class="pt-2 border-t border-gray-200">
-                                                                                    <p class="text-xs text-gray-500 uppercase font-bold mb-1">Jawaban Benar</p>
-                                                                                    <div class="text-green-700 font-medium">
-                                                                                        ${correctAnswerContent}
-                                                                                    </div>
-                                                                                </div>
-                                                                                ` : ''}
+                                                                                                <div class="pt-2 border-t border-gray-200">
+                                                                                                    <p class="text-xs text-gray-500 uppercase font-bold mb-1">Jawaban Benar</p>
+                                                                                                    <div class="text-green-700 font-medium">
+                                                                                                        ${correctAnswerContent}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                ` : ''}
                                     </div>
                                 </div>
                             </div>
                         `;
-                    });
-                    html += '</div>';
-                } else {
-                    html += `
+                        });
+                        html += '</div>';
+                    } else {
+                        html += `
                         <div class="text-center py-8">
                             <i class="fas fa-exclamation-circle text-gray-300 text-4xl mb-3"></i>
                             <p class="text-gray-500">Detail jawaban tidak tersedia atau data soal telah dihapus.</p>
                         </div>
                     `;
+                    }
+
+                    content.html(html);
+                    modal.removeClass('hidden');
                 }
 
-                content.html(html);
-                modal.removeClass('hidden');
-            }
-
-            function closeModal() {
-                $('#detailModal').addClass('hidden');
-            }
-
-            // Close modal when clicking outside
-            $('#detailModal').on('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
+                function closeModal() {
+                    $('#detailModal').addClass('hidden');
                 }
-            });
 
-            function hapusHistori(historiId) {
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: "Data histori kuis ini akan dihapus secara permanen!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/api/histori-kuis/${historiId}`,
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    Swal.fire(
-                                        'Terhapus!',
-                                        response.message,
-                                        'success'
-                                    ).then(() => {
-                                        location.reload();
-                                    });
-                                }
-                            },
-                            error: function() {
-                                Swal.fire('Error', 'Gagal menghapus histori kuis', 'error');
-                            }
-                        });
+                // Close modal when clicking outside
+                $('#detailModal').on('click', function(e) {
+                    if (e.target === this) {
+                        closeModal();
                     }
                 });
-            }
+
+                function hapusHistori(historiId) {
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Data histori kuis ini akan dihapus secara permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/api/histori-kuis/${historiId}`,
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        Swal.fire(
+                                            'Terhapus!',
+                                            response.message,
+                                            'success'
+                                        ).then(() => {
+                                            location.reload();
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    Swal.fire('Error', 'Gagal menghapus histori kuis', 'error');
+                                }
+                            });
+                        }
+                    });
+                });
+
+            // Expose functions globally for onclick handlers
+            window.showDetail = showDetail; window.closeModal = closeModal; window.hapusHistori = hapusHistori;
+            });
         </script>
     @endpush
 @endsection

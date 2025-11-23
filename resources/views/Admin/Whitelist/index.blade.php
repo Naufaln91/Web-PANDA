@@ -191,97 +191,99 @@
 
     @push('scripts')
         <script>
-            // Tambah Whitelist
-            $('#form-tambah-whitelist').on('submit', function(e) {
-                e.preventDefault();
+            document.addEventListener('vite:loaded', function() {
+                // Tambah Whitelist
+                $('#form-tambah-whitelist').on('submit', function(e) {
+                    e.preventDefault();
 
-                const email = $('#email').val();
-                const role = $('#role').val();
-                const errorDiv = $('#error-message');
+                    const email = $('#email').val();
+                    const role = $('#role').val();
+                    const errorDiv = $('#error-message');
 
-                errorDiv.addClass('hidden');
+                    errorDiv.addClass('hidden');
 
-                // Validasi
-                if (!email || !role) {
-                    errorDiv.find('p').text('Semua field harus diisi!');
-                    errorDiv.removeClass('hidden');
-                    return;
-                }
+                    // Validasi
+                    if (!email || !role) {
+                        errorDiv.find('p').text('Semua field harus diisi!');
+                        errorDiv.removeClass('hidden');
+                        return;
+                    }
 
-                $.ajax({
-                    url: '{{ route('admin.whitelist.store') }}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        email: email,
-                        role: role
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                                timer: 2000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            errorDiv.find('p').text(response.message);
+                    $.ajax({
+                        url: '{{ route('admin.whitelist.store') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            email: email,
+                            role: role
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                errorDiv.find('p').text(response.message);
+                                errorDiv.removeClass('hidden');
+                            }
+                        },
+                        error: function(xhr) {
+                            const message = xhr.responseJSON?.message ||
+                                'Terjadi kesalahan. Silakan coba lagi.';
+                            errorDiv.find('p').text(message);
                             errorDiv.removeClass('hidden');
                         }
-                    },
-                    error: function(xhr) {
-                        const message = xhr.responseJSON?.message ||
-                            'Terjadi kesalahan. Silakan coba lagi.';
-                        errorDiv.find('p').text(message);
-                        errorDiv.removeClass('hidden');
-                    }
+                    });
                 });
-            });
 
-            // Search Functionality
-            $('#search-input').on('keyup', function() {
-                const searchValue = $(this).val().toLowerCase();
-                let visibleRows = 0;
+                // Search Functionality
+                $('#search-input').on('keyup', function() {
+                    const searchValue = $(this).val().toLowerCase();
+                    let visibleRows = 0;
 
-                $('#whitelist-table-body tr').each(function() {
-                    if ($(this).attr('id') === 'empty-row') return;
+                    $('#whitelist-table-body tr').each(function() {
+                        if ($(this).attr('id') === 'empty-row') return;
 
-                    const email = $(this).find('td:eq(1)').text().toLowerCase();
-                    const role = $(this).find('td:eq(2)').text().toLowerCase();
+                        const email = $(this).find('td:eq(1)').text().toLowerCase();
+                        const role = $(this).find('td:eq(2)').text().toLowerCase();
 
-                    if (email.includes(searchValue) || role.includes(searchValue)) {
-                        $(this).show();
-                        visibleRows++;
+                        if (email.includes(searchValue) || role.includes(searchValue)) {
+                            $(this).show();
+                            visibleRows++;
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+
+                    // Show/hide empty message
+                    if (visibleRows === 0 && searchValue !== '') {
+                        if ($('#no-results').length === 0) {
+                            $('#whitelist-table-body').append(`
+                                <tr id="no-results">
+                                    <td colspan="5" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center text-gray-400">
+                                            <i class="fas fa-search text-6xl mb-4"></i>
+                                            <p class="text-lg font-semibold text-gray-500">Tidak ada hasil ditemukan</p>
+                                            <p class="text-sm text-gray-400 mt-1">Coba kata kunci lain</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `);
+                        }
                     } else {
-                        $(this).hide();
+                        $('#no-results').remove();
                     }
                 });
-
-                // Show/hide empty message
-                if (visibleRows === 0 && searchValue !== '') {
-                    if ($('#no-results').length === 0) {
-                        $('#whitelist-table-body').append(`
-                            <tr id="no-results">
-                                <td colspan="5" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center justify-center text-gray-400">
-                                        <i class="fas fa-search text-6xl mb-4"></i>
-                                        <p class="text-lg font-semibold text-gray-500">Tidak ada hasil ditemukan</p>
-                                        <p class="text-sm text-gray-400 mt-1">Coba kata kunci lain</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `);
-                    }
-                } else {
-                    $('#no-results').remove();
-                }
             });
 
-            // Hapus Whitelist
-            function deleteWhitelist(id) {
+            // Hapus Whitelist - function needs to be global for onclick attributes
+            window.deleteWhitelist = function(id) {
                 Swal.fire({
                     title: 'Yakin ingin menghapus?',
                     text: 'Jika email ini sudah memiliki akun, akun juga akan terhapus.',
@@ -323,7 +325,7 @@
                         });
                     }
                 });
-            }
+            };
         </script>
     @endpush
 @endsection

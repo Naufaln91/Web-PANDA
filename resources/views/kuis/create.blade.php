@@ -270,37 +270,39 @@
             let soalList = [];
             let editingSoalIndex = null;
 
-            // Toggle durasi waktu
-            $('#waktu_tipe').on('change', function() {
-                if ($(this).val() !== 'tanpa_waktu') {
-                    $('#durasi-container').removeClass('hidden');
-                } else {
-                    $('#durasi-container').addClass('hidden');
-                }
-            });
+            document.addEventListener('vite:loaded', function() {
 
-            // Toggle tipe soal
-            $('input[name="tipe"]').on('change', function() {
-                if ($(this).val() === 'pilihan_ganda') {
-                    $('#form-pilihan-ganda').removeClass('hidden');
-                    $('#form-isian-singkat').addClass('hidden');
-                } else {
-                    $('#form-pilihan-ganda').addClass('hidden');
-                    $('#form-isian-singkat').removeClass('hidden');
-                }
-            });
+                // Toggle durasi waktu
+                $('#waktu_tipe').on('change', function() {
+                    if ($(this).val() !== 'tanpa_waktu') {
+                        $('#durasi-container').removeClass('hidden');
+                    } else {
+                        $('#durasi-container').addClass('hidden');
+                    }
+                });
 
-            // Generate pilihan jawaban
-            $('#jumlah_pilihan').on('change', function() {
-                generatePilihanJawaban($(this).val());
-            });
+                // Toggle tipe soal
+                $('input[name="tipe"]').on('change', function() {
+                    if ($(this).val() === 'pilihan_ganda') {
+                        $('#form-pilihan-ganda').removeClass('hidden');
+                        $('#form-isian-singkat').addClass('hidden');
+                    } else {
+                        $('#form-pilihan-ganda').addClass('hidden');
+                        $('#form-isian-singkat').removeClass('hidden');
+                    }
+                });
 
-            function generatePilihanJawaban(jumlah) {
-                const container = $('#pilihan-container');
-                container.empty();
+                // Generate pilihan jawaban
+                $('#jumlah_pilihan').on('change', function() {
+                    generatePilihanJawaban($(this).val());
+                });
 
-                for (let i = 1; i <= jumlah; i++) {
-                    const html = `
+                function generatePilihanJawaban(jumlah) {
+                    const container = $('#pilihan-container');
+                    container.empty();
+
+                    for (let i = 1; i <= jumlah; i++) {
+                        const html = `
             <div class="border-2 border-gray-200 rounded-lg p-4">
                 <div class="flex items-start space-x-3">
                     <input type="radio" name="jawaban_benar" value="${i}" ${i === 1 ? 'checked' : ''} 
@@ -316,240 +318,242 @@
                 </div>
             </div>
         `;
-                    container.append(html);
-                }
-            }
-
-            // Create Kuis
-            function createKuis() {
-                const judul = $('#judul').val().trim();
-                const deskripsi = $('#deskripsi').val().trim();
-                const waktuTipe = $('#waktu_tipe').val();
-                const durasiWaktu = $('#durasi_waktu').val();
-
-                if (!judul) {
-                    Swal.fire('Error', 'Judul kuis harus diisi!', 'error');
-                    return;
-                }
-
-                if (waktuTipe !== 'tanpa_waktu' && (!durasiWaktu || durasiWaktu < 5 || durasiWaktu > 3600)) {
-                    Swal.fire('Error', 'Durasi waktu harus antara 5-3600 detik!', 'error');
-                    return;
-                }
-
-                $.ajax({
-                    url: '{{ route('kuis.store') }}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        judul: judul,
-                        deskripsi: deskripsi,
-                        waktu_tipe: waktuTipe,
-                        durasi_waktu: durasiWaktu,
-                        penunjukan_jawaban: $('input[name="penunjukan_jawaban"]:checked').val()
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            kuisId = response.kuis_id;
-
-                            // Update display
-                            $('#display-judul').text(judul);
-                            $('#display-deskripsi').text(deskripsi || 'Tidak ada deskripsi');
-
-                            // Change step
-                            $('#step-info').addClass('hidden');
-                            $('#step-soal').removeClass('hidden');
-
-                            // Update progress indicator
-                            updateStepIndicator(2);
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: 'Kuis berhasil dibuat. Silakan tambahkan soal.',
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Terjadi kesalahan. Silakan coba lagi.', 'error');
+                        container.append(html);
                     }
-                });
-            }
-
-            function showAddSoalForm() {
-                editingSoalIndex = null;
-                $('#soal-id').val('');
-                $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Tambah Soal Baru');
-                $('#form-soal')[0].reset();
-                $('#form-soal-wrapper').removeClass('hidden');
-                $('#form-soal-container').removeClass('hidden');
-                generatePilihanJawaban(4);
-                $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
-
-                // Scroll to form
-                $('html, body').animate({
-                    scrollTop: $('#form-soal-container').offset().top - 100
-                }, 500);
-            }
-
-            function editSoal(index) {
-                editingSoalIndex = index;
-                const soal = soalList[index];
-
-                $('#soal-id').val(soal.id);
-                $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Edit Soal');
-
-                $('#konten_soal').val(soal.konten_soal);
-
-                if (soal.tipe === 'pilihan_ganda') {
-                    $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
-                    $('#jumlah_pilihan').val(soal.pilihan_jawaban.length).trigger('change');
-
-                    // Populate pilihan
-                    setTimeout(() => {
-                        soal.pilihan_jawaban.forEach((pilihan, idx) => {
-                            $(`#pilihan_${idx + 1}`).val(pilihan.konten_pilihan);
-                            if (pilihan.is_benar) {
-                                $(`input[name="jawaban_benar"][value="${idx + 1}"]`).prop('checked', true);
-                            }
-                        });
-                    }, 100);
-                } else {
-                    $('input[name="tipe"][value="isian_singkat"]').prop('checked', true).trigger('change');
-                    $('#jawaban_isian').val(soal.jawaban_benar);
                 }
 
-                $('#form-soal-wrapper').removeClass('hidden');
-                $('#form-soal-container').removeClass('hidden');
+                // Create Kuis
+                function createKuis() {
+                    const judul = $('#judul').val().trim();
+                    const deskripsi = $('#deskripsi').val().trim();
+                    const waktuTipe = $('#waktu_tipe').val();
+                    const durasiWaktu = $('#durasi_waktu').val();
 
-                // Scroll to form
-                $('html, body').animate({
-                    scrollTop: $('#form-soal-container').offset().top - 100
-                }, 500);
-            }
-
-            function closeFormSoal() {
-                $('#form-soal-wrapper').addClass('hidden');
-                $('#form-soal-container').addClass('hidden');
-                editingSoalIndex = null;
-            }
-
-            function saveSoal() {
-                const formData = new FormData();
-                formData.append('_token', '{{ csrf_token() }}');
-                formData.append('tipe', $('input[name="tipe"]:checked').val());
-                formData.append('konten_soal', $('#konten_soal').val());
-
-                // Gambar soal
-                const gambarSoal = $('#gambar_soal')[0].files[0];
-                if (gambarSoal) {
-                    formData.append('gambar_soal', gambarSoal);
-                }
-
-                if ($('input[name="tipe"]:checked').val() === 'pilihan_ganda') {
-                    const jumlahPilihan = $('#jumlah_pilihan').val();
-                    formData.append('jumlah_pilihan', jumlahPilihan);
-                    formData.append('jawaban_benar', $('input[name="jawaban_benar"]:checked').val());
-
-                    // Pilihan jawaban
-                    const pilihan = [];
-                    for (let i = 1; i <= jumlahPilihan; i++) {
-                        const konten = $(`#pilihan_${i}`).val();
-                        if (!konten) {
-                            Swal.fire('Error', `Pilihan ${i} harus diisi!`, 'error');
-                            return;
-                        }
-                        pilihan.push({
-                            konten: konten,
-                            urutan: i
-                        });
-                    }
-                    formData.append('pilihan', JSON.stringify(pilihan));
-
-                    // Gambar pilihan
-                    for (let i = 1; i <= jumlahPilihan; i++) {
-                        const gambarPilihan = $(`#gambar_pilihan_${i}`)[0].files[0];
-                        if (gambarPilihan) {
-                            formData.append(`gambar_pilihan_${i}`, gambarPilihan);
-                        }
-                    }
-                } else {
-                    const jawabanBenar = $('#jawaban_isian').val();
-                    if (!jawabanBenar) {
-                        Swal.fire('Error', 'Jawaban yang benar harus diisi!', 'error');
+                    if (!judul) {
+                        Swal.fire('Error', 'Judul kuis harus diisi!', 'error');
                         return;
                     }
-                    formData.append('jawaban_benar', jawabanBenar);
-                }
 
-                if (!$('#konten_soal').val()) {
-                    Swal.fire('Error', 'Pertanyaan soal harus diisi!', 'error');
-                    return;
-                }
+                    if (waktuTipe !== 'tanpa_waktu' && (!durasiWaktu || durasiWaktu < 5 || durasiWaktu > 3600)) {
+                        Swal.fire('Error', 'Durasi waktu harus antara 5-3600 detik!', 'error');
+                        return;
+                    }
 
-                const soalId = $('#soal-id').val();
-                const url = soalId ? `/kuis/soal/${soalId}` : `/kuis/${kuisId}/soal`;
-                let method = soalId ? 'PUT' : 'POST';
+                    $.ajax({
+                        url: '{{ route('kuis.store') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            judul: judul,
+                            deskripsi: deskripsi,
+                            waktu_tipe: waktuTipe,
+                            durasi_waktu: durasiWaktu,
+                            penunjukan_jawaban: $('input[name="penunjukan_jawaban"]:checked').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                kuisId = response.kuis_id;
 
-                // For PUT requests with FormData, use POST with _method
-                if (method === 'PUT') {
-                    formData.append('_method', 'PUT');
-                    method = 'POST';
-                }
+                                // Update display
+                                $('#display-judul').text(judul);
+                                $('#display-deskripsi').text(deskripsi || 'Tidak ada deskripsi');
 
-                $.ajax({
-                    url: url,
-                    method: method,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response.success) {
-                            if (soalId) {
-                                // Update existing soal
-                                soalList[editingSoalIndex] = response.soal;
-                            } else {
-                                // Add new soal
-                                soalList.push(response.soal);
+                                // Change step
+                                $('#step-info').addClass('hidden');
+                                $('#step-soal').removeClass('hidden');
+
+                                // Update progress indicator
+                                updateStepIndicator(2);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: 'Kuis berhasil dibuat. Silakan tambahkan soal.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
                             }
-                            renderSoalList();
-                            closeFormSoal();
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Terjadi kesalahan. Silakan coba lagi.', 'error');
+                        }
+                    });
+                }
 
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: soalId ? 'Soal berhasil diupdate.' : 'Soal berhasil ditambahkan.',
-                                timer: 2000,
-                                showConfirmButton: false
+                function showAddSoalForm() {
+                    editingSoalIndex = null;
+                    $('#soal-id').val('');
+                    $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Tambah Soal Baru');
+                    $('#form-soal')[0].reset();
+                    $('#form-soal-wrapper').removeClass('hidden');
+                    $('#form-soal-container').removeClass('hidden');
+                    generatePilihanJawaban(4);
+                    $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
+
+                    // Scroll to form
+                    $('html, body').animate({
+                        scrollTop: $('#form-soal-container').offset().top - 100
+                    }, 500);
+                }
+
+                function editSoal(index) {
+                    editingSoalIndex = index;
+                    const soal = soalList[index];
+
+                    $('#soal-id').val(soal.id);
+                    $('#form-soal-title').html('<i class="fas fa-edit mr-2 text-purple-500"></i> Edit Soal');
+
+                    $('#konten_soal').val(soal.konten_soal);
+
+                    if (soal.tipe === 'pilihan_ganda') {
+                        $('input[name="tipe"][value="pilihan_ganda"]').prop('checked', true).trigger('change');
+                        $('#jumlah_pilihan').val(soal.pilihan_jawaban.length).trigger('change');
+
+                        // Populate pilihan
+                        setTimeout(() => {
+                            soal.pilihan_jawaban.forEach((pilihan, idx) => {
+                                $(`#pilihan_${idx + 1}`).val(pilihan.konten_pilihan);
+                                if (pilihan.is_benar) {
+                                    $(`input[name="jawaban_benar"][value="${idx + 1}"]`).prop('checked',
+                                        true);
+                                }
+                            });
+                        }, 100);
+                    } else {
+                        $('input[name="tipe"][value="isian_singkat"]').prop('checked', true).trigger('change');
+                        $('#jawaban_isian').val(soal.jawaban_benar);
+                    }
+
+                    $('#form-soal-wrapper').removeClass('hidden');
+                    $('#form-soal-container').removeClass('hidden');
+
+                    // Scroll to form
+                    $('html, body').animate({
+                        scrollTop: $('#form-soal-container').offset().top - 100
+                    }, 500);
+                }
+
+                function closeFormSoal() {
+                    $('#form-soal-wrapper').addClass('hidden');
+                    $('#form-soal-container').addClass('hidden');
+                    editingSoalIndex = null;
+                }
+
+                function saveSoal() {
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('tipe', $('input[name="tipe"]:checked').val());
+                    formData.append('konten_soal', $('#konten_soal').val());
+
+                    // Gambar soal
+                    const gambarSoal = $('#gambar_soal')[0].files[0];
+                    if (gambarSoal) {
+                        formData.append('gambar_soal', gambarSoal);
+                    }
+
+                    if ($('input[name="tipe"]:checked').val() === 'pilihan_ganda') {
+                        const jumlahPilihan = $('#jumlah_pilihan').val();
+                        formData.append('jumlah_pilihan', jumlahPilihan);
+                        formData.append('jawaban_benar', $('input[name="jawaban_benar"]:checked').val());
+
+                        // Pilihan jawaban
+                        const pilihan = [];
+                        for (let i = 1; i <= jumlahPilihan; i++) {
+                            const konten = $(`#pilihan_${i}`).val();
+                            if (!konten) {
+                                Swal.fire('Error', `Pilihan ${i} harus diisi!`, 'error');
+                                return;
+                            }
+                            pilihan.push({
+                                konten: konten,
+                                urutan: i
                             });
                         }
-                    },
-                    error: function(xhr) {
-                        const message = xhr.responseJSON?.message || 'Terjadi kesalahan.';
-                        Swal.fire('Error', message, 'error');
+                        formData.append('pilihan', JSON.stringify(pilihan));
+
+                        // Gambar pilihan
+                        for (let i = 1; i <= jumlahPilihan; i++) {
+                            const gambarPilihan = $(`#gambar_pilihan_${i}`)[0].files[0];
+                            if (gambarPilihan) {
+                                formData.append(`gambar_pilihan_${i}`, gambarPilihan);
+                            }
+                        }
+                    } else {
+                        const jawabanBenar = $('#jawaban_isian').val();
+                        if (!jawabanBenar) {
+                            Swal.fire('Error', 'Jawaban yang benar harus diisi!', 'error');
+                            return;
+                        }
+                        formData.append('jawaban_benar', jawabanBenar);
                     }
-                });
-            }
 
-            function renderSoalList() {
-                const container = $('#soal-list');
+                    if (!$('#konten_soal').val()) {
+                        Swal.fire('Error', 'Pertanyaan soal harus diisi!', 'error');
+                        return;
+                    }
 
-                if (soalList.length === 0) {
-                    container.html(`
+                    const soalId = $('#soal-id').val();
+                    const url = soalId ? `/kuis/soal/${soalId}` : `/kuis/${kuisId}/soal`;
+                    let method = soalId ? 'PUT' : 'POST';
+
+                    // For PUT requests with FormData, use POST with _method
+                    if (method === 'PUT') {
+                        formData.append('_method', 'PUT');
+                        method = 'POST';
+                    }
+
+                    $.ajax({
+                        url: url,
+                        method: method,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.success) {
+                                if (soalId) {
+                                    // Update existing soal
+                                    soalList[editingSoalIndex] = response.soal;
+                                } else {
+                                    // Add new soal
+                                    soalList.push(response.soal);
+                                }
+                                renderSoalList();
+                                closeFormSoal();
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: soalId ? 'Soal berhasil diupdate.' :
+                                        'Soal berhasil ditambahkan.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            const message = xhr.responseJSON?.message || 'Terjadi kesalahan.';
+                            Swal.fire('Error', message, 'error');
+                        }
+                    });
+                }
+
+                function renderSoalList() {
+                    const container = $('#soal-list');
+
+                    if (soalList.length === 0) {
+                        container.html(`
             <div class="text-center py-12 text-gray-400">
                 <i class="fas fa-clipboard-list text-6xl mb-3"></i>
                 <p class="text-lg">Belum ada soal. Klik "Tambah Soal" untuk memulai</p>
             </div>
         `);
-                    $('#jumlah-soal').text('0');
-                    return;
-                }
+                        $('#jumlah-soal').text('0');
+                        return;
+                    }
 
-                container.empty();
-                soalList.forEach((soal, index) => {
-                    const html = `
+                    container.empty();
+                    soalList.forEach((soal, index) => {
+                        const html = `
             <div class="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg transition">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
@@ -573,99 +577,112 @@
                 </div>
             </div>
         `;
-                    container.append(html);
-                });
+                        container.append(html);
+                    });
 
-                $('#jumlah-soal').text(soalList.length);
-            }
-
-            function deleteSoal(soalId, index) {
-                Swal.fire({
-                    title: 'Hapus Soal?',
-                    text: 'Soal akan dihapus permanen.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/kuis/soal/${soalId}`,
-                            method: 'DELETE',
-                            data: {
-                                _token: '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    soalList.splice(index, 1);
-                                    renderSoalList();
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: 'Soal berhasil dihapus.',
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-            function saveDraft() {
-                updateStatus('draft');
-            }
-
-            function publishKuis() {
-                if (soalList.length === 0) {
-                    Swal.fire('Error', 'Kuis harus memiliki minimal 1 soal untuk dipublikasikan!', 'error');
-                    return;
+                    $('#jumlah-soal').text(soalList.length);
                 }
-                updateStatus('published');
-            }
 
-            function updateStatus(status) {
-                $.ajax({
-                    url: `/kuis/${kuisId}/status`,
-                    method: 'PUT',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        status: status
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                                timer: 2000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                window.location.href = '{{ route('kuis.index') }}';
+                function deleteSoal(soalId, index) {
+                    Swal.fire({
+                        title: 'Hapus Soal?',
+                        text: 'Soal akan dihapus permanen.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/kuis/soal/${soalId}`,
+                                method: 'DELETE',
+                                data: {
+                                    _token: '{{ csrf_token() }}'
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        soalList.splice(index, 1);
+                                        renderSoalList();
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil!',
+                                            text: 'Soal berhasil dihapus.',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+                                    }
+                                }
                             });
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            function updateStepIndicator(step) {
-                for (let i = 1; i <= 3; i++) {
-                    const indicator = $(`#step-indicator-${i}`);
-                    if (i <= step) {
-                        indicator.find('div').removeClass('bg-gray-300 text-gray-600').addClass('bg-blue-500 text-white');
-                        indicator.find('span').removeClass('text-gray-400').addClass('text-blue-500');
-                    } else {
-                        indicator.find('div').removeClass('bg-blue-500 text-white').addClass('bg-gray-300 text-gray-600');
-                        indicator.find('span').removeClass('text-blue-500').addClass('text-gray-400');
+                function saveDraft() {
+                    updateStatus('draft');
+                }
+
+                function publishKuis() {
+                    if (soalList.length === 0) {
+                        Swal.fire('Error', 'Kuis harus memiliki minimal 1 soal untuk dipublikasikan!', 'error');
+                        return;
+                    }
+                    updateStatus('published');
+                }
+
+                function updateStatus(status) {
+                    $.ajax({
+                        url: `/kuis/${kuisId}/status`,
+                        method: 'PUT',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            status: status
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.href = '{{ route('kuis.index') }}';
+                                });
+                            }
+                        }
+                    });
+                }
+
+                function updateStepIndicator(step) {
+                    for (let i = 1; i <= 3; i++) {
+                        const indicator = $(`#step-indicator-${i}`);
+                        if (i <= step) {
+                            indicator.find('div').removeClass('bg-gray-300 text-gray-600').addClass(
+                                'bg-blue-500 text-white');
+                            indicator.find('span').removeClass('text-gray-400').addClass('text-blue-500');
+                        } else {
+                            indicator.find('div').removeClass('bg-blue-500 text-white').addClass(
+                                'bg-gray-300 text-gray-600');
+                            indicator.find('span').removeClass('text-blue-500').addClass('text-gray-400');
+                        }
                     }
                 }
-            }
 
-            // Initialize
-            generatePilihanJawaban(4);
+                // Initialize
+                generatePilihanJawaban(4);
+
+                // Expose functions globally for onclick handlers
+                window.createKuis = createKuis;
+                window.showAddSoalForm = showAddSoalForm;
+                window.closeFormSoal = closeFormSoal;
+                window.saveSoal = saveSoal;
+                window.editSoal = editSoal;
+                window.deleteSoal = deleteSoal;
+                window.saveDraft = saveDraft;
+                window.publishKuis = publishKuis;
+            });
         </script>
     @endpush
 @endsection

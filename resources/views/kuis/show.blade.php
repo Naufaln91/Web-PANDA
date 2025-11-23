@@ -216,7 +216,6 @@
     @endpush
 
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
         <script>
             const kuisData = @json($kuis);
             let currentSoalIndex = 0;
@@ -633,13 +632,13 @@
 
                         <!-- Correct Answer (Only if wrong) -->
                         ${!isCorrect ? `
-                                                                <div class="pt-3 border-t border-gray-200">
-                                                                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Benar</p>
-                                                                    <div class="text-green-700 font-medium text-base sm:text-lg">
-                                                                        ${correctAnswerContent}
-                                                                    </div>
-                                                                </div>
-                                                                ` : ''}
+                                                                        <div class="pt-3 border-t border-gray-200">
+                                                                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Benar</p>
+                                                                            <div class="text-green-700 font-medium text-base sm:text-lg">
+                                                                                ${correctAnswerContent}
+                                                                            </div>
+                                                                        </div>
+                                                                        ` : ''}
                     </div>
                 </div>
             </div>

@@ -7,23 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'PANDA - Pembelajaran Anak Dengan Asyik')</title>
 
-    <!-- Tailwind CSS (Built with Vite) -->
-    @vite(['resources/css/app.css'])
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Sweet Alert 2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
-    <!-- Sortable JS for drag & drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-
-    <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Vite Assets (CSS & JS) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body {

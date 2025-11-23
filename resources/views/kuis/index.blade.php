@@ -99,7 +99,7 @@
 
     @push('scripts')
         <script>
-            function deleteKuis(id) {
+            window.deleteKuis = function(id) {
                 Swal.fire({
                     title: 'Yakin ingin menghapus kuis?',
                     text: 'Kuis akan dihapus permanen.',
@@ -131,7 +131,7 @@
                         });
                     }
                 });
-            }
+            };
         </script>
     @endpush
 @endsection
