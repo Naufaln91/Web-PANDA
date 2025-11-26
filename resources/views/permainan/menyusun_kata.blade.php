@@ -171,8 +171,8 @@
                 }
 
                 .box-size-medium {
-                    width: 3.5rem;
-                    height: 3.5rem;
+                    width: 4rem;
+                    height: 4rem;
                     font-size: 1.875rem;
                     /* text-3xl */
                 }
@@ -285,6 +285,7 @@
             let hintDigunakan = false;
             let audioContext = null;
             let shuffledQuestions = [];
+            let isCheckingAnswer = false;
 
             const ikonItem = document.getElementById('ikon-item');
             const hurufContainer = document.getElementById('huruf-container');
@@ -399,6 +400,7 @@
                     shuffledQuestions = shuffle([...semuaItem]);
                 }
 
+                isCheckingAnswer = false;
                 currentData = shuffledQuestions[soalSekarang];
                 currentWord = [];
                 hurufButtons = [];
@@ -457,7 +459,7 @@
                 } else {
                     const wordLength = currentData.kata.length;
                     let boxClass =
-                        'letter-box bg-white border-2 sm:border-4 border-purple-400 text-purple-600 font-bold rounded-lg sm:rounded-xl shadow-lg flex items-center justify-center force-square';
+                        'letter-box bg-white border-2 sm:border-4 border-purple-400 text-purple-600 font-bold rounded-lg sm:rounded-xl shadow-lg flex items-center justify-center force-square cursor-pointer hover:bg-red-50 transition-colors';
 
                     // Dynamic sizing based on word length using custom classes
                     if (wordLength > 8) {
@@ -472,6 +474,7 @@
                         const box = document.createElement('div');
                         box.textContent = huruf;
                         box.className = boxClass;
+                        box.onclick = () => kembalikanHuruf(idx);
                         kataArea.appendChild(box);
                     });
                 }
@@ -480,6 +483,8 @@
             }
 
             function pilihHuruf(huruf, btn) {
+                if (isCheckingAnswer) return;
+
                 currentWord.push(huruf);
                 updateKataArea();
                 btn.disabled = true;
@@ -487,8 +492,30 @@
                 btn.classList.remove('hover:scale-110');
 
                 if (currentWord.length === currentData.kata.length) {
+                    isCheckingAnswer = true;
                     setTimeout(() => checkAnswer(), 300);
                 }
+            }
+
+            function kembalikanHuruf(index) {
+                if (isCheckingAnswer) return;
+
+                const huruf = currentWord[index];
+                currentWord.splice(index, 1); // Remove from array
+
+                // Find a disabled button for this letter to re-enable
+                // We need to find one that is currently disabled and matches the letter
+                const btn = Array.from(hurufContainer.children).find(b =>
+                    b.textContent === huruf && b.disabled
+                );
+
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-30', 'cursor-not-allowed', 'scale-90');
+                    btn.classList.add('hover:scale-110');
+                }
+
+                updateKataArea();
             }
 
             function hapusHurufTerakhir() {
@@ -537,6 +564,7 @@
                     setTimeout(() => {
                         ikonItem.classList.remove('shake-animation');
                         resetJawaban();
+                        isCheckingAnswer = false;
                     }, 1500);
                 }
             }
