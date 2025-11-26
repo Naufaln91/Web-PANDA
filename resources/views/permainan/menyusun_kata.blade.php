@@ -45,7 +45,7 @@
 
             {{-- Word Area --}}
             <div id="kata-area"
-                class="flex flex-wrap justify-center gap-3 mb-8 min-h-[6rem] items-center p-4 bg-white/50 rounded-2xl backdrop-blur-sm">
+                class="flex flex-nowrap justify-center gap-2 sm:gap-3 mb-8 min-h-[6rem] items-center p-2 sm:p-4 bg-white/50 rounded-2xl backdrop-blur-sm overflow-x-auto">
             </div>
 
             {{-- Letter Buttons --}}
@@ -137,6 +137,59 @@
                 50% {
                     transform: translateY(-20px);
                 }
+            }
+
+            /* Custom Box Sizes for Guaranteed Squareness */
+            .box-size-small {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1.125rem;
+                /* text-lg */
+            }
+
+            .box-size-medium {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.25rem;
+                /* text-xl */
+            }
+
+            .box-size-large {
+                width: 3rem;
+                height: 3rem;
+                font-size: 1.5rem;
+                /* text-2xl */
+            }
+
+            /* Desktop Sizes (sm breakpoint) */
+            @media (min-width: 640px) {
+                .box-size-small {
+                    width: 3rem;
+                    height: 3rem;
+                    font-size: 1.5rem;
+                    /* text-2xl */
+                }
+
+                .box-size-medium {
+                    width: 3.5rem;
+                    height: 3.5rem;
+                    font-size: 1.875rem;
+                    /* text-3xl */
+                }
+
+                .box-size-large {
+                    width: 4rem;
+                    height: 4rem;
+                    font-size: 1.875rem;
+                    /* text-3xl */
+                }
+            }
+
+            .force-square {
+                aspect-ratio: 1 / 1;
+                min-width: 0;
+                /* Allow shrinking if needed but we use fixed sizes */
+                flex-shrink: 0;
             }
         </style>
     @endpush
@@ -231,6 +284,7 @@
             let soalSekarang = 0;
             let hintDigunakan = false;
             let audioContext = null;
+            let shuffledQuestions = [];
 
             const ikonItem = document.getElementById('ikon-item');
             const hurufContainer = document.getElementById('huruf-container');
@@ -340,7 +394,12 @@
             }
 
             function newQuestion() {
-                currentData = semuaItem[Math.floor(Math.random() * semuaItem.length)];
+                // Ensure questions are shuffled if empty (first run)
+                if (shuffledQuestions.length === 0) {
+                    shuffledQuestions = shuffle([...semuaItem]);
+                }
+
+                currentData = shuffledQuestions[soalSekarang];
                 currentWord = [];
                 hurufButtons = [];
                 hintDigunakan = false;
@@ -376,8 +435,9 @@
                 hurufArray.forEach((huruf, index) => {
                     const btn = document.createElement('button');
                     btn.textContent = huruf;
+                    // Use box-size-large for buttons to match the default answer box size
                     btn.className =
-                        'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl text-2xl shadow-lg transition transform hover:scale-110 hover:-rotate-3';
+                        'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold box-size-large force-square flex items-center justify-center rounded-xl shadow-lg transition transform hover:scale-110 hover:-rotate-3';
                     btn.dataset.huruf = huruf;
                     btn.dataset.index = index;
                     btn.onclick = () => pilihHuruf(huruf, btn);
@@ -392,14 +452,26 @@
                 if (currentWord.length === 0) {
                     const placeholder = document.createElement('div');
                     placeholder.textContent = 'Pilih huruf...';
-                    placeholder.className = 'text-3xl text-gray-400 font-semibold italic';
+                    placeholder.className = 'text-xl sm:text-3xl text-gray-400 font-semibold italic whitespace-nowrap';
                     kataArea.appendChild(placeholder);
                 } else {
+                    const wordLength = currentData.kata.length;
+                    let boxClass =
+                        'letter-box bg-white border-2 sm:border-4 border-purple-400 text-purple-600 font-bold rounded-lg sm:rounded-xl shadow-lg flex items-center justify-center force-square';
+
+                    // Dynamic sizing based on word length using custom classes
+                    if (wordLength > 8) {
+                        boxClass += ' box-size-small';
+                    } else if (wordLength > 6) {
+                        boxClass += ' box-size-medium';
+                    } else {
+                        boxClass += ' box-size-large';
+                    }
+
                     currentWord.forEach((huruf, idx) => {
                         const box = document.createElement('div');
                         box.textContent = huruf;
-                        box.className =
-                            'letter-box bg-white border-4 border-purple-400 text-purple-600 font-bold py-4 px-5 rounded-xl text-3xl shadow-lg';
+                        box.className = boxClass;
                         kataArea.appendChild(box);
                     });
                 }
