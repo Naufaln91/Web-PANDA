@@ -61,7 +61,7 @@
         <div class="card rounded-xl sm:rounded-2xl p-4 sm:p-6 bg-white">
             <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">
                 <i class="fas fa-bolt mr-2 text-yellow-500"></i>
-                Aksi Cepat
+                Pilihan Menu
             </h2>
 
             <!-- First Row -->

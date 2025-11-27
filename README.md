@@ -1,3 +1,131 @@
+# 🐼 PANDA (Pembelajaran Anak dengan Asyik)
+
+PANDA adalah platform edukasi interaktif yang dirancang khusus untuk anak-anak usia dini (Taman Kanak-Kanak). Platform ini menyediakan berbagai fitur pembelajaran yang menyenangkan dan interaktif untuk membantu perkembangan anak dalam aspek kognitif, motorik, dan sosial.
+
+## Fitur Utama
+
+### 🎓 Kuis
+- Guru dapat membuat kuis dengan berbagai tipe soal.
+- Siswa dapat mengerjakan kuis secara interaktif.
+- Riwayat nilai dan detail jawaban tersimpan untuk evaluasi.
+
+### 📚 Materi Pembelajaran
+- 🅰️ **Alfabet**: Pengenalan huruf A-Z.
+- 🎨 **Warna**: Mengenal berbagai macam warna.
+- 🦁 **Hewan**: Mengenal nama-nama hewan.
+- 1️⃣ **Angka**: Pengenalan angka dasar.
+- 🍎 **Buah**: Mengenal nama-nama buah.
+- 🚗 **Transportasi**: Mengenal jenis-jenis kendaraan.
+
+### 🎮 Permainan Edukatif
+- **🧩 Puzzle**: Melatih pemecahan masalah visual.
+- **🧮 Berhitung**: Belajar matematika dasar dengan cara yang menyenangkan.
+- **🃏 Cocokkan Pasangan**: Melatih daya ingat (memory game).
+- **🔢 Urutkan Angka**: Memahami urutan bilangan.
+- **📝 Menyusun Kata**: Belajar mengeja dan menyusun huruf menjadi kata.
+- **🌀 maze Labirin**: Melatih logika dan perencanaan jalur.
+
+### 👥 Sistem Pengguna
+- **Admin**: Mengelola platform dan pengguna
+- **Guru**: Membuat dan mengelola materi serta kuis
+- **Wali Murid**: Mewakili anak dalam menggunakan platform, mengakses materi, permainan, dan kuis
+
+### 🔐 Keamanan dan Autentikasi
+- Sistem login dengan email dan OTP
+- Role-based access control
+- Whitelist untuk kontrol akses
+
+## 🛠️ Teknologi yang Digunakan
+
+- **Backend**: [Laravel 12.x](https://laravel.com)
+- **Frontend**: [Blade Templates](https://laravel.com/docs/blade), [Tailwind CSS](https://tailwindcss.com)
+- **Interactivity**: [Alpine.js](https://alpinejs.dev), [jQuery](https://jquery.com)
+- **Libraries**:
+  - `sweetalert2` (Notifikasi cantik)
+  - `sortablejs` (Drag & drop)
+  - `canvas-confetti` (Efek selebrasi)
+- **Build Tool**: [Vite](https://vitejs.dev)
+
+## 🚀 Instalasi & Menjalankan Project
+
+Ikuti langkah-langkah berikut untuk menjalankan project di komputer lokal Anda:
+
+### Prasyarat
+Pastikan Anda sudah menginstall:
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- Database (MySQL/MariaDB/SQLite)
+
+### Langkah-langkah
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/username/panda-tk.git
+   cd panda-tk
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Konfigurasi Environment**
+   Salin file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   Buka file `.env` dan sesuaikan konfigurasi database Anda.
+
+   **Opsional**: Anda dapat mengatur kredensial admin default di `.env`:
+   ```env
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD=admin123
+   ```
+
+4. **Generate App Key**
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Migrasi & Seeding Database**
+   Jalankan migrasi dan seeder untuk membuat tabel dan data awal (termasuk akun admin):
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Jalankan Aplikasi**
+   Buka dua terminal terpisah untuk menjalankan server Laravel dan Vite:
+
+   Terminal 1:
+   ```bash
+   php artisan serve
+   ```
+
+   Terminal 2:
+   ```bash
+   npm run dev
+   ```
+
+7. **Akses Aplikasi**
+   Buka browser dan kunjungi `http://localhost:8000`.
+
+## 🔑 Akun Default
+
+Setelah menjalankan `php artisan migrate --seed`, Anda dapat menggunakan akun berikut:
+
+### Admin
+- **Username**: `admin` (atau sesuai `ADMIN_USERNAME` di .env)
+- **Password**: `admin123` (atau sesuai `ADMIN_PASSWORD` di .env)
+
+### Whitelist Email (Untuk Pendaftaran)
+Seeder juga menambahkan beberapa email ke whitelist agar bisa mendaftar sebagai Guru atau Wali Murid:
+- `guru@example.com` (Role: Guru)
+- `wali@example.com` (Role: Wali Murid)
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
