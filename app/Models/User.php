@@ -5,16 +5,22 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @method void update(array $attributes = [])
+ * @method void fill(array $attributes)
+ * @method bool save(array $options = [])
+ */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasFactory;
 
     protected $fillable = [
-        'nomor_hp',
+        'email',
         'username',
         'password',
-        'nama_orangtua',
+        'nama',
         'nama_anak',
         'kelas_anak',
         'role',
@@ -35,16 +41,33 @@ class User extends Authenticatable
         return $this->hasMany(Kuis::class, 'created_by');
     }
 
+    public function historiKuis()
+    {
+        return $this->hasMany(HistoriKuis::class);
+    }
+
+    /**
+     * Check if the user is an admin.
+     * @return bool
+     */
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
+    /**
+     * Check if the user is a guru.
+     * @return bool
+     */
     public function isGuru()
     {
         return $this->role === 'guru';
     }
 
+    /**
+     * Check if the user is a wali murid.
+     * @return bool
+     */
     public function isWaliMurid()
     {
         return $this->role === 'wali_murid';

@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Whitelist extends Model
 {
-    protected $fillable = ['nomor_hp'];
+    use HasFactory;
 
-    public static function isWhitelisted($nomorHp)
+    protected $fillable = ['email', 'role'];
+
+    public static function isWhitelisted($email)
     {
-        return self::where('nomor_hp', $nomorHp)->exists();
+        return self::where('email', $email)->exists();
     }
 }

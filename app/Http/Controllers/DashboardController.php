@@ -8,6 +8,22 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    public function index()
+    {
+        if (Auth::check()) {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->isGuru()) {
+                return redirect()->route('guru.dashboard');
+            } else {
+                return redirect()->route('wali-murid.dashboard');
+            }
+        }
+        return redirect()->route('login');
+    }
+
     public function admin()
     {
         $totalUsers = \App\Models\User::where('role', '!=', 'admin')->count();

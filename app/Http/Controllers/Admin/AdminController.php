@@ -32,41 +32,47 @@ class AdminController extends Controller
     public function whitelistStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nomor_hp' => 'required|string|regex:/^08[0-9]{9,11}$/|unique:whitelists,nomor_hp',
+            'email' => 'required|email|unique:whitelists,email',
+            'role' => 'required|in:guru,wali_murid',
         ], [
-            'nomor_hp.required' => 'Nomor HP harus diisi.',
-            'nomor_hp.regex' => 'Format nomor HP salah.',
-            'nomor_hp.unique' => 'Nomor HP ini sudah terdapat dalam whitelist.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email salah.',
+            'email.unique' => 'Email ini sudah terdapat dalam whitelist.',
+            'role.required' => 'Role harus dipilih.',
+            'role.in' => 'Role tidak valid.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first('nomor_hp'),
+                'message' => $validator->errors()->first(),
             ]);
         }
 
-        Whitelist::create(['nomor_hp' => $request->nomor_hp]);
+        Whitelist::create([
+            'email' => $request->email,
+            'role' => $request->role,
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Nomor HP berhasil ditambah.',
+            'message' => 'Email berhasil ditambah.',
         ]);
     }
 
     public function whitelistDestroy($id)
     {
         $whitelist = Whitelist::findOrFail($id);
-        $nomorHp = $whitelist->nomor_hp;
+        $email = $whitelist->email;
 
-        // Cek apakah ada user dengan nomor ini
-        $user = User::where('nomor_hp', $nomorHp)->first();
+        // Cek apakah ada user dengan email ini
+        $user = User::where('email', $email)->first();
 
-        $message = 'Nomor HP berhasil dihapus.';
+        $message = 'Email berhasil dihapus.';
 
         if ($user) {
             $user->delete();
-            $message = 'Nomor HP dan akun terkait berhasil dihapus.';
+            $message = 'Email dan akun terkait berhasil dihapus.';
         }
 
         $whitelist->delete();
@@ -80,11 +86,15 @@ class AdminController extends Controller
     // Kelola Akun
     public function akunIndex()
     {
-        $users = User::where('role', '!=', 'admin')
+        $guru = User::where('role', 'guru')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20, ['*'], 'guru_page');
 
-        return view('admin.akun.index', compact('users'));
+        $waliMurid = User::where('role', 'wali_murid')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'wali_murid_page');
+
+        return view('admin.akun.index', compact('guru', 'waliMurid'));
     }
 
     public function akunDestroy($id)

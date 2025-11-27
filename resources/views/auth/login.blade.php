@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - PANDA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- Vite Assets (CSS & JS) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 min-h-screen flex items-center justify-center">
@@ -19,12 +17,12 @@
             <div class="grid md:grid-cols-2">
                 <!-- Left Side - Illustration -->
                 <div
-                    class="bg-gradient-to-br from-blue-500 to-indigo-600 p-12 flex flex-col justify-center items-center text-white">
-                    <div class="text-8xl mb-6">🐼</div>
-                    <h1 class="text-4xl font-bold mb-4">PANDA</h1>
-                    <p class="text-center text-lg opacity-90">Platform Pembelajaran Anak</p>
+                    class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 sm:p-12 flex flex-col justify-center items-center text-white">
+                    <div class="text-6xl sm:text-8xl mb-6">🐼</div>
+                    <h1 class="text-3xl sm:text-4xl font-bold mb-4">PANDA</h1>
+                    <p class="text-center text-base sm:text-lg opacity-90">Pembelajaran Anak Dengan Asyik</p>
                     <div class="mt-8 text-center">
-                        <div class="flex justify-center space-x-6 text-5xl">
+                        <div class="flex justify-center space-x-4 sm:space-x-6 text-4xl sm:text-5xl">
                             <span>📚</span>
                             <span>🎮</span>
                             <span>✏️</span>
@@ -33,9 +31,9 @@
                 </div>
 
                 <!-- Right Side - Login Forms -->
-                <div class="p-12">
+                <div class="p-6 sm:p-12">
                     <!-- Tab Buttons -->
-                    <div class="flex space-x-2 mb-8">
+                    <div class="flex space-x-1 sm:space-x-2 mb-6 sm:mb-8">
                         <button onclick="showTab('admin')" id="tab-admin"
                             class="flex-1 py-3 px-4 rounded-lg font-semibold transition bg-blue-500 text-white">
                             Admin
@@ -59,31 +57,35 @@
                         <form action="{{ route('login.admin') }}" method="POST">
                             @csrf
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Username</label>
+                                <label
+                                    class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Username</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <i class="fas fa-user"></i>
                                     </span>
                                     <input type="text" name="username" required
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
                                         placeholder="Masukkan username">
                                 </div>
                             </div>
 
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                            <div class="mb-4 sm:mb-6">
+                                <label
+                                    class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Password</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                                         <i class="fas fa-lock"></i>
                                     </span>
                                     <input type="password" name="password" required
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
                                         placeholder="Masukkan password">
                                 </div>
                             </div>
 
                             <button type="submit"
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-sign-in-alt mr-2"></i> Login
                             </button>
                         </form>
@@ -93,32 +95,32 @@
                     <div id="form-user" class="space-y-6 hidden">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6">Login Guru / Wali Murid</h2>
 
-                        <!-- Step 1: Input Nomor HP -->
-                        <div id="step-nomor-hp">
+                        <!-- Step 1: Input Email -->
+                        <div id="step-email">
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Nomor HP</label>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Email</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                        <i class="fas fa-phone"></i>
+                                    <span
+                                        class="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <i class="fas fa-envelope"></i>
                                     </span>
-                                    <input type="text" id="nomor_hp"
-                                        class="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="08xxxxxxxxxx">
+                                    <input type="email" id="email"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
+                                        placeholder="nama@email.com">
                                 </div>
-                                <p id="error-nomor-hp" class="text-red-500 text-sm mt-1 hidden"></p>
+                                <p id="error-email" class="text-red-500 text-sm mt-1 hidden"></p>
                             </div>
 
                             <button onclick="requestOtp()" id="btn-request-otp"
-                                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-paper-plane mr-2"></i> Minta Kode OTP
                             </button>
                         </div>
 
                         <!-- Step 2: Input OTP -->
                         <div id="step-otp" class="hidden">
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
-                                <p class="font-semibold">Kode OTP Anda:</p>
-                                <p class="text-2xl font-bold" id="display-otp"></p>
+                            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-4">
+                                <p class="font-semibold">Kode OTP telah dikirim ke email Anda</p>
                                 <p class="text-sm mt-1">Kode berlaku selama 5 menit</p>
                             </div>
 
@@ -135,14 +137,26 @@
                                 <p id="error-otp" class="text-red-500 text-sm mt-1 hidden"></p>
                             </div>
 
+                            <div class="mb-4">
+                                <button onclick="resendOtp()" id="btn-resend-otp"
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">
+                                    <i class="fas fa-envelope mr-2"></i> Kirim Ulang OTP
+                                </button>
+                                <p id="resend-info" class="text-xs sm:text-sm text-gray-600 mt-1 text-center">
+                                    <span id="resend-countdown" class="hidden">Kirim ulang tersedia dalam <span
+                                            id="countdown-timer">30</span> detik</span>
+                                    <span id="resend-limit" class="hidden">Batas kirim ulang tercapai</span>
+                                </p>
+                            </div>
+
                             <button onclick="verifyOtp()" id="btn-verify-otp"
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
                                 <i class="fas fa-check mr-2"></i> Verifikasi OTP
                             </button>
 
-                            <button onclick="backToNomorHp()"
-                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300">
-                                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                            <button onclick="backToEmail()"
+                                class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 rounded-lg transition duration-300 flex items-center justify-center text-sm sm:text-base">
+                                <i class="fas fa-arrow-left "></i><span class="ml-2 hidden sm:inline">Kembali</span>
                             </button>
                         </div>
 
@@ -151,42 +165,46 @@
                             <h3 class="text-xl font-bold text-gray-800 mb-4">Lengkapi Profil Anda</h3>
 
                             <div class="space-y-4">
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Nama Orang Tua</label>
-                                    <input type="text" id="nama_orangtua"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="Masukkan nama orang tua">
+                                <!-- Form untuk Guru -->
+                                <div id="form-guru" class="hidden">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama</label>
+                                        <input type="text" id="nama_guru"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama lengkap">
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Nama Anak</label>
-                                    <input type="text" id="nama_anak"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                        placeholder="Masukkan nama anak">
-                                </div>
+                                <!-- Form untuk Wali Murid -->
+                                <div id="form-wali-murid" class="hidden">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama Orang Tua</label>
+                                        <input type="text" id="nama_orangtua"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama orang tua">
+                                    </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Kelas Anak</label>
-                                    <select id="kelas_anak"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
-                                        <option value="">Pilih kelas</option>
-                                        <option value="TK A">TK A</option>
-                                        <option value="TK B">TK B</option>
-                                    </select>
-                                </div>
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Nama Anak</label>
+                                        <input type="text" id="nama_anak"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                                            placeholder="Masukkan nama anak">
+                                    </div>
 
-                                <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Peran</label>
-                                    <select id="role"
-                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
-                                        <option value="wali_murid">Wali Murid</option>
-                                        <option value="guru">Guru</option>
-                                    </select>
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-2">Kelas Anak</label>
+                                        <select id="kelas_anak"
+                                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                                            <option value="">Pilih kelas</option>
+                                            <option value="TK A">TK A</option>
+                                            <option value="TK B">TK B</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <p id="error-profile" class="text-red-500 text-sm hidden"></p>
 
-                                <button onclick="completeProfile()" id="btn-complete-profile"
+                                <button onclick="confirmCompleteProfile()" id="btn-complete-profile"
                                     class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-300">
                                     <i class="fas fa-save mr-2"></i> Simpan & Masuk
                                 </button>
@@ -199,7 +217,8 @@
     </div>
 
     <script>
-        let currentNomorHp = '';
+        let currentEmail = '';
+        let currentRole = '';
 
         function showTab(tab) {
             if (tab === 'admin') {
@@ -220,8 +239,8 @@
         }
 
         function requestOtp() {
-            const nomorHp = document.getElementById('nomor_hp').value;
-            const errorDiv = document.getElementById('error-nomor-hp');
+            const email = document.getElementById('email').value;
+            const errorDiv = document.getElementById('error-email');
             const btn = document.getElementById('btn-request-otp');
 
             errorDiv.classList.add('hidden');
@@ -233,14 +252,15 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    nomor_hp: nomorHp
+                    email: email
                 },
                 success: function(response) {
                     if (response.success) {
-                        currentNomorHp = nomorHp;
-                        document.getElementById('display-otp').textContent = response.otp_code;
-                        document.getElementById('step-nomor-hp').classList.add('hidden');
+                        currentEmail = email;
+                        currentRole = response.role;
+                        document.getElementById('step-email').classList.add('hidden');
                         document.getElementById('step-otp').classList.remove('hidden');
+                        startResendCountdown();
                     } else {
                         errorDiv.textContent = response.message;
                         errorDiv.classList.remove('hidden');
@@ -271,7 +291,7 @@
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    nomor_hp: currentNomorHp,
+                    email: currentEmail,
                     otp_code: otpCode
                 },
                 success: function(response) {
@@ -279,6 +299,8 @@
                         if (response.is_new_user) {
                             document.getElementById('step-otp').classList.add('hidden');
                             document.getElementById('step-profile').classList.remove('hidden');
+                            // Tampilkan form sesuai role
+                            showProfileForm(currentRole);
                         } else {
                             window.location.href = response.redirect_url;
                         }
@@ -298,21 +320,60 @@
             });
         }
 
-        function completeProfile() {
-            const namaOrangtua = document.getElementById('nama_orangtua').value;
-            const namaAnak = document.getElementById('nama_anak').value;
-            const kelasAnak = document.getElementById('kelas_anak').value;
-            const role = document.getElementById('role').value;
+        function confirmCompleteProfile() {
             const errorDiv = document.getElementById('error-profile');
-            const btn = document.getElementById('btn-complete-profile');
-
             errorDiv.classList.add('hidden');
 
-            if (!namaOrangtua || !namaAnak || !kelasAnak) {
-                errorDiv.textContent = 'Semua field harus diisi!';
-                errorDiv.classList.remove('hidden');
-                return;
+            // Validate form
+            let isValid = true;
+            let data = {
+                _token: '{{ csrf_token() }}',
+                email: currentEmail
+            };
+
+            if (currentRole === 'guru') {
+                const namaGuru = document.getElementById('nama_guru').value;
+                if (!namaGuru) {
+                    errorDiv.textContent = 'Nama harus diisi!';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                data.nama = namaGuru;
+            } else {
+                const namaOrangtua = document.getElementById('nama_orangtua').value;
+                const namaAnak = document.getElementById('nama_anak').value;
+                const kelasAnak = document.getElementById('kelas_anak').value;
+
+                if (!namaOrangtua || !namaAnak || !kelasAnak) {
+                    errorDiv.textContent = 'Semua field harus diisi!';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                data.nama_orangtua = namaOrangtua;
+                data.nama_anak = namaAnak;
+                data.kelas_anak = kelasAnak;
             }
+
+            // Show confirmation popup
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin data sudah diisi dengan benar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    completeProfile(data);
+                }
+            });
+        }
+
+        function completeProfile(data) {
+            const errorDiv = document.getElementById('error-profile');
+            const btn = document.getElementById('btn-complete-profile');
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
@@ -320,14 +381,7 @@
             $.ajax({
                 url: '{{ route('login.complete-profile') }}',
                 method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    nomor_hp: currentNomorHp,
-                    nama_orangtua: namaOrangtua,
-                    nama_anak: namaAnak,
-                    kelas_anak: kelasAnak,
-                    role: role
-                },
+                data: data,
                 success: function(response) {
                     if (response.success) {
                         Swal.fire({
@@ -355,10 +409,99 @@
             });
         }
 
-        function backToNomorHp() {
+        function resendOtp() {
+            const btn = document.getElementById('btn-resend-otp');
+            const errorDiv = document.getElementById('error-otp');
+
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim ulang...';
+
+            $.ajax({
+                url: '{{ route('login.resend-otp') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    email: currentEmail
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        startResendCountdown();
+                        if (response.remaining_resend <= 0) {
+                            disableResendButton();
+                        }
+                    } else {
+                        errorDiv.textContent = response.message;
+                        errorDiv.classList.remove('hidden');
+                        if (response.message.includes('tercapai')) {
+                            disableResendButton();
+                        }
+                    }
+                },
+                error: function() {
+                    errorDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                    errorDiv.classList.remove('hidden');
+                },
+                complete: function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-envelope mr-2"></i> Kirim Ulang OTP';
+                }
+            });
+        }
+
+        function startResendCountdown() {
+            let countdown = 30;
+            const countdownElement = document.getElementById('countdown-timer');
+            const countdownDiv = document.getElementById('resend-countdown');
+            const resendBtn = document.getElementById('btn-resend-otp');
+
+            resendBtn.disabled = true;
+            countdownDiv.classList.remove('hidden');
+            document.getElementById('resend-limit').classList.add('hidden');
+
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    countdownDiv.classList.add('hidden');
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function disableResendButton() {
+            const resendBtn = document.getElementById('btn-resend-otp');
+            const countdownDiv = document.getElementById('resend-countdown');
+            const limitDiv = document.getElementById('resend-limit');
+
+            resendBtn.disabled = true;
+            countdownDiv.classList.add('hidden');
+            limitDiv.classList.remove('hidden');
+        }
+
+        function backToEmail() {
             document.getElementById('step-otp').classList.add('hidden');
-            document.getElementById('step-nomor-hp').classList.remove('hidden');
+            document.getElementById('step-email').classList.remove('hidden');
             document.getElementById('otp_code').value = '';
+        }
+
+        function showProfileForm(role) {
+            if (role === 'guru') {
+                document.getElementById('form-guru').classList.remove('hidden');
+                document.getElementById('form-wali-murid').classList.add('hidden');
+            } else {
+                document.getElementById('form-guru').classList.add('hidden');
+                document.getElementById('form-wali-murid').classList.remove('hidden');
+            }
         }
     </script>
 </body>

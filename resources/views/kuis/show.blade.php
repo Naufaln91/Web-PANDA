@@ -4,6 +4,13 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto">
+        <div class="flex justify-end mb-6">
+            <a href="{{ route('kuis.index') }}"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition inline-flex items-center justify-center">
+                <i class="fas fa-arrow-left "></i><span class="ml-2 hidden sm:inline">Kembali</span>
+            </a>
+        </div>
+
         <!-- Intro Screen -->
         <div id="intro-screen" class="card text-center">
             <div class="mb-6">
@@ -12,7 +19,7 @@
                 <p class="text-gray-600 text-lg mb-6">{{ $kuis->deskripsi }}</p>
             </div>
 
-            <div class="bg-blue-50 rounded-xl p-6 mb-6">
+            <div class="bg-blue-200 rounded-xl p-6 mb-6">
                 <div class="grid md:grid-cols-3 gap-6">
                     <div>
                         <i class="fas fa-list-ol text-3xl text-blue-500 mb-2"></i>
@@ -40,12 +47,6 @@
                 </div>
             </div>
 
-            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-6">
-                <p class="text-yellow-800 font-semibold">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Pastikan proyektor sudah siap. Klik tombol di bawah untuk memulai kuis.
-                </p>
-            </div>
 
             <button onclick="startKuis()"
                 class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-12 rounded-full text-2xl transition transform hover:scale-105 shadow-lg">
@@ -56,46 +57,56 @@
         <!-- Quiz Screen (Full Screen Mode) -->
         <div id="quiz-screen" class="hidden">
             <!-- Header dengan Timer -->
-            <div class="card mb-6 sticky top-0 z-50 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600">Soal</p>
-                        <p class="text-2xl font-bold text-gray-800">
-                            <span id="current-soal-number">1</span> / <span
-                                id="total-soal">{{ $kuis->soal->count() }}</span>
+            <div
+                class="card mb-4 shadow-lg bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <!-- Info Soal -->
+                    <div class="bg-white/70 px-3 py-2 rounded-lg shadow-sm border border-gray-100">
+                        <p class="text-xs text-gray-600">Soal</p>
+                        <p class="text-lg font-bold text-gray-800">
+                            <span id="current-soal-number">1</span> /
+                            <span id="total-soal">{{ $kuis->soal->count() }}</span>
                         </p>
                     </div>
 
+                    <!-- Timer -->
                     @if ($kuis->waktu_tipe !== 'tanpa_waktu')
-                        <div id="timer-display" class="text-center">
-                            <p class="text-sm text-gray-600">
+                        <div id="timer-display"
+                            class="text-center bg-white/70 px-3 py-2 rounded-lg shadow-sm border border-gray-100">
+                            <p class="text-xs text-gray-600">
                                 {{ $kuis->waktu_tipe === 'per_soal' ? 'Waktu Tersisa' : 'Waktu Total' }}
                             </p>
-                            <p id="timer-text" class="text-4xl font-bold text-blue-600">
+                            <p id="timer-text" class="text-2xl font-bold text-blue-700 tracking-wide">
                                 <span id="timer-minutes">00</span>:<span id="timer-seconds">00</span>
                             </p>
                         </div>
                     @endif
 
-                    <div class="text-right">
-                        <p class="text-sm text-gray-600">Dijawab</p>
-                        <p class="text-2xl font-bold text-green-600">
+                    <!-- Jumlah Dijawab -->
+                    <div class="text-right bg-green-50 border border-green-200 rounded-lg px-3 py-2 shadow-sm">
+                        <p class="text-xs text-gray-600">Dijawab</p>
+                        <p class="text-lg font-semibold text-green-600">
                             <span id="answered-count">0</span> soal
                         </p>
                     </div>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                <div class="mt-3 bg-gray-300 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div id="progress-bar"
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-500 ease-in-out"
+                        style="width: 0%">
+                    </div>
                 </div>
             </div>
 
             <!-- Soal Container -->
-            <div id="soal-container" class="card min-h-[500px]">
+            <div id="soal-container"
+                class="card min-h-[400px] bg-white border border-gray-200 rounded-xl p-4 shadow-md transition-all duration-300">
                 <!-- Content will be loaded by JavaScript -->
             </div>
         </div>
+
 
         <!-- Results Screen -->
         <div id="results-screen" class="hidden">
@@ -130,7 +141,7 @@
                     </button>
                     <a href="{{ route('kuis.index') }}"
                         class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 rounded-lg text-xl transition">
-                        <i class="fas fa-home mr-2"></i> Kembali ke Daftar Kuis
+                        <i class="fas fa-home mr-2"></i> <span class="hidden lg:inline">Kembali ke Daftar Kuis</span>
                     </a>
                 </div>
             </div>
@@ -259,7 +270,7 @@
         <div class="space-y-6">
             <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-8 mb-6">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">${soal.konten_soal}</h2>
-                ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="max-w-md mx-auto rounded-lg shadow-lg mt-4" alt="Gambar Soal">` : ''}
+                ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="w-full max-w-xs md:max-w-sm lg:max-w-md mx-auto rounded-lg shadow-lg mt-4" alt="Gambar Soal">` : ''}
             </div>
     `;
 
@@ -275,7 +286,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-xl font-semibold text-gray-800">${pilihan.konten_pilihan}</p>
-                            ${pilihan.gambar_pilihan ? `<img src="/storage/${pilihan.gambar_pilihan}" class="max-w-xs mt-3 rounded-lg shadow" alt="Pilihan">` : ''}
+                            ${pilihan.gambar_pilihan ? `<img src="/storage/${pilihan.gambar_pilihan}" class="w-full max-w-xs md:max-w-sm lg:max-w-md mt-3 rounded-lg shadow" alt="Pilihan">` : ''}
                         </div>
                     </div>
                 </div>
@@ -312,10 +323,14 @@
 
                 isAnswered = true;
 
+                // Ensure boolean
+                const isCorrect = (isBenar == 1 || isBenar === true || isBenar === 'true');
+
                 // Save answer
                 userAnswers.push({
                     soal_index: currentSoalIndex,
-                    is_correct: isBenar
+                    is_correct: isCorrect,
+                    answer_id: pilihanId
                 });
 
                 // Update answered count
@@ -325,7 +340,14 @@
                 $('.quiz-answer').removeClass('selected');
                 event.currentTarget.classList.add('selected');
 
-                showFeedback(isBenar);
+                if (kuisData.penunjukan_jawaban === 'setelah_jawab') {
+                    showFeedback(isBenar);
+                } else {
+                    // For setelah_semua, move to next question immediately
+                    setTimeout(() => {
+                        nextSoal();
+                    }, 1000);
+                }
             }
 
             function submitIsianSingkat() {
@@ -346,13 +368,21 @@
                 // Save answer
                 userAnswers.push({
                     soal_index: currentSoalIndex,
-                    is_correct: isBenar
+                    is_correct: isBenar,
+                    answer_text: jawaban
                 });
 
                 $('#answered-count').text(userAnswers.length);
                 $('#jawaban-isian').prop('disabled', true);
 
-                showFeedback(isBenar, soal.jawaban_benar);
+                if (kuisData.penunjukan_jawaban === 'setelah_jawab') {
+                    showFeedback(isBenar, soal.jawaban_benar);
+                } else {
+                    // For setelah_semua, move to next question immediately
+                    setTimeout(() => {
+                        nextSoal();
+                    }, 1000);
+                }
             }
 
             function showFeedback(isBenar, jawabanBenar = null) {
@@ -368,7 +398,7 @@
                 ${isBenar ? 'Benar! 🎉' : 'Kurang Tepat 😊'}
             </h3>
             ${!isBenar && jawabanBenar ? `<p class="text-xl text-gray-700 mb-4">Jawaban yang benar: <span class="font-bold">${jawabanBenar}</span></p>` : ''}
-            ${!isBenar && kuisData.soal[currentSoalIndex].tipe === 'pilihan_ganda' ? '<p class="text-xl text-gray-700 mb-4">Lihat jawaban yang benar di bawah</p>' : ''}
+            ${!isBenar && kuisData.soal[currentSoalIndex].tipe === 'pilihan_ganda' ? '<p class="text-xl text-gray-700 mb-4"></p>' : ''}
         </div>
     `;
 
@@ -490,6 +520,38 @@
                 if (score >= 80) {
                     launchConfetti();
                 }
+
+                // For "setelah_semua", do NOT automatically show detail jawaban
+                // if (kuisData.penunjukan_jawaban === 'setelah_semua') {
+                //     showDetailJawaban();
+                // }
+
+                // Simpan hasil ke database
+                saveQuizResult(score, correctAnswers, userAnswers);
+            }
+
+            function saveQuizResult(score, correctCount, answers) {
+                $.ajax({
+                    url: `/kuis/${kuisData.id}/hasil`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        jumlah_soal_dijawab: answers.length,
+                        jumlah_benar: correctCount,
+                        nilai: score,
+                        detail_jawaban: answers
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            console.log('Hasil kuis berhasil disimpan');
+                        } else {
+                            console.error('Gagal menyimpan hasil kuis:', response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error saving quiz result:', error);
+                    }
+                });
             }
 
             function showDetailJawaban() {
@@ -503,21 +565,80 @@
                     const userAnswer = userAnswers.find(a => a.soal_index === index);
                     const isCorrect = userAnswer ? userAnswer.is_correct : false;
 
+                    let userAnswerContent = '-';
+                    let correctAnswerContent = '-';
+
+                    if (soal.tipe === 'pilihan_ganda') {
+                        // User Answer
+                        if (userAnswer && userAnswer.answer_id) {
+                            const selectedPilihan = soal.pilihan_jawaban.find(p => p.id === userAnswer.answer_id);
+                            if (selectedPilihan) {
+                                userAnswerContent = selectedPilihan.konten_pilihan;
+                                if (selectedPilihan.gambar_pilihan) {
+                                    userAnswerContent +=
+                                        `<br><img src="/storage/${selectedPilihan.gambar_pilihan}" class="h-20 rounded mt-2">`;
+                                }
+                            }
+                        }
+
+                        // Correct Answer (if wrong)
+                        if (!isCorrect) {
+                            const correctPilihan = soal.pilihan_jawaban.find(p => p.is_benar == 1);
+                            if (correctPilihan) {
+                                correctAnswerContent = correctPilihan.konten_pilihan;
+                                if (correctPilihan.gambar_pilihan) {
+                                    correctAnswerContent +=
+                                        `<br><img src="/storage/${correctPilihan.gambar_pilihan}" class="h-20 rounded mt-2">`;
+                                }
+                            }
+                        }
+                    } else {
+                        // Isian Singkat
+                        userAnswerContent = userAnswer ? userAnswer.answer_text : '-';
+                        if (!isCorrect) {
+                            correctAnswerContent = soal.jawaban_benar;
+                        }
+                    }
+
                     html += `
-            <div class="card ${isCorrect ? 'border-l-8 border-green-500' : 'border-l-8 border-red-500'}">
-                <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-${isCorrect ? 'check' : 'times'}-circle text-4xl text-${isCorrect ? 'green' : 'red'}-500"></i>
+            <div class="card mb-4 overflow-hidden border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow-sm hover:shadow-md transition-shadow">
+                <div class="p-4 sm:p-6">
+                    <!-- Header: Status & Question Number -->
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-gray-100 text-gray-600 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wider">
+                            Soal ${index + 1}
+                        </span>
+                        <span class="flex items-center ${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold text-sm sm:text-base">
+                            <i class="fas fa-${isCorrect ? 'check' : 'times'}-circle mr-2 text-lg"></i>
+                            ${isCorrect ? 'Benar' : 'Salah'}
+                        </span>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-600 mb-1">Soal ${index + 1}</p>
-                        <p class="text-lg font-semibold text-gray-800 mb-2">${soal.konten_soal}</p>
-                        <p class="text-sm">
-                            <span class="font-semibold">Status:</span> 
-                            <span class="text-${isCorrect ? 'green' : 'red'}-600 font-bold">
-                                ${isCorrect ? 'Benar ✓' : 'Salah ✗'}
-                            </span>
-                        </p>
+
+                    <!-- Question Content -->
+                    <div class="mb-6">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 leading-relaxed">${soal.konten_soal}</p>
+                        ${soal.gambar_soal ? `<img src="/storage/${soal.gambar_soal}" class="w-full max-w-md mt-4 rounded-lg shadow-sm border border-gray-100" alt="Gambar Soal">` : ''}
+                    </div>
+
+                    <!-- Answers Section -->
+                    <div class="bg-gray-50 rounded-xl p-4 sm:p-5 space-y-4">
+                        <!-- User Answer -->
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Kamu</p>
+                            <div class="${isCorrect ? 'text-green-700' : 'text-red-700'} font-medium text-base sm:text-lg">
+                                ${userAnswerContent}
+                            </div>
+                        </div>
+
+                        <!-- Correct Answer (Only if wrong) -->
+                        ${!isCorrect ? `
+                                                                        <div class="pt-3 border-t border-gray-200">
+                                                                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Jawaban Benar</p>
+                                                                            <div class="text-green-700 font-medium text-base sm:text-lg">
+                                                                                ${correctAnswerContent}
+                                                                            </div>
+                                                                        </div>
+                                                                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -559,43 +680,43 @@
             }
 
             function launchConfetti() {
-                const duration = 3000;
-                const end = Date.now() + duration;
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = {
+                    startVelocity: 30,
+                    spread: 360,
+                    ticks: 60,
+                    zIndex: 10000
+                };
 
-                (function frame() {
-                    for (let i = 0; i < 3; i++) {
-                        const confetti = document.createElement('div');
-                        confetti.style.position = 'fixed';
-                        confetti.style.left = Math.random() * window.innerWidth + 'px';
-                        confetti.style.top = '-20px';
-                        confetti.style.width = '10px';
-                        confetti.style.height = '10px';
-                        confetti.style.backgroundColor = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'][
-                            Math.floor(Math.random() * 6)
-                        ];
-                        confetti.style.borderRadius = '50%';
-                        confetti.style.zIndex = '10000';
-                        confetti.style.pointerEvents = 'none';
-                        document.body.appendChild(confetti);
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
 
-                        let pos = -20;
-                        const speed = 2 + Math.random() * 3;
-                        const fall = setInterval(() => {
-                            pos += speed;
-                            confetti.style.top = pos + 'px';
-                            confetti.style.transform = `rotate(${pos * 2}deg)`;
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
 
-                            if (pos > window.innerHeight) {
-                                clearInterval(fall);
-                                confetti.remove();
-                            }
-                        }, 20);
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
                     }
 
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
-                    }
-                })();
+                    var particleCount = 50 * (timeLeft / duration);
+                    // since particles fall down, start a bit higher than random
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: randomInRange(0.1, 0.3),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: randomInRange(0.7, 0.9),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                }, 250);
             }
 
             // Prevent accidental page leave

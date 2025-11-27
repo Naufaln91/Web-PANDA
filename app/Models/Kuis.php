@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kuis extends Model
 {
+    use HasFactory;
+
     protected $table = 'kuis';
 
     protected $fillable = [
@@ -14,6 +17,7 @@ class Kuis extends Model
         'deskripsi',
         'waktu_tipe',
         'durasi_waktu',
+        'penunjukan_jawaban',
         'status',
     ];
 
@@ -25,6 +29,11 @@ class Kuis extends Model
     public function soal()
     {
         return $this->hasMany(Soal::class)->orderBy('urutan');
+    }
+
+    public function historiKuis()
+    {
+        return $this->hasMany(HistoriKuis::class);
     }
 
     public function isDraft()

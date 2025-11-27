@@ -12,19 +12,25 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Create Admin
-        User::create([
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]);
+        // Create Admin using environment variables (via config)
+        $adminUsername = config('admin.username');
+        $adminPassword = config('admin.password');
 
-        // Add sample whitelisted phone numbers
-        Whitelist::create(['nomor_hp' => '081234567890']);
-        Whitelist::create(['nomor_hp' => '082345678901']);
-        Whitelist::create(['nomor_hp' => '083456789012']);
+        User::updateOrCreate(
+            ['username' => $adminUsername],
+            [
+                'password' => Hash::make($adminPassword),
+                'role' => 'admin',
+                'email' => null, // Admin doesn't need email
+            ]
+        );
 
-        echo "✅ Admin created: username=admin, password=admin123\n";
+        // Add sample whitelisted emails
+        Whitelist::firstOrCreate(['email' => 'guru@example.com'], ['role' => 'guru']);
+        Whitelist::firstOrCreate(['email' => 'wali@example.com'], ['role' => 'wali_murid']);
+        Whitelist::firstOrCreate(['email' => 'guru2@example.com'], ['role' => 'guru']);
+
+        echo "✅ Admin created/updated: username={$adminUsername}, password={$adminPassword}\n";
         echo "✅ Sample whitelisted numbers added\n";
     }
 }

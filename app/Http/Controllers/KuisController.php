@@ -7,6 +7,7 @@ use App\Models\Kuis;
 use App\Models\Soal;
 use App\Models\PilihanJawaban;
 use App\Models\User;
+use App\Models\HistoriKuis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -50,6 +51,7 @@ class KuisController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu_tipe' => 'required|in:per_soal,keseluruhan,tanpa_waktu',
             'durasi_waktu' => 'nullable|integer|min:5|max:3600',
+            'penunjukan_jawaban' => 'required|in:setelah_jawab,setelah_semua',
         ]);
 
         if ($validator->fails()) {
@@ -65,6 +67,7 @@ class KuisController extends Controller
             'deskripsi' => $request->deskripsi,
             'waktu_tipe' => $request->waktu_tipe,
             'durasi_waktu' => $request->waktu_tipe != 'tanpa_waktu' ? $request->durasi_waktu : null,
+            'penunjukan_jawaban' => $request->penunjukan_jawaban,
             'status' => 'draft',
         ]);
 
@@ -110,6 +113,7 @@ class KuisController extends Controller
             'deskripsi' => 'nullable|string',
             'waktu_tipe' => 'required|in:per_soal,keseluruhan,tanpa_waktu',
             'durasi_waktu' => 'nullable|integer|min:5|max:3600',
+            'penunjukan_jawaban' => 'required|in:setelah_jawab,setelah_semua',
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +128,7 @@ class KuisController extends Controller
             'deskripsi' => $request->deskripsi,
             'waktu_tipe' => $request->waktu_tipe,
             'durasi_waktu' => $request->waktu_tipe != 'tanpa_waktu' ? $request->durasi_waktu : null,
+            'penunjukan_jawaban' => $request->penunjukan_jawaban,
         ]);
 
         return response()->json([
@@ -215,6 +220,11 @@ class KuisController extends Controller
             ]);
         }
 
+        // Handle pilihan if sent as JSON string
+        if ($request->has('pilihan') && is_string($request->pilihan)) {
+            $request->merge(['pilihan' => json_decode($request->pilihan, true)]);
+        }
+
         $validator = Validator::make($request->all(), [
             'tipe' => 'required|in:pilihan_ganda,isian_singkat',
             'konten_soal' => 'required|string',
@@ -222,6 +232,8 @@ class KuisController extends Controller
             'jumlah_pilihan' => 'required_if:tipe,pilihan_ganda|integer|min:2|max:5',
             'jawaban_benar' => 'required',
             'pilihan' => 'required_if:tipe,pilihan_ganda|array',
+            'pilihan.*.konten' => 'required|string',
+            'pilihan.*.urutan' => 'required|integer',
         ], [
             'konten_soal.required' => 'Konten soal tidak boleh kosong.',
             'gambar_soal.max' => 'Ukuran gambar maksimal 5MB.',
@@ -258,20 +270,21 @@ class KuisController extends Controller
 
             // Jika pilihan ganda, simpan pilihan jawaban
             if ($request->tipe == 'pilihan_ganda' && $request->pilihan) {
-                foreach ($request->pilihan as $index => $pilihanData) {
+                foreach ($request->pilihan as $pilihanData) {
                     $gambarPilihanPath = null;
 
                     // Upload gambar pilihan jika ada
-                    if (isset($pilihanData['gambar']) && $pilihanData['gambar']) {
-                        $gambarPilihanPath = $pilihanData['gambar']->store('kuis/pilihan', 'public');
+                    $gambarKey = 'gambar_pilihan_' . $pilihanData['urutan'];
+                    if ($request->hasFile($gambarKey)) {
+                        $gambarPilihanPath = $request->file($gambarKey)->store('kuis/pilihan', 'public');
                     }
 
                     PilihanJawaban::create([
                         'soal_id' => $soal->id,
-                        'urutan' => $index + 1,
+                        'urutan' => $pilihanData['urutan'],
                         'konten_pilihan' => $pilihanData['konten'],
                         'gambar_pilihan' => $gambarPilihanPath,
-                        'is_benar' => ($index + 1) == $request->jawaban_benar,
+                        'is_benar' => $pilihanData['urutan'] == $request->jawaban_benar,
                     ]);
                 }
             }
@@ -308,10 +321,20 @@ class KuisController extends Controller
             ]);
         }
 
+        // Handle pilihan if sent as JSON string
+        if ($request->has('pilihan') && is_string($request->pilihan)) {
+            $request->merge(['pilihan' => json_decode($request->pilihan, true)]);
+        }
+
         $validator = Validator::make($request->all(), [
+            'tipe' => 'required|in:pilihan_ganda,isian_singkat',
             'konten_soal' => 'required|string',
             'gambar_soal' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'jumlah_pilihan' => 'required_if:tipe,pilihan_ganda|integer|min:2|max:5',
             'jawaban_benar' => 'required',
+            'pilihan' => 'required_if:tipe,pilihan_ganda|array',
+            'pilihan.*.konten' => 'required|string',
+            'pilihan.*.urutan' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -333,33 +356,35 @@ class KuisController extends Controller
             }
 
             $soal->update([
+                'tipe' => $request->tipe,
                 'konten_soal' => $request->konten_soal,
+                'jumlah_pilihan' => $request->tipe == 'pilihan_ganda' ? $request->jumlah_pilihan : null,
                 'jawaban_benar' => $request->jawaban_benar,
             ]);
 
-            // Update pilihan jika pilihan ganda
-            if ($soal->isPilihanGanda() && $request->pilihan) {
-                // Hapus pilihan lama
-                foreach ($soal->pilihanJawaban as $pilihan) {
-                    if ($pilihan->gambar_pilihan) {
-                        Storage::disk('public')->delete($pilihan->gambar_pilihan);
-                    }
+            // Hapus pilihan lama
+            foreach ($soal->pilihanJawaban as $pilihan) {
+                if ($pilihan->gambar_pilihan) {
+                    Storage::disk('public')->delete($pilihan->gambar_pilihan);
                 }
-                $soal->pilihanJawaban()->delete();
+            }
+            $soal->pilihanJawaban()->delete();
 
-                // Tambah pilihan baru
-                foreach ($request->pilihan as $index => $pilihanData) {
+            // Tambah pilihan baru jika pilihan ganda
+            if ($request->tipe == 'pilihan_ganda' && $request->pilihan) {
+                foreach ($request->pilihan as $pilihanData) {
                     $gambarPilihanPath = null;
-                    if (isset($pilihanData['gambar']) && $pilihanData['gambar']) {
-                        $gambarPilihanPath = $pilihanData['gambar']->store('kuis/pilihan', 'public');
+                    $gambarKey = 'gambar_pilihan_' . $pilihanData['urutan'];
+                    if ($request->hasFile($gambarKey)) {
+                        $gambarPilihanPath = $request->file($gambarKey)->store('kuis/pilihan', 'public');
                     }
 
                     PilihanJawaban::create([
                         'soal_id' => $soal->id,
-                        'urutan' => $index + 1,
+                        'urutan' => $pilihanData['urutan'],
                         'konten_pilihan' => $pilihanData['konten'],
                         'gambar_pilihan' => $gambarPilihanPath,
-                        'is_benar' => ($index + 1) == $request->jawaban_benar,
+                        'is_benar' => $pilihanData['urutan'] == $request->jawaban_benar,
                     ]);
                 }
             }
@@ -478,6 +503,151 @@ class KuisController extends Controller
         return response()->json([
             'success' => true,
             'kuis' => $kuis,
+        ]);
+    }
+
+    // API: Get Single Soal
+    public function getSingleSoal($soalId)
+    {
+        $soal = Soal::with('pilihanJawaban')->findOrFail($soalId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && $soal->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'soal' => $soal,
+        ]);
+    }
+
+    // Simpan Hasil Kuis
+    public function storeHasil(Request $request, $kuisId)
+    {
+        $kuis = Kuis::findOrFail($kuisId);
+
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'jumlah_soal_dijawab' => 'required|integer|min:0',
+            'jumlah_benar' => 'required|integer|min:0',
+            'nilai' => 'required|integer|min:0|max:100',
+            'detail_jawaban' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak valid.',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        // Simpan histori
+        $histori = HistoriKuis::create([
+            'user_id' => Auth::id(),
+            'kuis_id' => $kuisId,
+            'jumlah_soal_dijawab' => $request->jumlah_soal_dijawab,
+            'jumlah_benar' => $request->jumlah_benar,
+            'nilai' => $request->nilai,
+            'detail_jawaban' => $request->detail_jawaban,
+            'waktu_selesai' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hasil kuis berhasil disimpan.',
+            'histori_id' => $histori->id,
+        ]);
+    }
+
+    // Histori Pengerjaan Kuis
+    public function histori($kuisId)
+    {
+        $kuis = Kuis::findOrFail($kuisId);
+
+        // Cek akses - hanya admin dan guru
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $kuis->created_by != Auth::id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $histori = HistoriKuis::with('user')
+            ->where('kuis_id', $kuisId)
+            ->orderBy('waktu_selesai', 'desc')
+            ->paginate(10);
+
+        return view('kuis.histori', compact('kuis', 'histori'));
+    }
+
+    // API: Get Detail Histori
+    public function getDetailHistori($historiId)
+    {
+        $histori = HistoriKuis::with(['user', 'kuis.soal.pilihanJawaban'])->findOrFail($historiId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $histori->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'histori' => $histori,
+        ]);
+    }
+
+    // Hapus Histori Kuis
+    public function destroyHistori($historiId)
+    {
+        $histori = HistoriKuis::with('kuis')->findOrFail($historiId);
+
+        // Cek akses
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isGuru()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        // Jika bukan admin, cek apakah guru yang membuat kuis ini
+        if (!$user->isAdmin() && $histori->kuis->created_by != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak.',
+            ]);
+        }
+
+        $histori->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Histori kuis berhasil dihapus.',
         ]);
     }
 }

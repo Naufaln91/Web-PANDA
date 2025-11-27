@@ -3,15 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class OtpCode extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'nomor_hp',
+        'email',
         'code',
         'expires_at',
         'is_used',
+        'resend_count',
     ];
 
     protected $casts = [
@@ -19,35 +24,42 @@ class OtpCode extends Model
         'is_used' => 'boolean',
     ];
 
-    public static function generateOtp($nomorHp)
+    public static function generateOtp($email)
     {
         // Hapus OTP lama yang belum digunakan
-        self::where('nomor_hp', $nomorHp)
+        self::where('email', $email)
             ->where('is_used', false)
             ->delete();
 
         // Generate OTP 6 digit
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $hashedCode = Hash::make($code);
 
         // Simpan OTP dengan expired 5 menit
-        return self::create([
-            'nomor_hp' => $nomorHp,
-            'code' => $code,
+        $otp = self::create([
+            'email' => $email,
+            'code' => $hashedCode,
             'expires_at' => Carbon::now()->addMinutes(5),
+            'resend_count' => 0,
         ]);
+
+        // Return OTP dengan plain code untuk email
+        $otp->plain_code = $code;
+        return $otp;
     }
 
-    public static function verifyOtp($nomorHp, $code)
+    public static function verifyOtp($email, $code)
     {
-        $otp = self::where('nomor_hp', $nomorHp)
-            ->where('code', $code)
+        $otps = self::where('email', $email)
             ->where('is_used', false)
             ->where('expires_at', '>', Carbon::now())
-            ->first();
+            ->get();
 
-        if ($otp) {
-            $otp->update(['is_used' => true]);
-            return true;
+        foreach ($otps as $otp) {
+            if (Hash::check($code, $otp->code)) {
+                $otp->update(['is_used' => true]);
+                return true;
+            }
         }
 
         return false;
