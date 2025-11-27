@@ -99,8 +99,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/api/histori-kuis/{historiId}', [KuisController::class, 'getDetailHistori'])->name('api.histori-kuis.detail');
         Route::delete('/api/histori-kuis/{historiId}', [KuisController::class, 'destroyHistori'])->name('api.histori-kuis.destroy');
     });
-    Route::fallback(function () {
-    return response()->view('errors.404', [], 404);
+
 });
 
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
 });
