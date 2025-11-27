@@ -61,7 +61,7 @@
         <div class="card rounded-2xl p-6 bg-white">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">
                 <i class="fas fa-bolt mr-2 text-yellow-500"></i>
-                Aksi Cepat
+                Pilihan Menu
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
