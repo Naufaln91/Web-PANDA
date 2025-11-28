@@ -9,7 +9,7 @@
         <div class="flex justify-between items-center">
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
                 <i class="fas fa-tachometer-alt mr-2 text-blue-500"></i>
-                Dashboard admin
+                Dashboard Admin
             </h1>
         </div>
 
